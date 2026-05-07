@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://bh7ad0ocsom3i"]
+
+[ext_resource type="Script" path="res://scripts/slice_effect.gd" id="1_ga0dc"]
+
+[node name="SliceEffect" type="Area2D"]
+script = ExtResource("1_ga0dc")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(0, 0, 48, -20, 48, -10, 48, 0, 48, 10, 48, 20)
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+color = Color(1, 1, 1, 0.501961)
+polygon = PackedVector2Array(0, 0, 48, -20, 48, -10, 48, 0, 48, 10, 48, 20)

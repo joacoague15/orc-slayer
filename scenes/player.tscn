@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3 uid="uid://dp3v5iocdqtj2"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_tlp8j"]
+[ext_resource type="PackedScene" uid="uid://bh7ad0ocsom3i" path="res://scenes/slice_effect.tscn" id="2_qg56k"]
+[ext_resource type="Script" path="res://scripts/shake_camera.gd" id="3_83t3e"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lnb5w"]
+size = Vector2(32, 32)
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+script = ExtResource("1_tlp8j")
+slice_scene = ExtResource("2_qg56k")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_lnb5w")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource("3_83t3e")
+
+[node name="SliceCooldownTimer" type="Timer" parent="."]
+wait_time = 0.3
+one_shot = true
+
+[connection signal="timeout" from="SliceCooldownTimer" to="." method="_on_slice_cooldown_timer_timeout"]

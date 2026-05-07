@@ -1,0 +1,129 @@
+[gd_scene load_steps=7 format=3 uid="uid://8o10rd76dja7"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_hyiwn"]
+[ext_resource type="PackedScene" uid="uid://dp3v5iocdqtj2" path="res://scenes/player.tscn" id="2_rl6d3"]
+[ext_resource type="PackedScene" uid="uid://bf6tun472e7x8" path="res://scenes/orc.tscn" id="3_cgdby"]
+[ext_resource type="Script" path="res://scripts/spawner.gd" id="4_2bv7o"]
+[ext_resource type="PackedScene" uid="uid://clxtw52pcabh" path="res://scenes/orc_scout.tscn" id="5_rd2mj"]
+[ext_resource type="PackedScene" uid="uid://dcxl5tie7hrs7" path="res://scenes/orc_brute.tscn" id="6_ohvmb"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_hyiwn")
+
+[node name="Player" parent="." instance=ExtResource("2_rl6d3")]
+z_index = 1
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="TopLeft" type="MarginContainer" parent="UI"]
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/TopLeft"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ScoreLabel" type="Label" parent="UI/TopLeft/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Score: 0"
+
+[node name="TimeLabel" type="Label" parent="UI/TopLeft/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+theme_override_font_sizes/font_size = 22
+text = "Time: 0:00"
+
+[node name="TopCenter" type="MarginContainer" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_override_constants/margin_top = 20
+
+[node name="ComboLabel" type="Label" parent="UI/TopCenter"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 56
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GameOverScreen" type="Control" parent="UI"]
+z_index = 3
+layout_mode = 3
+anchor_right = 1.0
+anchor_bottom = 1.031
+offset_top = 22.0
+offset_bottom = -0.320007
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Overlay" type="ColorRect" parent="UI/GameOverScreen"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = 620.0
+offset_top = -13.0
+offset_right = 660.0
+offset_bottom = 27.0
+color = Color(0, 0, 0, 0)
+
+[node name="StatsContainer" type="VBoxContainer" parent="UI/GameOverScreen"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.384
+anchor_top = 0.4
+anchor_right = 0.671
+anchor_bottom = 0.858
+offset_left = 0.47998
+offset_right = 0.119995
+offset_bottom = 0.23999
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "GAME OVER"
+horizontal_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_font_sizes/font_size = 36
+text = "Score: 0"
+horizontal_alignment = 1
+
+[node name="TimeLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_font_sizes/font_size = 28
+text = "Time: 0:00"
+horizontal_alignment = 1
+
+[node name="HighscoreLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_font_sizes/font_size = 28
+text = "Highscore: 0"
+horizontal_alignment = 1
+
+[node name="PromptLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.811, 0.742, 0.18, 0)
+theme_override_font_sizes/font_size = 24
+text = "[R] Restart    [ESC] Menu"
+horizontal_alignment = 1
+
+[node name="Spawner" type="Node2D" parent="." groups=["spawner"]]
+script = ExtResource("4_2bv7o")
+orc_normal_scene = ExtResource("3_cgdby")
+orc_scout_scene = ExtResource("5_rd2mj")
+orc_brute_scene = ExtResource("6_ohvmb")

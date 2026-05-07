@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cv4mw228ry0vf"]
+
+[ext_resource type="Script" path="res://scripts/blood_splat.gd" id="1_ppl8s"]
+
+[node name="BloodSplat" type="Node2D"]
+script = ExtResource("1_ppl8s")

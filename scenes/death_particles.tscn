@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpywxskb13ix1"]
+
+[sub_resource type="GDScript" id="GDScript_vnolx"]
+script/source = "# scripts/death_particles.gd
+extends CPUParticles2D
+
+func _ready() -> void:
+	emitting = true  # forzamos que arranque al spawnear
+	await get_tree().create_timer(lifetime + 0.1).timeout
+	queue_free()
+
+func set_particle_color(c: Color) -> void:
+	color = c
+"
+
+[node name="DeathParticles" type="CPUParticles2D"]
+emitting = false
+amount = 12
+lifetime = 0.25
+one_shot = true
+explosiveness = 1.0
+spread = 180.0
+initial_velocity_min = 80.0
+initial_velocity_max = 350.0
+linear_accel_min = -500.0
+linear_accel_max = -300.0
+scale_amount_min = 3.0
+scale_amount_max = 5.0
+script = SubResource("GDScript_vnolx")
