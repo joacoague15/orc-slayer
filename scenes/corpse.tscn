@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpcky31tik7br"]
+
+[ext_resource type="Script" path="res://scripts/corpse.gd" id="1_2lc02"]
+
+[node name="Corpse" type="Node2D"]
+script = ExtResource("1_2lc02")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+z_index = -1
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0

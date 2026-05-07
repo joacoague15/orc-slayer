@@ -15,6 +15,7 @@ extends CharacterBody2D
 @export var pickup_coin_scene: PackedScene
 
 @export var blood_splat_scene: PackedScene
+@export var corpse_scene: PackedScene
 
 enum State { CHASING, TELEGRAPHING }
 
@@ -113,7 +114,16 @@ func die() -> void:
 	
 	AudioManager.play_orc_death()
 	try_drop_pickup()
-	spawn_blood_splat()
+	
+	# Calcular dirección del empuje desde el jugador hacia el orco
+	var push_dir := Vector2.RIGHT
+	if is_instance_valid(player):
+		push_dir = (global_position - player.global_position).normalized()
+		if push_dir == Vector2.ZERO:
+			push_dir = Vector2.RIGHT
+	
+	spawn_corpse(push_dir)
+	spawn_blood_splat_directional(push_dir)
 	
 	if is_instance_valid(player):
 		var camera := player.get_node_or_null("Camera2D")
@@ -124,14 +134,27 @@ func die() -> void:
 		GameState.register_kill()
 	queue_free()
 
-func spawn_blood_splat() -> void:
-	if blood_splat_scene:
-		var splat := blood_splat_scene.instantiate()
-		splat.position = global_position
-		splat.z_index = -1
-		get_parent().add_child(splat)
-		if splat.has_method("setup"):
-			splat.setup(visual_color)
+func spawn_corpse(push_direction: Vector2) -> void:
+	if not corpse_scene:
+		return
+	var corpse := corpse_scene.instantiate()
+	corpse.position = global_position
+	get_parent().add_child(corpse)
+	if corpse.has_method("setup"):
+		corpse.setup(visual_color, scale, push_direction, blood_splat_scene)
+
+func spawn_blood_splat_directional(direction: Vector2) -> void:
+	# Sangre que sale en la dirección del empuje (el primer "splash")
+	if not blood_splat_scene:
+		return
+	var splat := blood_splat_scene.instantiate()
+	splat.position = global_position
+	splat.z_index = -2
+	get_parent().add_child(splat)
+	if splat.has_method("setup_directional"):
+		splat.setup_directional(visual_color, direction)
+	elif splat.has_method("setup"):
+		splat.setup(visual_color)
 
 func try_drop_pickup() -> void:
 	if randf() > pickup_drop_chance:

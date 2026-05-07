@@ -1,6 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://clxtw52pcabh"]
+[gd_scene load_steps=7 format=3 uid="uid://clxtw52pcabh"]
 
 [ext_resource type="Script" path="res://scripts/orc.gd" id="1_0n2nu"]
+[ext_resource type="PackedScene" uid="uid://cbecpas7yxhve" path="res://scenes/pickup.tscn" id="2_lb5xo"]
+[ext_resource type="PackedScene" uid="uid://cpcky31tik7br" path="res://scenes/corpse.tscn" id="4_avgw8"]
+[ext_resource type="PackedScene" uid="uid://cv4mw228ry0vf" path="res://scenes/blood_splat.tscn" id="6_idlvw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_flafe"]
 size = Vector2(32, 32)
@@ -11,6 +14,9 @@ radius = 25.9422
 [node name="OrcScout" type="CharacterBody2D" groups=["orcs"]]
 script = ExtResource("1_0n2nu")
 visual_color = Color(0.113211, 0.499924, 0.349185, 1)
+pickup_coin_scene = ExtResource("2_lb5xo")
+blood_splat_scene = ExtResource("6_idlvw")
+corpse_scene = ExtResource("4_avgw8")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 offset_left = -16.0

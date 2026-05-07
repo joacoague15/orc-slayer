@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bf6tun472e7x8"]
+[gd_scene load_steps=7 format=3 uid="uid://bf6tun472e7x8"]
 
 [ext_resource type="Script" path="res://scripts/orc.gd" id="1_xeing"]
-[ext_resource type="PackedScene" uid="uid://b0e4jjmydh86e" path="res://scenes/pickup_coin.tscn" id="2_kn3pu"]
+[ext_resource type="PackedScene" uid="uid://cbecpas7yxhve" path="res://scenes/pickup.tscn" id="2_bl76n"]
+[ext_resource type="PackedScene" uid="uid://cpcky31tik7br" path="res://scenes/corpse.tscn" id="4_ufc7s"]
 [ext_resource type="PackedScene" uid="uid://cv4mw228ry0vf" path="res://scenes/blood_splat.tscn" id="6_087gv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_flafe"]
@@ -13,9 +14,10 @@ radius = 25.9422
 [node name="Orc" type="CharacterBody2D" groups=["orcs"]]
 script = ExtResource("1_xeing")
 visual_color = Color(0.564706, 1, 0.168627, 1)
-pickup_drop_chance = 0.9
-pickup_coin_scene = ExtResource("2_kn3pu")
+pickup_drop_chance = 0.2
+pickup_coin_scene = ExtResource("2_bl76n")
 blood_splat_scene = ExtResource("6_087gv")
+corpse_scene = ExtResource("4_ufc7s")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 offset_left = -16.0
