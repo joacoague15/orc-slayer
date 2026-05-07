@@ -13,7 +13,9 @@ radius = 25.9422
 
 [node name="OrcScout" type="CharacterBody2D" groups=["orcs"]]
 script = ExtResource("1_0n2nu")
+move_speed = 160.0
 visual_color = Color(0.113211, 0.499924, 0.349185, 1)
+visual_scale = 0.9
 pickup_coin_scene = ExtResource("2_lb5xo")
 blood_splat_scene = ExtResource("6_idlvw")
 corpse_scene = ExtResource("4_avgw8")
