@@ -2,42 +2,58 @@
 extends Node2D
 class_name Corpse
 
+const MAX_CORPSES: int = 220
+
 @export var lifetime: float = 90.0
 @export var fade_duration: float = 5.0
 
-# Empuje: el cuerpo se desliza un toque en la dirección del slice antes de quedarse quieto
 @export var push_distance: float = 35.0
 @export var push_duration: float = 0.18
 
 @onready var visual: ColorRect = $ColorRect
 
-# Para identificar al cuerpo en la escena (el cap usa esto)
 var spawn_time: float = 0.0
+var is_being_culled: bool = false
 
 func setup(base_color: Color, base_scale: Vector2, push_direction: Vector2, blood_splat_scene: PackedScene = null) -> void:
-	# Color más oscuro para diferenciarlo de un orco vivo
 	visual.color = base_color.darkened(0.5)
-	# Misma escala que el orco que murió
 	scale = base_scale
-	
-	# Spawn time para el cap de cuerpos
 	spawn_time = Time.get_ticks_msec() / 1000.0
 	
-	# Empuje visual en dirección del slice
+	# Cap: si hay demasiados cuerpos, hacer fade out a los más viejos
+	_enforce_cap()
+	
 	var target_pos := position + push_direction.normalized() * push_distance
 	var push_tween := create_tween()
 	push_tween.tween_property(self, "position", target_pos, push_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	# Cuando el cuerpo se queda quieto, generamos el charco final si nos pasaron la escena
 	if blood_splat_scene:
 		push_tween.tween_callback(_spawn_resting_blood.bind(blood_splat_scene, base_color))
 	
-	# Lifetime: dura 90 segundos, después fade out de 5 segundos
 	await get_tree().create_timer(lifetime - fade_duration).timeout
-	if not is_instance_valid(self):
+	if not is_instance_valid(self) or is_being_culled:
 		return
 	var fade_tween := create_tween()
 	fade_tween.tween_property(self, "modulate:a", 0.0, fade_duration)
 	fade_tween.tween_callback(queue_free)
+
+func _enforce_cap() -> void:
+	var corpses := get_tree().get_nodes_in_group("corpses")
+	if corpses.size() <= MAX_CORPSES:
+		return
+	
+	# Filtrar los que no están siendo eliminados ya
+	var active_corpses: Array = []
+	for c in corpses:
+		if c is Corpse and not c.is_being_culled and c != self:
+			active_corpses.append(c)
+	
+	# Ordenar por spawn_time ascendente (más viejos primero)
+	active_corpses.sort_custom(func(a, b): return a.spawn_time < b.spawn_time)
+	
+	# Cuántos cuerpos hay que eliminar para volver a estar dentro del cap
+	var to_remove := corpses.size() - MAX_CORPSES
+	for i in range(min(to_remove, active_corpses.size())):
+		active_corpses[i].force_fade_out()
 
 func _spawn_resting_blood(splat_scene: PackedScene, base_color: Color) -> void:
 	if not is_instance_valid(self):
@@ -50,7 +66,9 @@ func _spawn_resting_blood(splat_scene: PackedScene, base_color: Color) -> void:
 		splat.setup(base_color)
 
 func force_fade_out() -> void:
-	# Llamado desde el cap: hace fade rápido y se libera
+	if is_being_culled:
+		return
+	is_being_culled = true
 	var tween := create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, 0.5)
 	tween.tween_callback(queue_free)

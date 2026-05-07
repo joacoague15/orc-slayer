@@ -92,7 +92,8 @@ func start_telegraph() -> void:
 	if is_instance_valid(player):
 		var camera := player.get_node_or_null("Camera2D")
 		if camera and camera.has_method("shake"):
-			camera.shake(1.5)
+			var telegraph_shake = 1.5 + min(GameState.combo * 0.15, 3.0)
+			camera.shake(telegraph_shake)
 
 func telegraph(delta: float) -> void:
 	telegraph_timer -= delta
@@ -115,7 +116,6 @@ func die() -> void:
 	AudioManager.play_orc_death()
 	try_drop_pickup()
 	
-	# Calcular dirección del empuje desde el jugador hacia el orco
 	var push_dir := Vector2.RIGHT
 	if is_instance_valid(player):
 		push_dir = (global_position - player.global_position).normalized()
@@ -128,11 +128,18 @@ func die() -> void:
 	if is_instance_valid(player):
 		var camera := player.get_node_or_null("Camera2D")
 		if camera and camera.has_method("shake"):
-			camera.shake(3.0)
+			camera.shake(_get_shake_for_combo())
 	
 	for i in range(score_value):
 		GameState.register_kill()
 	queue_free()
+	
+func _get_shake_for_combo() -> float:
+	# Base de 4, escala con combo, capeado para que no sea brutal
+	var base_shake := 4.0
+	var combo_bonus := GameState.combo * 0.4
+	var max_shake := 12.0
+	return min(base_shake + combo_bonus, max_shake)
 
 func spawn_corpse(push_direction: Vector2) -> void:
 	if not corpse_scene:
