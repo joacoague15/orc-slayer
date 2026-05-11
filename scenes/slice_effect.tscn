@@ -4,10 +4,13 @@
 
 [node name="SliceEffect" type="Area2D"]
 script = ExtResource("1_ga0dc")
+max_kill_distance = 120.0
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array(0, 0, 60, -26, 60, -13, 60, 0, 60, 13, 60, 26)
+visible = false
+polygon = PackedVector2Array(0, 0, 25, -102, 70, -100, 72, 2, 72, 102, 29, 102)
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
+visible = false
 color = Color(1, 1, 1, 0.501961)
-polygon = PackedVector2Array(0, 0, 60, -26, 60, -13, 60, 0, 60, 13, 60, 26)
+polygon = PackedVector2Array(0, 0, 25, -102, 70, -100, 72, 2, 72, 102, 29, 102)

@@ -32,27 +32,27 @@
 [sub_resource type="SpriteFrames" id="SpriteFrames_fwcdg"]
 animations = [{
 "frames": [{
-"duration": 0.5,
+"duration": 1.0,
 "texture": ExtResource("3_v3oek")
 }, {
-"duration": 0.5,
+"duration": 1.0,
 "texture": ExtResource("4_h6lbr")
 }, {
-"duration": 0.5,
+"duration": 1.0,
 "texture": ExtResource("5_td68s")
 }, {
-"duration": 0.5,
+"duration": 1.0,
 "texture": ExtResource("6_scqf5")
 }, {
-"duration": 0.5,
+"duration": 1.0,
 "texture": ExtResource("7_u28b4")
 }, {
-"duration": 0.5,
+"duration": 1.0,
 "texture": ExtResource("8_3yxbr")
 }],
 "loop": false,
 "name": &"go_to_idle_slice_2",
-"speed": 6.0
+"speed": 20.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -167,7 +167,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"idle_to_slice_1",
-"speed": 15.0
+"speed": 50.0
 }, {
 "frames": [{
 "duration": 0.3,
@@ -205,7 +205,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"slice_1",
-"speed": 15.0
+"speed": 37.0
 }, {
 "frames": [{
 "duration": 0.3,
@@ -240,11 +240,11 @@ animations = [{
 }],
 "loop": false,
 "name": &"slice_2",
-"speed": 15.0
+"speed": 33.0
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lnb5w"]
-size = Vector2(32, 35)
+size = Vector2(45.5, 35)
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 script = ExtResource("1_tlp8j")
@@ -255,10 +255,9 @@ physics_interpolation_mode = 2
 scale = Vector2(0.16, 0.16)
 sprite_frames = SubResource("SpriteFrames_fwcdg")
 animation = &"idle"
-frame_progress = 0.871265
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -3)
+position = Vector2(-0.5, -3)
 scale = Vector2(2, 2)
 shape = SubResource("RectangleShape2D_lnb5w")
 
