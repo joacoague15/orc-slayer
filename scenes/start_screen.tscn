@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://dnr2r1qt25jg"]
+[gd_scene load_steps=4 format=3 uid="uid://dnr2r1qt25jg"]
 
 [ext_resource type="Script" path="res://scripts/start_screen.gd" id="1_cxrsa"]
+[ext_resource type="Texture2D" uid="uid://dc8tub4opx64e" path="res://sprites/main_menu.png" id="2_8kvlq"]
+[ext_resource type="FontFile" uid="uid://v2dqr2ab4mf5" path="res://fonts/PressStart2P-Regular.ttf" id="2_oa7cn"]
 
 [node name="StartScreen" type="Control"]
 layout_mode = 3
@@ -18,13 +20,17 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.05, 0.08, 1)
+color = Color(0, 0, 0, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 290.0
+offset_top = -4.0
+offset_right = 290.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 30
@@ -32,31 +38,38 @@ alignment = 1
 
 [node name="TitleLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 96
+theme_override_colors/font_color = Color(0.4, 0.7, 0.3, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/font = ExtResource("2_oa7cn")
+theme_override_font_sizes/font_size = 60
 text = "ORC SLAYER"
-horizontal_alignment = 1
-
-[node name="SubtitleLabel" type="Label" parent="VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
-theme_override_font_sizes/font_size = 24
-text = "Sobreviví. Combo. Repeat."
 horizontal_alignment = 1
 
 [node name="InstructionsLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
+theme_override_constants/line_spacing = 20
+theme_override_fonts/font = ExtResource("2_oa7cn")
 theme_override_font_sizes/font_size = 20
-text = "WASD para moverte\\nClick izquierdo para atacar\\nNo dejes que te toquen"
+text = "Move with WASD
+Left click to slice"
 horizontal_alignment = 1
 
 [node name="PromptLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 36
+theme_override_constants/line_spacing = 2
+theme_override_fonts/font = ExtResource("2_oa7cn")
+theme_override_font_sizes/font_size = 28
 text = "PRESS SPACE TO START"
 horizontal_alignment = 1
 
 [node name="HighscoreLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_oa7cn")
 theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
+
+[node name="main_menu_sprite" type="Sprite2D" parent="."]
+position = Vector2(316, 406)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_8kvlq")

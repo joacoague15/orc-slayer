@@ -3,6 +3,7 @@ extends Control
 
 @onready var prompt_label: Label = $VBoxContainer/PromptLabel
 @onready var highscore_label: Label = $VBoxContainer/HighscoreLabel
+@onready var hero_sprite: Sprite2D = $main_menu_sprite
 
 var blink_time: float = 0.0
 
@@ -12,6 +13,16 @@ func _ready() -> void:
 		highscore_label.text = "Highscore: %d" % GameState.highscore
 	else:
 		highscore_label.text = ""
+		
+	animate_intro()
+	
+func animate_intro() -> void:
+	hero_sprite.modulate.a = 0.0
+	hero_sprite.position.x -= 50  # arranca 50px a la izquierda
+	
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(hero_sprite, "modulate:a", 1.0, 0.8)
+	tween.tween_property(hero_sprite, "position:x", hero_sprite.position.x + 50, 0.8).set_ease(Tween.EASE_OUT)
 
 func _process(delta: float) -> void:
 	blink_time += delta
@@ -25,4 +36,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			start_game()
 
 func start_game() -> void:
+	# Bloqueamos input mientras hace la transición
+	set_process_unhandled_input(false)
+	
+	# Fade-out de todo
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(hero_sprite, "modulate:a", 0.0, 0.4)
+	tween.tween_property($VBoxContainer, "modulate:a", 0.0, 0.4)
+	
+	# Esperar a que termine el fade y cambiar de escena
+	await tween.finished
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
