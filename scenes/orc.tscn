@@ -1,9 +1,21 @@
-[gd_scene load_steps=7 format=3 uid="uid://bf6tun472e7x8"]
+[gd_scene load_steps=9 format=3 uid="uid://bf6tun472e7x8"]
 
 [ext_resource type="Script" path="res://scripts/orc.gd" id="1_xeing"]
 [ext_resource type="PackedScene" uid="uid://cbecpas7yxhve" path="res://scenes/pickup.tscn" id="2_bl76n"]
 [ext_resource type="PackedScene" uid="uid://cpcky31tik7br" path="res://scenes/corpse.tscn" id="4_ufc7s"]
+[ext_resource type="Texture2D" uid="uid://foi5cluofy2h" path="res://sprites/orc.png" id="5_fqomm"]
 [ext_resource type="PackedScene" uid="uid://cv4mw228ry0vf" path="res://scenes/blood_splat.tscn" id="6_087gv"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_m822r"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_fqomm")
+}],
+"loop": true,
+"name": &"default",
+"speed": 1.0
+}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_flafe"]
 size = Vector2(32, 32)
@@ -21,12 +33,10 @@ pickup_coin_scene = ExtResource("2_bl76n")
 blood_splat_scene = ExtResource("6_087gv")
 corpse_scene = ExtResource("4_ufc7s")
 
-[node name="ColorRect" type="ColorRect" parent="."]
-offset_left = -16.0
-offset_top = -16.0
-offset_right = 16.0
-offset_bottom = 16.0
-color = Color(0.458824, 1, 0, 1)
+[node name="OrcSpriteAnimator2D" type="AnimatedSprite2D" parent="."]
+modulate = Color(0.506589, 0.740973, 0.386696, 1)
+scale = Vector2(0.2, 0.2)
+sprite_frames = SubResource("SpriteFrames_m822r")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_flafe")

@@ -24,12 +24,12 @@ var player: Node2D
 var telegraph_timer: float = 0.0
 var is_dying: bool = false
 
-@onready var visual: ColorRect = $ColorRect
+@onready var visual: AnimatedSprite2D = $OrcSpriteAnimator2D
 @onready var neighbor_detector: Area2D = $NeighborDetector
 
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("player")
-	visual.color = visual_color
+	visual.modulate = visual_color
 	scale = Vector2(visual_scale, visual_scale)
 
 func _physics_process(delta: float) -> void:
@@ -48,6 +48,10 @@ func _physics_process(delta: float) -> void:
 			telegraph(delta)
 	
 	move_and_slide()
+	
+	# Rotación del sprite hacia el jugador
+	if is_instance_valid(player):
+		visual.rotation = (player.global_position - global_position).angle() - PI / 2
 
 func chase(_delta: float) -> void:
 	var distance := global_position.distance_to(player.global_position)
@@ -87,7 +91,7 @@ func start_telegraph() -> void:
 	state = State.TELEGRAPHING
 	telegraph_timer = telegraph_duration
 	velocity = Vector2.ZERO
-	visual.color = Color.RED
+	visual.modulate = Color.RED
 	
 	if is_instance_valid(player):
 		var camera := player.get_node_or_null("Camera2D")
@@ -106,7 +110,7 @@ func telegraph(delta: float) -> void:
 				if player.has_method("die"):
 					player.die()
 		state = State.CHASING
-		visual.color = visual_color
+		visual.modulate = visual_color
 
 func die() -> void:
 	if is_dying:

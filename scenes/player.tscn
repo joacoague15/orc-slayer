@@ -244,7 +244,7 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lnb5w"]
-size = Vector2(45.5, 35)
+size = Vector2(49.5, 37.5)
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 script = ExtResource("1_tlp8j")
@@ -252,12 +252,13 @@ slice_scene = ExtResource("2_qg56k")
 
 [node name="PlayerSprite" type="AnimatedSprite2D" parent="."]
 physics_interpolation_mode = 2
-scale = Vector2(0.16, 0.16)
+modulate = Color(0.587536, 0.603418, 0.531681, 1)
+scale = Vector2(0.18, 0.18)
 sprite_frames = SubResource("SpriteFrames_fwcdg")
 animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-0.5, -3)
+position = Vector2(-0.5, -5.5)
 scale = Vector2(2, 2)
 shape = SubResource("RectangleShape2D_lnb5w")
 
