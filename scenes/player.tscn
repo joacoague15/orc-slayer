@@ -199,9 +199,6 @@ animations = [{
 }, {
 "duration": 0.3,
 "texture": ExtResource("27_a7psd")
-}, {
-"duration": 0.3,
-"texture": ExtResource("26_58qk6")
 }],
 "loop": false,
 "name": &"slice_1",
@@ -247,6 +244,7 @@ animations = [{
 size = Vector2(49.5, 37.5)
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_mask = 0
 script = ExtResource("1_tlp8j")
 slice_scene = ExtResource("2_qg56k")
 
@@ -255,7 +253,7 @@ physics_interpolation_mode = 2
 modulate = Color(0.587536, 0.603418, 0.531681, 1)
 scale = Vector2(0.18, 0.18)
 sprite_frames = SubResource("SpriteFrames_fwcdg")
-animation = &"idle"
+animation = &"slice_1"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-0.5, -5.5)

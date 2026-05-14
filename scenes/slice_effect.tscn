@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/slice_effect.gd" id="1_ga0dc"]
 
 [node name="SliceEffect" type="Area2D"]
+collision_mask = 3
 script = ExtResource("1_ga0dc")
 max_kill_distance = 120.0
 

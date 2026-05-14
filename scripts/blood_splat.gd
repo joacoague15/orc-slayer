@@ -106,20 +106,52 @@ func _process(delta: float) -> void:
 	if not any_animating:
 		set_process(false)
 
+# Cache estático: una sola textura compartida por todos los blood_splat
+static var pixel_circle_texture: ImageTexture = null
+const TEXTURE_SIZE: int = 32
+
+static func _get_pixel_circle_texture() -> ImageTexture:
+	if pixel_circle_texture:
+		return pixel_circle_texture
+	
+	# Crear la imagen una sola vez
+	var img := Image.create(TEXTURE_SIZE, TEXTURE_SIZE, false, Image.FORMAT_RGBA8)
+	var center := Vector2(TEXTURE_SIZE / 2.0, TEXTURE_SIZE / 2.0)
+	var radius := TEXTURE_SIZE / 2.0 - 1.0
+	
+	for x in range(TEXTURE_SIZE):
+		for y in range(TEXTURE_SIZE):
+			var dx := x - center.x
+			var dy := y - center.y
+			if dx * dx + dy * dy <= radius * radius:
+				img.set_pixel(x, y, Color.WHITE)
+	
+	pixel_circle_texture = ImageTexture.create_from_image(img)
+	return pixel_circle_texture
+
 func _draw() -> void:
+	var tex := _get_pixel_circle_texture()
+	
 	for droplet in droplets:
-		# Dibujar trail (gotitas más chicas atrás)
+		# Trail
 		for i in range(droplet.trail_points.size()):
 			var trail_pos: Vector2 = droplet.trail_points[i]
-			# Las gotas del trail se hacen más chicas hacia atrás
 			var trail_factor: float = float(i + 1) / float(droplet.trail_points.size())
 			var trail_radius: float = droplet.radius * trail_factor * 0.7
 			var trail_color := splat_color
 			trail_color.a = splat_color.a * trail_factor * 0.6
-			draw_circle(trail_pos, trail_radius, trail_color)
+			_draw_pixel_circle_textured(tex, trail_pos, trail_radius, trail_color)
 		
-		# Dibujar la gota principal estirada en dirección del movimiento
-		_draw_elongated_droplet(droplet.position, droplet.direction, droplet.radius)
+		# Gota principal estirada (3 círculos)
+		var stretch_offset: Vector2 = droplet.direction * droplet.radius * (stretch_factor - 1.0) * 0.5
+		_draw_pixel_circle_textured(tex, droplet.position + stretch_offset * 0.5, droplet.radius, splat_color)
+		_draw_pixel_circle_textured(tex, droplet.position, droplet.radius * 0.85, splat_color)
+		_draw_pixel_circle_textured(tex, droplet.position - stretch_offset * 0.7, droplet.radius * 0.6, splat_color)
+
+func _draw_pixel_circle_textured(tex: Texture2D, center: Vector2, radius: float, color: Color) -> void:
+	var size := radius * 2.0
+	var rect := Rect2(center.x - radius, center.y - radius, size, size)
+	draw_texture_rect(tex, rect, false, color)
 
 func _draw_elongated_droplet(pos: Vector2, direction: Vector2, radius: float) -> void:
 	# Una gota estirada se aproxima dibujando 3 círculos: principal + dos extensiones

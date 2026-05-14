@@ -1,19 +1,206 @@
-[gd_scene load_steps=9 format=3 uid="uid://bf6tun472e7x8"]
+[gd_scene load_steps=32 format=3 uid="uid://bf6tun472e7x8"]
 
 [ext_resource type="Script" path="res://scripts/orc.gd" id="1_xeing"]
 [ext_resource type="PackedScene" uid="uid://cbecpas7yxhve" path="res://scenes/pickup.tscn" id="2_bl76n"]
-[ext_resource type="PackedScene" uid="uid://cpcky31tik7br" path="res://scenes/corpse.tscn" id="4_ufc7s"]
+[ext_resource type="Texture2D" uid="uid://biif7u1abp451" path="res://sprites/animations_sprites/orc_attack/frame_1.png" id="4_nu2fw"]
+[ext_resource type="Texture2D" uid="uid://c6c3v3koi6dhr" path="res://sprites/animations_sprites/orc_attack/frame_2.png" id="5_7ancs"]
+[ext_resource type="Texture2D" uid="uid://7ntg0wy86yq6" path="res://sprites/animations_sprites/death_orc/frame1.png" id="5_14yns"]
 [ext_resource type="Texture2D" uid="uid://foi5cluofy2h" path="res://sprites/orc.png" id="5_fqomm"]
+[ext_resource type="Texture2D" uid="uid://fcuf2ovi8mbl" path="res://sprites/animations_sprites/orc_attack/frame_3.png" id="6_3hjqd"]
 [ext_resource type="PackedScene" uid="uid://cv4mw228ry0vf" path="res://scenes/blood_splat.tscn" id="6_087gv"]
+[ext_resource type="Texture2D" uid="uid://bh8884w8ehh3y" path="res://sprites/animations_sprites/death_orc/frame2.png" id="6_v2tgl"]
+[ext_resource type="Texture2D" uid="uid://63qukgo3qmho" path="res://sprites/animations_sprites/orc_attack/frame_4.png" id="7_83riy"]
+[ext_resource type="Texture2D" uid="uid://c2fdcstj2dniy" path="res://sprites/animations_sprites/death_orc/frame3.png" id="7_sdfho"]
+[ext_resource type="Texture2D" uid="uid://5jnrgfii3f4g" path="res://sprites/animations_sprites/death_orc/frame4.png" id="8_4emx3"]
+[ext_resource type="Texture2D" uid="uid://canps42k0am5f" path="res://sprites/animations_sprites/orc_attack/frame_5.png" id="8_oqxue"]
+[ext_resource type="Texture2D" uid="uid://bu1w8mjiw4dg6" path="res://sprites/animations_sprites/orc_attack/frame_6.png" id="9_0rgqm"]
+[ext_resource type="Texture2D" uid="uid://c8ndvfhsvv6gm" path="res://sprites/animations_sprites/death_orc/frame5.png" id="9_xmu3h"]
+[ext_resource type="Texture2D" uid="uid://t63kxss0jiwq" path="res://sprites/animations_sprites/orc_attack/frame_7.png" id="10_2lmlx"]
+[ext_resource type="Texture2D" uid="uid://dbnolwiek4b6e" path="res://sprites/animations_sprites/death_orc/frame6.png" id="10_f8is6"]
+[ext_resource type="Texture2D" uid="uid://c182imyjeoxvw" path="res://sprites/animations_sprites/death_orc/frame7.png" id="11_sq6qo"]
+[ext_resource type="Texture2D" uid="uid://gcjj0oudavnm" path="res://sprites/animations_sprites/orc_attack/frame_8.png" id="11_tcmms"]
+[ext_resource type="Texture2D" uid="uid://bk4hj052f7pwb" path="res://sprites/animations_sprites/death_orc/frame8.png" id="12_1b4ni"]
+[ext_resource type="Texture2D" uid="uid://bcc44vb25oudn" path="res://sprites/animations_sprites/orc_attack/frame_9.png" id="12_523wb"]
+[ext_resource type="Texture2D" uid="uid://cn0erd7yumk7j" path="res://sprites/animations_sprites/orc_attack/frame_10.png" id="13_4nup1"]
+[ext_resource type="Texture2D" uid="uid://cd0wsbsnj742t" path="res://sprites/animations_sprites/death_orc/frame9.png" id="13_xyaw5"]
+[ext_resource type="Texture2D" uid="uid://b4fcikcs6h1bg" path="res://sprites/animations_sprites/orc_attack/frame_11.png" id="14_ajvov"]
+[ext_resource type="Texture2D" uid="uid://i77xses0go6j" path="res://sprites/animations_sprites/death_orc/frame10.png" id="14_brecr"]
+[ext_resource type="Texture2D" uid="uid://dybygs8sr8hx8" path="res://sprites/animations_sprites/death_orc/frame11.png" id="15_tqk2b"]
+
+[sub_resource type="GDScript" id="GDScript_tc4qd"]
+script/source = "# scripts/corpse.gd
+extends Node2D
+class_name Corpse
+
+const MAX_CORPSES: int = 220
+
+@export var lifetime: float = 90.0
+@export var fade_duration: float = 5.0
+
+@export var push_distance: float = 35.0
+@export var push_duration: float = 0.18
+
+@onready var visual: ColorRect = $ColorRect
+
+var spawn_time: float = 0.0
+var is_being_culled: bool = false
+
+func setup(base_color: Color, base_scale: Vector2, push_direction: Vector2, blood_splat_scene: PackedScene = null) -> void:
+	visual.color = base_color.darkened(0.5)
+	scale = base_scale
+	spawn_time = Time.get_ticks_msec() / 1000.0
+	
+	# Cap: si hay demasiados cuerpos, hacer fade out a los más viejos
+	_enforce_cap()
+	
+	var target_pos := position + push_direction.normalized() * push_distance
+	var push_tween := create_tween()
+	push_tween.tween_property(self, \"position\", target_pos, push_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	if blood_splat_scene:
+		push_tween.tween_callback(_spawn_resting_blood.bind(blood_splat_scene, base_color))
+	
+	await get_tree().create_timer(lifetime - fade_duration).timeout
+	if not is_instance_valid(self) or is_being_culled:
+		return
+	var fade_tween := create_tween()
+	fade_tween.tween_property(self, \"modulate:a\", 0.0, fade_duration)
+	fade_tween.tween_callback(queue_free)
+
+func _enforce_cap() -> void:
+	var corpses := get_tree().get_nodes_in_group(\"corpses\")
+	if corpses.size() <= MAX_CORPSES:
+		return
+	
+	# Filtrar los que no están siendo eliminados ya
+	var active_corpses: Array = []
+	for c in corpses:
+		if c is Corpse and not c.is_being_culled and c != self:
+			active_corpses.append(c)
+	
+	# Ordenar por spawn_time ascendente (más viejos primero)
+	active_corpses.sort_custom(func(a, b): return a.spawn_time < b.spawn_time)
+	
+	# Cuántos cuerpos hay que eliminar para volver a estar dentro del cap
+	var to_remove := corpses.size() - MAX_CORPSES
+	for i in range(min(to_remove, active_corpses.size())):
+		active_corpses[i].force_fade_out()
+
+func _spawn_resting_blood(splat_scene: PackedScene, base_color: Color) -> void:
+	if not is_instance_valid(self):
+		return
+	var splat := splat_scene.instantiate()
+	splat.position = global_position
+	splat.z_index = -2
+	get_parent().add_child(splat)
+	if splat.has_method(\"setup\"):
+		splat.setup(base_color)
+
+func force_fade_out() -> void:
+	if is_being_culled:
+		return
+	is_being_culled = true
+	var tween := create_tween()
+	tween.tween_property(self, \"modulate:a\", 0.0, 0.5)
+	tween.tween_callback(queue_free)
+"
+
+[sub_resource type="PackedScene" id="PackedScene_8ibep"]
+_bundled = {
+"conn_count": 0,
+"conns": PackedInt32Array(),
+"editable_instances": [],
+"names": PackedStringArray("Corpse", "script", "Node2D", "ColorRect", "z_index", "offset_left", "offset_top", "offset_right", "offset_bottom"),
+"node_count": 2,
+"node_paths": [],
+"nodes": PackedInt32Array(-1, -1, 2, 0, -1, 1, 1, 0, 0, 0, 0, 3, 3, -1, 5, 4, 1, 5, 2, 6, 2, 7, 3, 8, 3, 0),
+"variants": [SubResource("GDScript_tc4qd"), -1, -16.0, 16.0],
+"version": 3
+}
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_m822r"]
 animations = [{
 "frames": [{
+"duration": 0.5,
+"texture": ExtResource("4_nu2fw")
+}, {
+"duration": 0.5,
+"texture": ExtResource("5_7ancs")
+}, {
+"duration": 0.5,
+"texture": ExtResource("6_3hjqd")
+}, {
+"duration": 0.5,
+"texture": ExtResource("7_83riy")
+}, {
+"duration": 0.5,
+"texture": ExtResource("8_oqxue")
+}, {
+"duration": 2.0,
+"texture": ExtResource("9_0rgqm")
+}, {
+"duration": 2.0,
+"texture": ExtResource("10_2lmlx")
+}, {
+"duration": 2.0,
+"texture": ExtResource("11_tcmms")
+}, {
+"duration": 2.0,
+"texture": ExtResource("12_523wb")
+}, {
+"duration": 2.0,
+"texture": ExtResource("13_4nup1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_ajvov")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 22.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_14yns")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_v2tgl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_sdfho")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_4emx3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_xmu3h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_f8is6")
+}, {
+"duration": 1.5,
+"texture": ExtResource("11_sq6qo")
+}, {
+"duration": 2.0,
+"texture": ExtResource("12_1b4ni")
+}, {
+"duration": 2.0,
+"texture": ExtResource("13_xyaw5")
+}, {
+"duration": 2.0,
+"texture": ExtResource("14_brecr")
+}, {
+"duration": 2.0,
+"texture": ExtResource("15_tqk2b")
+}],
+"loop": false,
+"name": &"death",
+"speed": 30.0
+}, {
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("5_fqomm")
 }],
-"loop": true,
-"name": &"default",
+"loop": false,
+"name": &"idle",
 "speed": 1.0
 }]
 
@@ -24,24 +211,28 @@ size = Vector2(32, 32)
 radius = 25.9422
 
 [node name="Orc" type="CharacterBody2D" groups=["orcs"]]
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("1_xeing")
 move_speed = 140.0
-attack_range = 60.0
+attack_range = 70.0
 visual_color = Color(0.564706, 1, 0.168627, 1)
 pickup_drop_chance = 0.2
 pickup_coin_scene = ExtResource("2_bl76n")
 blood_splat_scene = ExtResource("6_087gv")
-corpse_scene = ExtResource("4_ufc7s")
+corpse_scene = SubResource("PackedScene_8ibep")
 
 [node name="OrcSpriteAnimator2D" type="AnimatedSprite2D" parent="."]
 modulate = Color(0.506589, 0.740973, 0.386696, 1)
 scale = Vector2(0.2, 0.2)
 sprite_frames = SubResource("SpriteFrames_m822r")
+animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_flafe")
 
 [node name="NeighborDetector" type="Area2D" parent="."]
+collision_mask = 3
 
 [node name="NeighborShape" type="CollisionShape2D" parent="NeighborDetector"]
 shape = SubResource("CircleShape2D_k425p")

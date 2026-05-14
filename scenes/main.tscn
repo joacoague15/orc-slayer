@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://8o10rd76dja7"]
+[gd_scene load_steps=10 format=3 uid="uid://8o10rd76dja7"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hyiwn"]
 [ext_resource type="PackedScene" uid="uid://dp3v5iocdqtj2" path="res://scenes/player.tscn" id="2_rl6d3"]
@@ -6,9 +6,23 @@
 [ext_resource type="Script" path="res://scripts/spawner.gd" id="4_2bv7o"]
 [ext_resource type="PackedScene" uid="uid://clxtw52pcabh" path="res://scenes/orc_scout.tscn" id="5_rd2mj"]
 [ext_resource type="PackedScene" uid="uid://dcxl5tie7hrs7" path="res://scenes/orc_brute.tscn" id="6_ohvmb"]
+[ext_resource type="Script" path="res://scripts/ground_variations.gd" id="8_txakl"]
+[ext_resource type="Texture2D" uid="uid://dtifo0f33ghwm" path="res://sprites/tiles/tile_1.png" id="10_r780o"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_cg4vv"]
+load_path = "res://.godot/imported/tile_2.png-34e154829a1f4ef91d5e56ebd911cbf4.ctex"
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_hyiwn")
+
+[node name="GroundBase" type="Sprite2D" parent="."]
+z_index = -10
+texture_repeat = 2
+position = Vector2(415, -129)
+scale = Vector2(0.6297, 0.6297)
+texture = ExtResource("10_r780o")
+region_enabled = true
+region_rect = Rect2(-10000, -10000, 3000, 3000)
 
 [node name="Player" parent="." instance=ExtResource("2_rl6d3")]
 z_index = 1
@@ -127,3 +141,8 @@ script = ExtResource("4_2bv7o")
 orc_normal_scene = ExtResource("3_cgdby")
 orc_scout_scene = ExtResource("5_rd2mj")
 orc_brute_scene = ExtResource("6_ohvmb")
+
+[node name="GroundVariations" type="Node2D" parent="."]
+script = ExtResource("8_txakl")
+tile_variations = Array[Texture2D]([SubResource("CompressedTexture2D_cg4vv"), ExtResource("10_r780o")])
+tile_size = 1254.0

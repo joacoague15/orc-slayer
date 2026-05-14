@@ -5,7 +5,6 @@ extends Node
 var slice_stream: AudioStream = preload("res://audio/sfx/slice.wav")
 var orc_death_stream: AudioStream = preload("res://audio/sfx/orc_death.wav")
 var player_death_stream: AudioStream = preload("res://audio/sfx/player_death.wav")
-var telegraph_stream: AudioStream = preload("res://audio/sfx/telegraph.wav")
 var pickup_stream: AudioStream = preload("res://audio/sfx/pickup.wav")
 var music_stream: AudioStream = preload("res://audio/music/background.wav")
 
@@ -89,9 +88,6 @@ func play_orc_death() -> void:
 
 func play_player_death() -> void:
 	_play_sfx(player_death_stream, "player_death")
-
-func play_telegraph() -> void:
-	_play_sfx(telegraph_stream, "telegraph", 0.1)
 
 func play_pickup() -> void:
 	_play_sfx(pickup_stream, "pickup", 0.1)
