@@ -162,6 +162,7 @@ size = Vector2(32, 32)
 radius = 25.9422
 
 [node name="OrcBrute" type="CharacterBody2D" groups=["orcs"]]
+collision_mask = 3
 script = ExtResource("1_jfd3n")
 move_speed = 100.0
 visual_color = Color(0.0735009, 0.254383, 0.254814, 1)

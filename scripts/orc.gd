@@ -24,7 +24,7 @@ extends CharacterBody2D
 # Nuevo flag para distinguir "muriendo" de "muerto"
 var is_dead: bool = false
 
-enum State { CHASING, TELEGRAPHING }
+enum State { CHASING, TELEGRAPHING, RETURNING_TO_IDLE }
 
 var state: State = State.CHASING
 var player: Node2D
@@ -57,17 +57,19 @@ func _physics_process(delta: float) -> void:
 			chase(delta)
 		State.TELEGRAPHING:
 			telegraph(delta)
+		State.RETURNING_TO_IDLE:
+			chase(delta)
 	
 	move_and_slide()
 	
 	# Rotación (solo si está vivo)
-	if is_instance_valid(player):
+	if state != State.TELEGRAPHING and is_instance_valid(player):
 		visual.rotation = (player.global_position - global_position).angle() - PI / 2
 
 func chase(_delta: float) -> void:
 	var distance := global_position.distance_to(player.global_position)
 	
-	if distance <= attack_range:
+	if distance <= attack_range and state == State.CHASING:
 		start_telegraph()
 		return
 	
@@ -121,10 +123,16 @@ func telegraph(delta: float) -> void:
 			if distance <= attack_range:
 				if player.has_method("die"):
 					player.die()
-		state = State.CHASING
-		# Volver al estado normal: idle + color original
-		visual.play("idle")
+		state = State.RETURNING_TO_IDLE
 		visual.modulate = visual_color
+		visual.play("attack_to_idle")
+		visual.animation_finished.connect(_on_attack_to_idle_finished, CONNECT_ONE_SHOT)
+
+func _on_attack_to_idle_finished() -> void:
+	if not is_instance_valid(self) or is_dying:
+		return
+	state = State.CHASING
+	visual.play("idle")
 
 func die() -> void:
 	if is_dying:

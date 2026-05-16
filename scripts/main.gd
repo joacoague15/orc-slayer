@@ -3,9 +3,8 @@ extends Node2D
 
 @onready var player: Node2D = $Player
 @onready var spawner: Node2D = $Spawner
-@onready var score_label: Label = $UI/TopLeft/VBoxContainer/ScoreLabel
-@onready var time_label: Label = $UI/TopLeft/VBoxContainer/TimeLabel
-@onready var combo_label: Label = $UI/TopCenter/ComboLabel
+@onready var score_label: Label = $UI/TopLeftPanel/ScoreLabel
+@onready var time_label: Label = $UI/TimeRow/TimeVBox/TimeLabel
 
 # Nuevos refs para el game over screen
 @onready var game_over_screen: Control = $UI/GameOverScreen
@@ -16,15 +15,20 @@ extends Node2D
 @onready var go_highscore: Label = $UI/GameOverScreen/StatsContainer/HighscoreLabel
 @onready var go_prompt: Label = $UI/GameOverScreen/StatsContainer/PromptLabel
 
+@onready var combo_value_label: Label = $UI/ComboContainer/ComboVBox/ComboValueLabel
+@onready var combo_timer_bar: ProgressBar = $UI/ComboContainer/ComboVBox/ComboTimerBar
+
 func _ready() -> void:
 	GameState.reset_score()
 	GameState.game_over = false
 	player.died.connect(_on_player_died)
 	GameState.score_changed.connect(_on_score_changed)
 	GameState.combo_changed.connect(_on_combo_changed)
-	score_label.text = "Score: 0"
-	combo_label.text = ""
-	time_label.text = "Time: 0:00"
+	score_label.text = "0"
+	time_label.text = "0:00"
+	combo_value_label.text = ""
+	combo_timer_bar.modulate.a = 0.0
+	
 	# Asegurar que el game over screen arranque invisible
 	game_over_screen.modulate.a = 1.0  # el container sí está activo
 	overlay.modulate.a = 0.0
@@ -37,19 +41,43 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if not player.is_dead:
-		time_label.text = "Time: %s" % format_time(GameState.time_survived)
+		time_label.text = format_time(GameState.time_survived)
+		# Actualizar barra de combo
+		if GameState.combo > 0:
+			var ratio: float = GameState.combo_timer / GameState.COMBO_TIMEOUT
+			combo_timer_bar.value = ratio * 100.0
 
 func _on_score_changed(new_score: int) -> void:
-	score_label.text = "Score: %d" % new_score
+	score_label.text = "%d" % new_score
+	# Bounce animation
+	score_label.scale = Vector2(1.2, 1.2)
+	var tween := create_tween()
+	tween.tween_property(score_label, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _on_combo_changed(combo: int) -> void:
 	if combo >= 2:
-		combo_label.text = "x%d COMBO" % combo
-		combo_label.modulate = get_combo_color(combo)
+		combo_value_label.text = "x%d" % combo
+		var combo_color := get_combo_color(combo)
+		combo_value_label.modulate = combo_color
+		# Color de la barra también cambia
+		_update_combo_bar_color(combo_color)
+		# Mostrar text y bar
+		combo_timer_bar.modulate.a = 1.0
 		animate_combo_pop()
 	else:
-		combo_label.text = ""
-
+		combo_value_label.text = ""
+		combo_timer_bar.modulate.a = 0.0
+		
+func _update_combo_bar_color(color: Color) -> void:
+	var fill_style := combo_timer_bar.get_theme_stylebox("fill")
+	if fill_style is StyleBoxFlat:
+		fill_style.bg_color = color
+		
+func animate_combo_pop() -> void:
+	combo_value_label.scale = Vector2(1.3, 1.3)
+	var tween := create_tween()
+	tween.tween_property(combo_value_label, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	
 func get_combo_color(combo: int) -> Color:
 	if combo >= 20:
 		return Color(1, 0.2, 0.2)
@@ -59,11 +87,6 @@ func get_combo_color(combo: int) -> Color:
 		return Color(1, 0.85, 0.2)
 	else:
 		return Color(1, 1, 1)
-
-func animate_combo_pop() -> void:
-	combo_label.scale = Vector2(1.3, 1.3)
-	var tween := create_tween()
-	tween.tween_property(combo_label, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _on_player_died() -> void:
 	print("[GAME OVER] disparado")

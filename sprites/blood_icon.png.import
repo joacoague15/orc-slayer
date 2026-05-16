@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bh08p8mfew7fd"
-path="res://.godot/imported/frame_14.png-3e6894827c7aa89e19c759bb887dec3a.ctex"
+uid="uid://bja8gaveu0g7o"
+path="res://.godot/imported/blood_icon.png-c35b97a89013954ab88a185e6512dc7e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/animations_sprites/slice_player/frame_14.png"
-dest_files=["res://.godot/imported/frame_14.png-3e6894827c7aa89e19c759bb887dec3a.ctex"]
+source_file="res://sprites/blood_icon.png"
+dest_files=["res://.godot/imported/blood_icon.png-c35b97a89013954ab88a185e6512dc7e.ctex"]
 
 [params]
 

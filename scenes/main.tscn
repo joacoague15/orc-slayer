@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://8o10rd76dja7"]
+[gd_scene load_steps=13 format=3 uid="uid://8o10rd76dja7"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hyiwn"]
 [ext_resource type="PackedScene" uid="uid://dp3v5iocdqtj2" path="res://scenes/player.tscn" id="2_rl6d3"]
@@ -9,8 +9,16 @@
 [ext_resource type="Script" path="res://scripts/ground_variations.gd" id="8_txakl"]
 [ext_resource type="Texture2D" uid="uid://dtifo0f33ghwm" path="res://sprites/tiles/tile_1.png" id="10_r780o"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51kyq"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_66rgd"]
+bg_color = Color(0.1, 0.1, 0.1, 0.7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c7f13"]
+bg_color = Color(1, 0.85, 0.2, 1)
+
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_cg4vv"]
-load_path = "res://.godot/imported/tile_2.png-34e154829a1f4ef91d5e56ebd911cbf4.ctex"
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_hyiwn")
@@ -28,46 +36,6 @@ region_rect = Rect2(-10000, -10000, 3000, 3000)
 z_index = 1
 
 [node name="UI" type="CanvasLayer" parent="."]
-
-[node name="TopLeft" type="MarginContainer" parent="UI"]
-offset_right = 40.0
-offset_bottom = 40.0
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/TopLeft"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="ScoreLabel" type="Label" parent="UI/TopLeft/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Score: 0"
-
-[node name="TimeLabel" type="Label" parent="UI/TopLeft/VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
-theme_override_font_sizes/font_size = 22
-text = "Time: 0:00"
-
-[node name="TopCenter" type="MarginContainer" parent="UI"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -20.0
-offset_right = 20.0
-offset_bottom = 40.0
-grow_horizontal = 2
-theme_override_constants/margin_top = 20
-
-[node name="ComboLabel" type="Label" parent="UI/TopCenter"]
-custom_minimum_size = Vector2(400, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 56
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="GameOverScreen" type="Control" parent="UI"]
 z_index = 3
@@ -135,6 +103,73 @@ theme_override_colors/font_color = Color(0.811, 0.742, 0.18, 0)
 theme_override_font_sizes/font_size = 24
 text = "[R] Restart    [ESC] Menu"
 horizontal_alignment = 1
+
+[node name="TopLeftPanel" type="PanelContainer" parent="UI"]
+anchors_preset = -1
+anchor_left = 0.023
+anchor_top = 0.078
+anchor_right = 0.262
+anchor_bottom = 0.207
+offset_left = 0.559998
+offset_top = -0.16
+offset_right = -0.360046
+offset_bottom = -0.0400085
+theme_override_styles/panel = SubResource("StyleBoxFlat_51kyq")
+
+[node name="ScoreLabel" type="Label" parent="UI/TopLeftPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 32
+text = "0"
+
+[node name="TimeRow" type="HBoxContainer" parent="UI"]
+anchors_preset = -1
+anchor_left = 0.024
+anchor_top = 0.036
+anchor_right = 0.244
+anchor_bottom = 0.132
+offset_left = 0.279999
+offset_top = 0.079998
+offset_right = -0.320007
+offset_bottom = -0.0400009
+
+[node name="TimeVBox" type="VBoxContainer" parent="UI/TimeRow"]
+layout_mode = 2
+
+[node name="TimeLabel" type="Label" parent="UI/TimeRow/TimeVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "0:00"
+
+[node name="ComboContainer" type="CenterContainer" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -30.5
+offset_right = 30.5
+offset_bottom = 81.0
+grow_horizontal = 2
+
+[node name="ComboVBox" type="VBoxContainer" parent="UI/ComboContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ComboValueLabel" type="Label" parent="UI/ComboContainer/ComboVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 72
+horizontal_alignment = 1
+
+[node name="ComboTimerBar" type="ProgressBar" parent="UI/ComboContainer/ComboVBox"]
+modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(180, 8)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_66rgd")
+theme_override_styles/fill = SubResource("StyleBoxFlat_c7f13")
+show_percentage = false
 
 [node name="Spawner" type="Node2D" parent="." groups=["spawner"]]
 script = ExtResource("4_2bv7o")

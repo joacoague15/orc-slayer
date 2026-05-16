@@ -159,6 +159,23 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("14_ajvov")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_4nup1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_7ancs")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_nu2fw")
+}],
+"loop": false,
+"name": &"attack_to_idle",
+"speed": 16.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": ExtResource("5_14yns")
 }, {
 "duration": 1.0,
@@ -226,7 +243,9 @@ corpse_scene = SubResource("PackedScene_8ibep")
 modulate = Color(0.506589, 0.740973, 0.386696, 1)
 scale = Vector2(0.2, 0.2)
 sprite_frames = SubResource("SpriteFrames_m822r")
-animation = &"idle"
+animation = &"attack_to_idle"
+frame = 3
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_flafe")
