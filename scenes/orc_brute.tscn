@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://dcxl5tie7hrs7"]
+[gd_scene load_steps=21 format=3 uid="uid://cpuavmrgs713w"]
 
 [ext_resource type="Script" path="res://scripts/orc.gd" id="1_jfd3n"]
 [ext_resource type="PackedScene" uid="uid://cbecpas7yxhve" path="res://scenes/pickup.tscn" id="2_tupxu"]
@@ -16,7 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://i77xses0go6j" path="res://sprites/animations_sprites/death_orc/frame10.png" id="13_3bjs5"]
 [ext_resource type="Texture2D" uid="uid://dybygs8sr8hx8" path="res://sprites/animations_sprites/death_orc/frame11.png" id="14_sym17"]
 
-[sub_resource type="GDScript" id="GDScript_tc4qd"]
+[sub_resource type="GDScript" id="GDScript_sa3qr"]
 script/source = "# scripts/corpse.gd
 extends Node2D
 class_name Corpse
@@ -93,7 +93,7 @@ func force_fade_out() -> void:
 	tween.tween_callback(queue_free)
 "
 
-[sub_resource type="PackedScene" id="PackedScene_8ibep"]
+[sub_resource type="PackedScene" id="PackedScene_iryyr"]
 _bundled = {
 "conn_count": 0,
 "conns": PackedInt32Array(),
@@ -102,7 +102,7 @@ _bundled = {
 "node_count": 2,
 "node_paths": [],
 "nodes": PackedInt32Array(-1, -1, 2, 0, -1, 1, 1, 0, 0, 0, 0, 3, 3, -1, 5, 4, 1, 5, 2, 6, 2, 7, 3, 8, 3, 0),
-"variants": [SubResource("GDScript_tc4qd"), -1, -16.0, 16.0],
+"variants": [SubResource("GDScript_sa3qr"), -1, -16.0, 16.0],
 "version": 3
 }
 
@@ -155,22 +155,23 @@ animations = [{
 "speed": 1.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_flafe"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4lp7i"]
 size = Vector2(32, 32)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_cqv87"]
 radius = 25.9422
 
 [node name="OrcBrute" type="CharacterBody2D" groups=["orcs"]]
-collision_mask = 3
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("1_jfd3n")
-move_speed = 100.0
-visual_color = Color(0.0735009, 0.254383, 0.254814, 1)
+move_speed = 180.0
+visual_color = Color(0.146517, 0.870145, 0.575076, 1)
 visual_scale = 1.4
 pickup_drop_chance = 0.4
 pickup_coin_scene = ExtResource("2_tupxu")
 blood_splat_scene = ExtResource("6_5yejl")
-corpse_scene = SubResource("PackedScene_8ibep")
+corpse_scene = SubResource("PackedScene_iryyr")
 
 [node name="OrcSpriteAnimator2D" type="AnimatedSprite2D" parent="."]
 modulate = Color(0.254902, 0.513726, 0.552941, 1)
@@ -179,7 +180,7 @@ sprite_frames = SubResource("SpriteFrames_4d0iq")
 animation = &"death"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_flafe")
+shape = SubResource("RectangleShape2D_4lp7i")
 
 [node name="NeighborDetector" type="Area2D" parent="."]
 

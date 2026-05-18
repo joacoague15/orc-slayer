@@ -5,8 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://bf6tun472e7x8" path="res://scenes/orc.tscn" id="3_cgdby"]
 [ext_resource type="Script" path="res://scripts/spawner.gd" id="4_2bv7o"]
 [ext_resource type="FontFile" uid="uid://v2dqr2ab4mf5" path="res://fonts/PressStart2P-Regular.ttf" id="4_lowrd"]
-[ext_resource type="PackedScene" uid="uid://clxtw52pcabh" path="res://scenes/orc_scout.tscn" id="5_rd2mj"]
-[ext_resource type="PackedScene" uid="uid://dcxl5tie7hrs7" path="res://scenes/orc_brute.tscn" id="6_ohvmb"]
+[ext_resource type="PackedScene" uid="uid://0qj0gy2vxwap" path="res://scenes/orc_scout.tscn" id="5_rd2mj"]
+[ext_resource type="PackedScene" uid="uid://cpuavmrgs713w" path="res://scenes/orc_brute.tscn" id="6_ohvmb"]
 [ext_resource type="Script" path="res://scripts/ground_variations.gd" id="8_txakl"]
 [ext_resource type="Texture2D" uid="uid://dtifo0f33ghwm" path="res://sprites/tiles/tile_1.png" id="10_r780o"]
 
@@ -85,7 +85,6 @@ horizontal_alignment = 1
 
 [node name="ScoreLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 0)
 theme_override_font_sizes/font_size = 36
 text = "Score: 0"
 horizontal_alignment = 1
@@ -125,14 +124,12 @@ horizontal_alignment = 1
 
 [node name="TimeLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 0)
 theme_override_font_sizes/font_size = 28
 text = "Time: 0:00"
 horizontal_alignment = 1
 
 [node name="PromptLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.811, 0.742, 0.18, 0)
 theme_override_font_sizes/font_size = 24
 text = "[R] Restart    [Q] Menu"
 horizontal_alignment = 1
