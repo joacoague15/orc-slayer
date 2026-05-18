@@ -6,7 +6,7 @@ var slice_stream: AudioStream = preload("res://audio/sfx/slice.wav")
 var orc_death_stream: AudioStream = preload("res://audio/sfx/orc_death.wav")
 var player_death_stream: AudioStream = preload("res://audio/sfx/player_death.wav")
 var pickup_stream: AudioStream = preload("res://audio/sfx/pickup.wav")
-var music_stream: AudioStream = preload("res://audio/music/background.wav")
+var music_stream: AudioStream = preload("res://audio/music/background.ogg")
 
 # Pool de players para SFX (para que varios sonidos puedan superponerse)
 const SFX_POOL_SIZE: int = 12

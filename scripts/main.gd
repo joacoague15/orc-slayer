@@ -18,6 +18,11 @@ extends Node2D
 @onready var combo_value_label: Label = $UI/ComboContainer/ComboVBox/ComboValueLabel
 @onready var combo_timer_bar: ProgressBar = $UI/ComboContainer/ComboVBox/ComboTimerBar
 
+@onready var anger_container: VBoxContainer = $UI/GameOverScreen/StatsContainer/AngerContainer
+@onready var level_label: Label = $UI/GameOverScreen/StatsContainer/AngerContainer/LevelLabel
+@onready var anger_bar: ProgressBar = $UI/GameOverScreen/StatsContainer/AngerContainer/AngerBar
+@onready var anger_value_label: Label = $UI/GameOverScreen/StatsContainer/AngerContainer/AngerValueLabel
+
 func _ready() -> void:
 	GameState.reset_score()
 	GameState.game_over = false
@@ -28,6 +33,7 @@ func _ready() -> void:
 	time_label.text = "0:00"
 	combo_value_label.text = ""
 	combo_timer_bar.modulate.a = 0.0
+	anger_container.modulate.a = 0.0
 	
 	# Asegurar que el game over screen arranque invisible
 	game_over_screen.modulate.a = 1.0  # el container sí está activo
@@ -89,55 +95,125 @@ func get_combo_color(combo: int) -> Color:
 		return Color(1, 1, 1)
 
 func _on_player_died() -> void:
-	print("[GAME OVER] disparado")
 	GameState.trigger_game_over()
 	GameState.stop_timer()
 	GameState.try_update_highscore()
-	
-	print("[GAME OVER] antes de fade music")
 	AudioManager.fade_music_to(0.3)
-	print("[GAME OVER] despues de fade music")
 	
+	# Pre-llenar labels iniciales
 	go_score.text = "Score: %d" % GameState.score
-	go_time.text = "Time: %s" % format_time(GameState.time_survived)
 	go_highscore.text = "Highscore: %d" % GameState.highscore
-	go_prompt.text = "[R] Restart    [ESC] Menu"
+	go_prompt.text = "[R] Restart    [Q] Menu"
 	
-	print("[GAME OVER] antes de await silencio")
+	# Estado inicial del anger
+	_update_anger_display()
+	
+	# Silencio inicial
 	await get_tree().create_timer(0.4).timeout
-	print("[GAME OVER] despues de await silencio")
 	
+	# Fade in del overlay
+	var overlay_tween := create_tween()
+	overlay_tween.tween_property(overlay, "modulate:a", 1.0, 0.4)
+	await get_tree().create_timer(0.4).timeout
+	
+	# Cascade in de los labels iniciales
+	var fade_tween := create_tween()
+	fade_tween.tween_property(go_title, "modulate:a", 1.0, 0.3)
+	fade_tween.tween_interval(0.2)
+	fade_tween.tween_property(go_score, "modulate:a", 1.0, 0.3)
+	fade_tween.tween_interval(0.3)
+	fade_tween.tween_property(anger_container, "modulate:a", 1.0, 0.3)
+	
+	await fade_tween.finished
+	await get_tree().create_timer(0.4).timeout
+	
+	# Conversión de score a anger
+	await _animate_score_to_anger()
+	
+	# Mostrar resto de stats
+	print("[GAME OVER] empezando final tween")
+	var final_tween := create_tween()
+	final_tween.tween_property(go_highscore, "modulate:a", 1.0, 0.3)
+	final_tween.tween_interval(0.2)
+	final_tween.tween_property(go_prompt, "modulate:a", 1.0, 0.4)
+	await final_tween.finished
+	print("[GAME OVER] final tween terminado")
+
+func _animate_score_to_anger() -> void:
+	var total_anger_to_add := GameState.points_to_anger(GameState.score)
+	var initial_score := GameState.score
+	
+	if total_anger_to_add <= 0:
+		go_score.text = "Score: 0"
+		return
+	
+	var max_duration := 4.0
+	var min_duration := 1.0
+	var duration: float = clamp(total_anger_to_add * 0.01, min_duration, max_duration)
+	
+	var anger_per_second: float = float(total_anger_to_add) / duration
+	var elapsed := 0.0
+	var anger_added := 0
+	var safety_counter := 0
+	
+	while anger_added < total_anger_to_add and safety_counter < 10000:
+		safety_counter += 1
+		var delta := get_process_delta_time()
+		elapsed += delta
+		
+		var target_anger_added: int = min(int(anger_per_second * elapsed) + 1, total_anger_to_add)
+		var anger_this_frame := target_anger_added - anger_added
+		
+		if anger_this_frame > 0:
+			var result := GameState.add_anger(anger_this_frame)
+			anger_added = target_anger_added
+			
+			# Calcular score visual: empieza en initial_score, baja proporcionalmente
+			var progress: float = float(anger_added) / float(total_anger_to_add)
+			var visual_score: int = int(initial_score * (1.0 - progress))
+			go_score.text = "Score: %d" % max(0, visual_score)
+			
+			_update_anger_display()
+			
+			if result.levels_gained > 0:
+				_on_level_up()
+		
+		await get_tree().process_frame
+	
+	# Forzar score final a 0 cuando termina
+	go_score.text = "Score: 0"
+	print("[ANGER] animación terminada, anger_added: ", anger_added)
+
+func _update_anger_display() -> void:
+	var current := GameState.get_anger_in_current_level()
+	var needed := GameState.get_anger_needed_for_current_level()
+	level_label.text = "LEVEL %d" % GameState.current_level
+	anger_bar.max_value = needed
+	anger_bar.value = current
+	anger_value_label.text = "%d / %d" % [current, needed]
+
+func _on_level_up() -> void:
+	# Efecto visual: el level label hace un pop
+	level_label.scale = Vector2(1.5, 1.5)
 	var tween := create_tween()
-	tween.tween_property(overlay, "modulate:a", 1.0, 0.4)
-	print("[GAME OVER] tween overlay creado")
-	
-	await get_tree().create_timer(0.4).timeout
-	print("[GAME OVER] empezando cascada")
-	
-	var fade_in_tween := create_tween()
-	fade_in_tween.tween_property(go_title, "modulate:a", 1.0, 0.3)
-	fade_in_tween.tween_interval(0.2)
-	fade_in_tween.tween_property(go_score, "modulate:a", 1.0, 0.3)
-	fade_in_tween.tween_interval(0.2)
-	fade_in_tween.tween_property(go_time, "modulate:a", 1.0, 0.3)
-	fade_in_tween.tween_interval(0.2)
-	fade_in_tween.tween_property(go_highscore, "modulate:a", 1.0, 0.3)
-	fade_in_tween.tween_interval(0.3)
-	fade_in_tween.tween_property(go_prompt, "modulate:a", 1.0, 0.4)
-	print("[GAME OVER] cascada lanzada")
+	tween.tween_property(level_label, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	# Opcional: shake de la cámara
+	if player.has_node("Camera2D"):
+		player.get_node("Camera2D").shake(5.0)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not player.is_dead:
 		return
-	# Solo aceptar input cuando el prompt ya apareció (sino reinicia muy rápido)
 	if go_prompt.modulate.a < 0.9:
 		return
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_R:
 			get_tree().reload_current_scene()
-		elif event.keycode == KEY_ESCAPE:
+		elif event.keycode == KEY_Q:
 			get_tree().change_scene_to_file("res://scenes/start_screen.tscn")
-
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_M:  # tecla de reset
+			GameState.reset_save()
 func format_time(seconds: float) -> String:
 	var minutes := int(seconds) / 60
 	var secs := int(seconds) % 60

@@ -4,6 +4,7 @@ extends Control
 @onready var prompt_label: Label = $VBoxContainer/PromptLabel
 @onready var highscore_label: Label = $VBoxContainer/HighscoreLabel
 @onready var hero_sprite: Sprite2D = $main_menu_sprite
+@onready var player_level_label: Label = $VBoxContainer/PlayerLevelLabel
 
 var blink_time: float = 0.0
 
@@ -14,6 +15,7 @@ func _ready() -> void:
 	else:
 		highscore_label.text = ""
 		
+	player_level_label.text = "LEVEL %d  |  ANGER %d" % [GameState.current_level, GameState.total_anger]
 	animate_intro()
 	
 func animate_intro() -> void:

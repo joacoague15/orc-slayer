@@ -1,13 +1,20 @@
-[gd_scene load_steps=13 format=3 uid="uid://8o10rd76dja7"]
+[gd_scene load_steps=15 format=3 uid="uid://8o10rd76dja7"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hyiwn"]
 [ext_resource type="PackedScene" uid="uid://dp3v5iocdqtj2" path="res://scenes/player.tscn" id="2_rl6d3"]
 [ext_resource type="PackedScene" uid="uid://bf6tun472e7x8" path="res://scenes/orc.tscn" id="3_cgdby"]
 [ext_resource type="Script" path="res://scripts/spawner.gd" id="4_2bv7o"]
+[ext_resource type="FontFile" uid="uid://v2dqr2ab4mf5" path="res://fonts/PressStart2P-Regular.ttf" id="4_lowrd"]
 [ext_resource type="PackedScene" uid="uid://clxtw52pcabh" path="res://scenes/orc_scout.tscn" id="5_rd2mj"]
 [ext_resource type="PackedScene" uid="uid://dcxl5tie7hrs7" path="res://scenes/orc_brute.tscn" id="6_ohvmb"]
 [ext_resource type="Script" path="res://scripts/ground_variations.gd" id="8_txakl"]
 [ext_resource type="Texture2D" uid="uid://dtifo0f33ghwm" path="res://sprites/tiles/tile_1.png" id="10_r780o"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f0l8l"]
+bg_color = Color(0.1, 0.1, 0.1, 0.8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gb467"]
+bg_color = Color(1, 0.3, 0.1, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51kyq"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -18,8 +25,6 @@ bg_color = Color(0.1, 0.1, 0.1, 0.7)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c7f13"]
 bg_color = Color(1, 0.85, 0.2, 1)
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_cg4vv"]
-
 [node name="Main" type="Node2D"]
 script = ExtResource("1_hyiwn")
 
@@ -27,8 +32,9 @@ script = ExtResource("1_hyiwn")
 z_index = -10
 texture_repeat = 2
 position = Vector2(415, -129)
-scale = Vector2(0.6297, 0.6297)
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("10_r780o")
+centered = false
 region_enabled = true
 region_rect = Rect2(-10000, -10000, 3000, 3000)
 
@@ -59,13 +65,14 @@ color = Color(0, 0, 0, 0)
 [node name="StatsContainer" type="VBoxContainer" parent="UI/GameOverScreen"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.384
-anchor_top = 0.4
-anchor_right = 0.671
-anchor_bottom = 0.858
-offset_left = 0.47998
-offset_right = 0.119995
-offset_bottom = 0.23999
+anchor_left = 0.312
+anchor_top = 0.069
+anchor_right = 0.713
+anchor_bottom = 0.896
+offset_left = 0.639984
+offset_top = 0.319996
+offset_right = 0.359924
+offset_bottom = -0.119995
 theme_override_constants/separation = 20
 alignment = 1
 
@@ -83,11 +90,30 @@ theme_override_font_sizes/font_size = 36
 text = "Score: 0"
 horizontal_alignment = 1
 
-[node name="TimeLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
+[node name="AngerContainer" type="VBoxContainer" parent="UI/GameOverScreen/StatsContainer"]
+modulate = Color(1, 1, 1, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_constants/separation = 8
+
+[node name="LevelLabel" type="Label" parent="UI/GameOverScreen/StatsContainer/AngerContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.5, 0.1, 1)
 theme_override_font_sizes/font_size = 28
-text = "Time: 0:00"
+text = "LEVEL 1"
+horizontal_alignment = 1
+
+[node name="AngerBar" type="ProgressBar" parent="UI/GameOverScreen/StatsContainer/AngerContainer"]
+custom_minimum_size = Vector2(300, 20)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_f0l8l")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gb467")
+show_percentage = false
+
+[node name="AngerValueLabel" type="Label" parent="UI/GameOverScreen/StatsContainer/AngerContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "0 / 100"
 horizontal_alignment = 1
 
 [node name="HighscoreLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
@@ -97,11 +123,18 @@ theme_override_font_sizes/font_size = 28
 text = "Highscore: 0"
 horizontal_alignment = 1
 
+[node name="TimeLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_font_sizes/font_size = 28
+text = "Time: 0:00"
+horizontal_alignment = 1
+
 [node name="PromptLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.811, 0.742, 0.18, 0)
 theme_override_font_sizes/font_size = 24
-text = "[R] Restart    [ESC] Menu"
+text = "[R] Restart    [Q] Menu"
 horizontal_alignment = 1
 
 [node name="TopLeftPanel" type="PanelContainer" parent="UI"]
@@ -119,6 +152,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_51kyq")
 [node name="ScoreLabel" type="Label" parent="UI/TopLeftPanel"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_fonts/font = ExtResource("4_lowrd")
 theme_override_font_sizes/font_size = 32
 text = "0"
 
@@ -139,16 +173,20 @@ layout_mode = 2
 [node name="TimeLabel" type="Label" parent="UI/TimeRow/TimeVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_lowrd")
 theme_override_font_sizes/font_size = 24
 text = "0:00"
 
 [node name="ComboContainer" type="CenterContainer" parent="UI"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -30.5
-offset_right = 30.5
-offset_bottom = 81.0
+anchors_preset = -1
+anchor_left = 0.43
+anchor_top = 0.028
+anchor_right = 0.57
+anchor_bottom = 0.144
+offset_left = -0.400024
+offset_top = -0.16
+offset_right = 0.399902
+offset_bottom = 0.319992
 grow_horizontal = 2
 
 [node name="ComboVBox" type="VBoxContainer" parent="UI/ComboContainer"]
@@ -160,6 +198,7 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 8
+theme_override_fonts/font = ExtResource("4_lowrd")
 theme_override_font_sizes/font_size = 72
 horizontal_alignment = 1
 
@@ -178,6 +217,7 @@ orc_scout_scene = ExtResource("5_rd2mj")
 orc_brute_scene = ExtResource("6_ohvmb")
 
 [node name="GroundVariations" type="Node2D" parent="."]
+modulate = Color(0.18, 0.18, 0.2, 1)
 script = ExtResource("8_txakl")
-tile_variations = Array[Texture2D]([SubResource("CompressedTexture2D_cg4vv"), ExtResource("10_r780o")])
+tile_variations = Array[Texture2D]([ExtResource("10_r780o")])
 tile_size = 1254.0

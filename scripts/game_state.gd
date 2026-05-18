@@ -8,16 +8,21 @@ var score: int = 0
 var highscore: int = 0
 var combo: int = 0
 
-const SAVE_PATH := "user://highscore.save"
+# Sistema de anger persistente
+var total_anger: int = 0
+var current_level: int = 1
+
+const SAVE_PATH := "user://savegame.save"
 const COMBO_TIMEOUT: float = 3.5
+const POINTS_PER_ANGER: int = 10  # 10 puntos = 1 anger
 
 var combo_timer: float = 0.0
-
 var time_survived: float = 0.0
 var is_running: bool = false
+var game_over: bool = false
 
 func _ready() -> void:
-	load_highscore()
+	load_save()
 
 func _process(delta: float) -> void:
 	if is_running:
@@ -32,7 +37,7 @@ func register_kill() -> void:
 	combo += 1
 	combo_timer = COMBO_TIMEOUT
 	combo_changed.emit(combo)
-	add_score(combo)  # cada kill suma puntos = combo actual
+	add_score(combo)
 
 func reset_combo() -> void:
 	combo = 0
@@ -47,33 +52,86 @@ func reset_score() -> void:
 	score = 0
 	time_survived = 0.0
 	is_running = true
+	game_over = false
 	reset_combo()
 	score_changed.emit(score)
+
+func stop_timer() -> void:
+	is_running = false
+
+func trigger_game_over() -> void:
+	game_over = true
+	is_running = false
 
 func try_update_highscore() -> bool:
 	if score > highscore:
 		highscore = score
-		save_highscore()
+		save_progress()
 		return true
 	return false
 
-func save_highscore() -> void:
+# === Anger system ===
+
+func points_to_anger(points: int) -> int:
+	return points / POINTS_PER_ANGER
+
+func anger_needed_for_next_level(level: int) -> int:
+	return 100 * level
+
+func add_anger(amount: int) -> Dictionary:
+	var levels_gained := 0
+	total_anger += amount
+	
+	# Recalcular el nivel desde cero basado en total_anger
+	var new_level := calculate_level_from_total_anger(total_anger)
+	if new_level > current_level:
+		levels_gained = new_level - current_level
+		current_level = new_level
+	
+	save_progress()
+	return {"levels_gained": levels_gained}
+	
+
+
+func calculate_level_from_total_anger(anger: int) -> int:
+	# Anger acumulado necesario para llegar al nivel N: 100 + 200 + ... + (N-1)*100
+	# Eso es: 100 * (N-1) * N / 2 (suma de los primeros N-1 enteros multiplicada por 100)
+	# Despejando: N = (1 + sqrt(1 + 8*anger/100)) / 2
+	if anger < 100:
+		return 1
+	var n := (1.0 + sqrt(1.0 + 8.0 * float(anger) / 100.0)) / 2.0
+	return int(n)
+
+func get_anger_in_current_level() -> int:
+	var anger_for_previous_levels := 0
+	for lvl in range(1, current_level):
+		anger_for_previous_levels += anger_needed_for_next_level(lvl)
+	return total_anger - anger_for_previous_levels
+
+func get_anger_needed_for_current_level() -> int:
+	return anger_needed_for_next_level(current_level)
+
+func save_progress() -> void:
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
 		file.store_32(highscore)
+		file.store_32(total_anger)
+		file.store_32(current_level)
 
-func load_highscore() -> void:
+func load_save() -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
 		return
 	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
 	if file:
 		highscore = file.get_32()
-	
-func stop_timer() -> void:
-	is_running = false
-	
-var game_over: bool = false
-
-func trigger_game_over() -> void:
-	game_over = true
-	is_running = false
+		total_anger = file.get_32()
+		current_level = file.get_32()
+		if current_level < 1:
+			current_level = 1
+			
+func reset_save() -> void:
+	highscore = 0
+	total_anger = 0
+	current_level = 1
+	save_progress()
+	print("[GAMESTATE] Save reseteado")
