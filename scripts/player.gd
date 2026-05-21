@@ -76,13 +76,10 @@ func _physics_process(delta: float) -> void:
 		_try_attack()
 
 func _is_in_slice_animation() -> bool:
-	# Devuelve true si estamos en una animación de slice activa (no en HOLD)
 	return slice_state == SliceState.TRANSITIONING_TO_SLICE_1 \
-		or slice_state == SliceState.SLICING_2 \
-		or slice_state == SliceState.RETURNING_TO_IDLE
+		or slice_state == SliceState.SLICING_2
 
 func _try_attack() -> void:
-	# Solo permitimos ataques desde estados donde se puede atacar
 	match slice_state:
 		SliceState.IDLE:
 			_start_slice_1_from_idle()
@@ -90,9 +87,11 @@ func _try_attack() -> void:
 			_start_slice_2()
 		SliceState.SLICE_2_HOLD:
 			_start_slice_1_from_hold()
-		# Durante transiciones (TRANSITIONING_TO_SLICE_1, SLICING_2, RETURNING_TO_IDLE)
-		# se ignora el click
+		SliceState.RETURNING_TO_IDLE:
+			# Cancelar el retorno e iniciar slice_1 directamente
+			_start_slice_1_from_hold()
 		_:
+			# TRANSITIONING_TO_SLICE_1 y SLICING_2 siguen sin interrumpirse
 			pass
 
 func _start_slice_1_from_idle() -> void:

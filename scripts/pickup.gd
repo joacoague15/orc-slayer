@@ -2,15 +2,13 @@
 extends Area2D
 class_name Pickup
 
-@export var visual_color: Color = Color.YELLOW
 @export var lifetime: float = 10.0
 @export var bonus_points: int = 5
 
-@onready var visual: ColorRect = $ColorRect
+@onready var visual: Sprite2D = $CoinSprite
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
-	visual.color = visual_color
 	
 	await get_tree().create_timer(lifetime).timeout
 	if is_instance_valid(self):
