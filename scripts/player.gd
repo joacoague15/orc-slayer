@@ -229,7 +229,7 @@ func _spawn_dash_ghost() -> void:
 	ghost.global_position = global_position
 	ghost.global_rotation = sprite.global_rotation
 	ghost.global_scale = sprite.global_scale
-	ghost.z_index = sprite.z_index - 1
+	ghost.z_index = sprite.z_index + 20
 	ghost.modulate = Color(0.6, 0.9, 1.0, 0.45)
 	get_tree().current_scene.add_child(ghost)
 	
@@ -241,6 +241,9 @@ func _flash_dash_ready() -> void:
 	var tween := create_tween()
 	tween.tween_property(sprite, "modulate", Color(1.6, 1.6, 1.6, 1.0), 0.04)
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.12)
+
+func is_damage_invulnerable() -> bool:
+	return is_invulnerable
 
 func _on_animation_finished() -> void:
 	match slice_state:

@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/orc.tscn" id="1_t0yvn"]
+[ext_resource type="Script" path="res://scripts/berserker.gd" id="2_eglhv"]
+
+[node name="Berserker" instance=ExtResource("1_t0yvn")]
+script = ExtResource("2_eglhv")
+move_speed = 150.0
+visual_color = Color(0.82, 0.18, 0.12, 1)
+visual_scale = 1.15
+pickup_drop_chance = 0.25
+wander_speed = 150.0
+charge_speed = 620.0
+charge_hit_radius = 34.0
+charge_max_distance = 900.0
+
+[node name="OrcSpriteAnimator2D" parent="." index="0"]
+modulate = Color(0.82, 0.18, 0.12, 1)
+scale = Vector2(0.22, 0.22)
+
+[node name="TelegraphFlash" type="Polygon2D" parent="." index="3"]
+visible = false
+z_index = 5
+color = Color(1, 0, 0, 0.75)
+polygon = PackedVector2Array(0, -34, 24, -24, 34, 0, 24, 24, 0, 34, -24, 24, -34, 0, -24, -24)

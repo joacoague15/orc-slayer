@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/orc.tscn" id="1_vlm5i"]
+[ext_resource type="Script" path="res://scripts/mage.gd" id="2_fmw2m"]
+[ext_resource type="PackedScene" path="res://scenes/arcane_bolt.tscn" id="3_skk7e"]
+
+[node name="Mage" instance=ExtResource("1_vlm5i")]
+script = ExtResource("2_fmw2m")
+move_speed = 55.0
+visual_color = Color(0.48, 0.23, 0.68, 1)
+pickup_drop_chance = 0.2
+arcane_bolt_scene = ExtResource("3_skk7e")
+mage_move_speed = 55.0
+mage_attack_range = 360.0
+mage_min_range = 120.0
+arcane_bolt_speed = 360.0
+bolt_split_distance = 200.0
+split_bolt_travel_distance = 360.0
+attack_cooldown = 3.0
+
+[node name="OrcSpriteAnimator2D" parent="." index="0"]
+modulate = Color(0.48, 0.23, 0.68, 1)
+scale = Vector2(0.18, 0.18)
+
+[node name="TelegraphGlow" type="Polygon2D" parent="." index="3"]
+visible = false
+z_index = 5
+color = Color(0.85, 0.25, 1, 0.75)
+polygon = PackedVector2Array(0, -28, 20, -20, 28, 0, 20, 20, 0, 28, -20, 20, -28, 0, -20, -20)
