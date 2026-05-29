@@ -3,10 +3,12 @@ extends Node
 
 signal score_changed(new_score: int)
 signal combo_changed(combo: int)
+signal kill_count_changed(kill_count: int)
 
 var score: int = 0
 var highscore: int = 0
 var combo: int = 0
+var kill_count: int = 0
 
 # Sistema de anger persistente
 var total_anger: int = 0
@@ -33,11 +35,14 @@ func _process(delta: float) -> void:
 		if combo_timer <= 0.0:
 			reset_combo()
 
-func register_kill() -> void:
+func register_kill(score_multiplier: int = 1, counts_as_enemy_kill: bool = true) -> void:
+	if counts_as_enemy_kill:
+		kill_count += 1
+		kill_count_changed.emit(kill_count)
 	combo += 1
 	combo_timer = COMBO_TIMEOUT
 	combo_changed.emit(combo)
-	add_score(combo)
+	add_score(combo * score_multiplier)
 
 func reset_combo() -> void:
 	combo = 0
@@ -50,11 +55,13 @@ func add_score(amount: int) -> void:
 
 func reset_score() -> void:
 	score = 0
+	kill_count = 0
 	time_survived = 0.0
 	is_running = true
 	game_over = false
 	reset_combo()
 	score_changed.emit(score)
+	kill_count_changed.emit(kill_count)
 
 func stop_timer() -> void:
 	is_running = false

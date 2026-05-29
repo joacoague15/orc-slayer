@@ -170,9 +170,8 @@ func die() -> void:
 	# Sacar del grupo "orcs" para que no cuente como vivo
 	remove_from_group("orcs")
 	
-	# Sumar puntos
-	for i in range(score_value):
-		GameState.register_kill()
+	# Una muerte siempre suma una kill; score_value solo multiplica puntos.
+	GameState.register_kill(score_value)
 	
 	# EMPUJE: el orco se desliza un toque en dirección opuesta al jugador
 	var push_distance := 80.0

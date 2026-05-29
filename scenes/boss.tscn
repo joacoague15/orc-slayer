@@ -1,0 +1,51 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/orc.tscn" id="1_167e4"]
+[ext_resource type="Script" path="res://scripts/boss.gd" id="2_5f7rj"]
+[ext_resource type="PackedScene" path="res://scenes/orc.tscn" id="3_4vfdc"]
+
+[node name="Boss" instance=ExtResource("1_167e4")]
+script = ExtResource("2_5f7rj")
+move_speed = 185.0
+score_value = 10
+visual_color = Color(1, 0.45, 0.05, 1)
+visual_scale = 2.6
+pickup_drop_chance = 0.0
+boss_move_speed = 185.0
+boss_recover_speed = 0.0
+grunt_scene = ExtResource("3_4vfdc")
+summon_spawn_buffer = 50.0
+
+[node name="OrcSpriteAnimator2D" parent="." index="0"]
+modulate = Color(1, 0.45, 0.05, 1)
+scale = Vector2(0.28, 0.28)
+
+[node name="CollisionShape2D" parent="." index="1"]
+scale = Vector2(1.6, 1.6)
+
+[node name="PhaseAura" type="Polygon2D" parent="." index="3"]
+z_index = -1
+modulate = Color(1, 0.45, 0.05, 0.28)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(0, -58, 41, -41, 58, 0, 41, 41, 0, 58, -41, 41, -58, 0, -41, -41)
+
+[node name="SpinRadius" type="Polygon2D" parent="." index="4"]
+visible = false
+z_index = 4
+modulate = Color(1, 0, 0, 0.22)
+color = Color(1, 0, 0, 1)
+polygon = PackedVector2Array(0, -150, 57, -139, 106, -106, 139, -57, 150, 0, 139, 57, 106, 106, 57, 139, 0, 150, -57, 139, -106, 106, -139, 57, -150, 0, -139, -57, -106, -106, -57, -139)
+
+[node name="LeapShadow" type="Polygon2D" parent="." index="5"]
+visible = false
+z_index = -1
+modulate = Color(0, 0, 0, 0.45)
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(0, -48, 34, -34, 48, 0, 34, 34, 0, 48, -34, 34, -48, 0, -34, -34)
+
+[node name="ShockwaveVisual" type="Polygon2D" parent="." index="6"]
+visible = false
+z_index = 6
+modulate = Color(1, 0.1, 0.05, 0.75)
+color = Color(1, 0.1, 0.05, 1)
+polygon = PackedVector2Array(0, -100, 38, -92, 71, -71, 92, -38, 100, 0, 92, 38, 71, 71, 38, 92, 0, 100, -38, 92, -71, 71, -92, 38, -100, 0, -92, -38, -71, -71, -38, -92)

@@ -20,5 +20,5 @@ func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		AudioManager.play_pickup()
 		for i in range(bonus_points):
-			GameState.register_kill()
+			GameState.register_kill(1, false)
 		queue_free()

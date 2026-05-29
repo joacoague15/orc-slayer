@@ -1,6 +1,11 @@
 # scripts/main.gd
 extends Node2D
 
+@export var boss_scene: PackedScene
+@export var boss_kill_trigger: int = 20
+@export var boss_spawn_delay: float = 3.0
+@export var boss_spawn_distance_buffer: float = 120.0
+
 @onready var player: Node2D = $Player
 @onready var spawner: Node2D = $Spawner
 @onready var score_label: Label = $UI/TopLeftPanel/ScoreLabel
@@ -23,12 +28,16 @@ extends Node2D
 @onready var anger_bar: ProgressBar = $UI/GameOverScreen/StatsContainer/AngerContainer/AngerBar
 @onready var anger_value_label: Label = $UI/GameOverScreen/StatsContainer/AngerContainer/AngerValueLabel
 
+var boss_spawn_started: bool = false
+var boss_instance: Node2D
+
 func _ready() -> void:
 	GameState.reset_score()
 	GameState.game_over = false
 	player.died.connect(_on_player_died)
 	GameState.score_changed.connect(_on_score_changed)
 	GameState.combo_changed.connect(_on_combo_changed)
+	GameState.kill_count_changed.connect(_on_kill_count_changed)
 	score_label.text = "0"
 	time_label.text = "0:00"
 	combo_value_label.text = ""
@@ -59,6 +68,60 @@ func _on_score_changed(new_score: int) -> void:
 	score_label.scale = Vector2(1.2, 1.2)
 	var tween := create_tween()
 	tween.tween_property(score_label, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func _on_kill_count_changed(kill_count: int) -> void:
+	if boss_spawn_started:
+		return
+	if kill_count < boss_kill_trigger:
+		return
+	_start_boss_sequence()
+
+func _start_boss_sequence() -> void:
+	boss_spawn_started = true
+	if spawner.has_method("set_spawning_enabled"):
+		spawner.set_spawning_enabled(false)
+	_clear_existing_orcs()
+	
+	if player.has_node("Camera2D"):
+		player.get_node("Camera2D").shake(5.0)
+	
+	await get_tree().create_timer(boss_spawn_delay).timeout
+	if GameState.game_over or player.is_dead:
+		return
+	_spawn_boss()
+
+func _clear_existing_orcs() -> void:
+	for orc in get_tree().get_nodes_in_group("orcs"):
+		if not is_instance_valid(orc):
+			continue
+		orc.remove_from_group("orcs")
+		orc.queue_free()
+
+func _spawn_boss() -> void:
+	if not boss_scene:
+		return
+	boss_instance = boss_scene.instantiate()
+	boss_instance.global_position = _get_boss_spawn_position()
+	add_child(boss_instance)
+
+func _get_boss_spawn_position() -> Vector2:
+	var viewport_size := get_viewport().get_visible_rect().size
+	var spawn_radius: float = max(viewport_size.x, viewport_size.y) / 2.0 + boss_spawn_distance_buffer
+	var camera := get_viewport().get_camera_2d()
+	var center := player.global_position
+	if camera:
+		center = camera.global_position
+	
+	var best_position := center + Vector2.RIGHT * spawn_radius
+	var best_distance := -1.0
+	for i in range(8):
+		var angle := TAU * float(i) / 8.0
+		var candidate := center + Vector2(cos(angle), sin(angle)) * spawn_radius
+		var distance := candidate.distance_to(player.global_position)
+		if distance > best_distance:
+			best_distance = distance
+			best_position = candidate
+	return best_position
 
 func _on_combo_changed(combo: int) -> void:
 	if combo >= 2:

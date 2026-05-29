@@ -35,6 +35,7 @@ var current_spawn_interval: float
 var time_since_last_spawn: float = 0.0
 var time_since_last_difficulty_increase: float = 0.0
 var elapsed_time: float = 0.0
+var spawning_enabled: bool = true
 
 var player: Node2D
 
@@ -44,6 +45,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if GameState.game_over:
+		return
+	if not spawning_enabled:
 		return
 	
 	if not is_instance_valid(player):
@@ -128,3 +131,6 @@ func get_spawn_position() -> Vector2:
 
 func get_orc_count() -> int:
 	return get_tree().get_nodes_in_group("orcs").size()
+
+func set_spawning_enabled(enabled: bool) -> void:
+	spawning_enabled = enabled
