@@ -1,14 +1,11 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://c6u4oegopnuge"]
 
-[ext_resource type="PackedScene" path="res://scenes/orc.tscn" id="1_vlm5i"]
+[ext_resource type="PackedScene" uid="uid://bf6tun472e7x8" path="res://scenes/orc.tscn" id="1_vlm5i"]
 [ext_resource type="Script" path="res://scripts/mage.gd" id="2_fmw2m"]
 [ext_resource type="PackedScene" path="res://scenes/arcane_bolt.tscn" id="3_skk7e"]
 
 [node name="Mage" instance=ExtResource("1_vlm5i")]
 script = ExtResource("2_fmw2m")
-move_speed = 75.0
-visual_color = Color(0.48, 0.23, 0.68, 1)
-pickup_drop_chance = 0.2
 arcane_bolt_scene = ExtResource("3_skk7e")
 mage_move_speed = 75.0
 mage_attack_range = 360.0
@@ -17,6 +14,8 @@ arcane_bolt_speed = 360.0
 bolt_split_distance = 200.0
 split_bolt_travel_distance = 360.0
 attack_cooldown = 3.0
+move_speed = 75.0
+visual_color = Color(0.48, 0.23, 0.68, 1)
 
 [node name="OrcSpriteAnimator2D" parent="." index="0"]
 modulate = Color(0.48, 0.23, 0.68, 1)

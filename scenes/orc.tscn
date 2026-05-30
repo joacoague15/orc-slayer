@@ -239,7 +239,6 @@ blood_splat_scene = ExtResource("6_087gv")
 corpse_scene = SubResource("PackedScene_8ibep")
 
 [node name="OrcSpriteAnimator2D" type="AnimatedSprite2D" parent="."]
-modulate = Color(0.506589, 0.740973, 0.386696, 1)
 scale = Vector2(0.2, 0.2)
 sprite_frames = SubResource("SpriteFrames_m822r")
 animation = &"attack_to_idle"

@@ -6,6 +6,7 @@ extends CharacterBody2D
 @export var telegraph_duration: float = 0.5
 @export var score_value: int = 1
 @export var visual_color: Color = Color.WHITE
+@export var blood_color: Color = Color(0.08, 0.45, 0.12, 1.0)
 @export var visual_scale: float = 1.0
 
 @export var separation_strength: float = 80.0
@@ -20,6 +21,7 @@ extends CharacterBody2D
 @export var death_lifetime: float = 90.0
 @export var death_fade_duration: float = 5.0
 @export var death_blood_delay: float = 0.5  # cuándo sale el charco final (segundos)
+@export var dead_body_color: Color = Color(0.45, 0.45, 0.45, 1.0)
 
 # Nuevo flag para distinguir "muriendo" de "muerto"
 var is_dead: bool = false
@@ -140,7 +142,7 @@ func die() -> void:
 	is_dying = true
 	is_dead = true
 	
-	visual.modulate = visual_color
+	visual.modulate = dead_body_color
 	
 	AudioManager.play_orc_death()
 	try_drop_pickup()
@@ -219,9 +221,9 @@ func spawn_blood_splat_directional(direction: Vector2) -> void:
 	splat.z_index = -2
 	get_parent().add_child(splat)
 	if splat.has_method("setup_directional"):
-		splat.setup_directional(visual_color, direction)
+		splat.setup_directional(blood_color, direction)
 	elif splat.has_method("setup"):
-		splat.setup(visual_color)
+		splat.setup(blood_color)
 
 func try_drop_pickup() -> void:
 	if randf() > pickup_drop_chance:
@@ -243,4 +245,4 @@ func spawn_resting_blood() -> void:
 		splat.z_index = -2
 		get_parent().add_child(splat)
 		if splat.has_method("setup"):
-			splat.setup(visual_color)
+			splat.setup(blood_color)
