@@ -262,7 +262,7 @@ R: Sí, pero los proyectiles no alcanzan a dividirse. Son solo 3 proyectiles rec
 [x] Orco Arquero + flechas con tracking
 [x] Orco Berserker + patrón de carga
 [x] Orco Mago + proyectiles con split
-[ ] Orco Warlord (jefe) + 5 fases
+[x] Orco Warlord (jefe) + 5 fases
 [ ] Pantalla de victoria + créditos
 [ ] Game over mejorado (stats, tips, slow-mo)
 [ ] HUD mejorado (dash indicator, boss phase)

@@ -9,17 +9,17 @@ extends Node2D
 @export var orc_berserker_scene: PackedScene
 
 @export_group("Spawn Weights")
-@export var mid_scout_weight: float = 0.25
+@export var mid_scout_weight: float = 0.20
 @export var mid_archer_weight: float = 0.15
 @export var mid_mage_weight: float = 0.10
-@export var mid_berserker_weight: float = 0.08
-@export var hard_scout_weight: float = 0.25
-@export var hard_brute_weight: float = 0.15
+@export var mid_berserker_weight: float = 0.10
+@export var hard_scout_weight: float = 0.10
+@export var hard_brute_weight: float = 0.10
 @export var hard_archer_weight: float = 0.20
 @export var hard_mage_weight: float = 0.15
-@export var hard_berserker_weight: float = 0.12
-@export var late_scout_weight: float = 0.25
-@export var late_brute_weight: float = 0.15
+@export var hard_berserker_weight: float = 0.15
+@export var late_scout_weight: float = 0.10
+@export var late_brute_weight: float = 0.10
 @export var late_archer_weight: float = 0.20
 @export var late_mage_weight: float = 0.15
 @export var late_berserker_weight: float = 0.20

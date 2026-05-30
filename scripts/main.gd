@@ -2,7 +2,7 @@
 extends Node2D
 
 @export var boss_scene: PackedScene
-@export var boss_kill_trigger: int = 20
+@export var boss_kill_trigger: int = 200
 @export var boss_spawn_delay: float = 3.0
 @export var boss_spawn_distance_buffer: float = 120.0
 

@@ -233,7 +233,6 @@ collision_mask = 2
 script = ExtResource("1_xeing")
 move_speed = 240.0
 attack_range = 70.0
-visual_color = Color(0.51708, 0.79606, 0.17784, 1)
 pickup_drop_chance = 0.2
 pickup_coin_scene = ExtResource("2_bl76n")
 blood_splat_scene = ExtResource("6_087gv")
