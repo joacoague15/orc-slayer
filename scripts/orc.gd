@@ -1,7 +1,7 @@
 # scripts/orc.gd
 extends CharacterBody2D
 
-@export var move_speed: float = 120.0
+@export var move_speed: float = 156.0
 @export var attack_range: float = 40.0
 @export var telegraph_duration: float = 0.5
 @export var score_value: int = 1

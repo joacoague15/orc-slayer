@@ -6,12 +6,12 @@
 
 [node name="Boss" instance=ExtResource("1_167e4")]
 script = ExtResource("2_5f7rj")
-move_speed = 185.0
+move_speed = 240.5
 score_value = 10
 visual_color = Color(1, 0.45, 0.05, 1)
 visual_scale = 2.6
 pickup_drop_chance = 0.0
-boss_move_speed = 185.0
+boss_move_speed = 240.5
 boss_recover_speed = 0.0
 grunt_scene = ExtResource("3_4vfdc")
 summon_spawn_buffer = 50.0

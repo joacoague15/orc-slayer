@@ -5,12 +5,12 @@
 
 [node name="Berserker" instance=ExtResource("1_t0yvn")]
 script = ExtResource("2_eglhv")
-move_speed = 150.0
+move_speed = 195.0
 visual_color = Color(0.82, 0.18, 0.12, 1)
 visual_scale = 1.15
 pickup_drop_chance = 0.25
-wander_speed = 150.0
-charge_speed = 620.0
+wander_speed = 195.0
+charge_speed = 806.0
 charge_hit_radius = 34.0
 charge_max_distance = 900.0
 

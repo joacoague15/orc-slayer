@@ -7,8 +7,8 @@ const WINDUP_DURATION: float = 0.3
 const CHARGE_DURATION: float = 2.0
 const RECOVERY_DURATION: float = 0.5
 
-@export var wander_speed: float = 150.0
-@export var charge_speed: float = 620.0
+@export var wander_speed: float = 195.0
+@export var charge_speed: float = 806.0
 @export var charge_hit_radius: float = 34.0
 @export var charge_max_distance: float = 900.0
 

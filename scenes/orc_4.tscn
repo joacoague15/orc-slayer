@@ -227,11 +227,11 @@ size = Vector2(32, 32)
 [sub_resource type="CircleShape2D" id="CircleShape2D_k425p"]
 radius = 25.9422
 
-[node name="Orc" type="CharacterBody2D" groups=["orcs"]]
+[node name="Orc2" type="CharacterBody2D" groups=["orcs"]]
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("1_mr8kc")
-move_speed = 220.0
+move_speed = 286.0
 attack_range = 70.0
 visual_color = Color(0.564706, 1, 0.168627, 1)
 pickup_drop_chance = 0.2

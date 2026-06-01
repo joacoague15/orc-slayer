@@ -6,12 +6,12 @@ signal dash_started
 signal dash_finished
 signal dash_ready
 
-@export var move_speed: float = 250.0
+@export var move_speed: float = 325.0
 @export var slice_speed_multiplier: float = 0.5
 @export var slice_scene: PackedScene
 
 @export_group("Dash")
-@export var dash_speed: float = 850.0
+@export var dash_speed: float = 1105.0
 @export var dash_duration: float = 0.16
 @export var dash_cooldown: float = 0.75
 @export var dash_ghost_count: int = 4

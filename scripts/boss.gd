@@ -16,7 +16,7 @@ const SPIN_RADIUS: float = 150.0
 const SHOCKWAVE_RADIUS: float = 100.0
 const TAUNT_GRUNT_COUNT: int = 2
 
-@export var boss_move_speed: float = 185.0
+@export var boss_move_speed: float = 240.5
 @export var boss_recover_speed: float = 0.0
 @export var grunt_scene: PackedScene
 @export var summon_spawn_buffer: float = 50.0
