@@ -182,6 +182,7 @@ Combo (arriba-centro): ×24 con barra circular de decaimiento. Color según nive
 ×100+: Púrpura
 Timer (arriba-izquierda): 02:34 tiempo de run
 Dash Indicator (sobre el personaje): el personaje destella. Destello es que esta listo de nuevo.
+Marcador de Oleada al principio de cada comienzo de oleada
 Solo durante boss:
 
 
@@ -269,3 +270,27 @@ R: Sí, pero los proyectiles no alcanzan a dividirse. Son solo 3 proyectiles rec
 [ ] Sistema de audio
 [ ] Música de boss
 [ ] Efectos de pantalla (screen shake, hit stop, chromatic)
+
+cosas a pulir:
+[] Mas animaciones en las muertes de los orcos
+[] Pulir arquero
+[] Pulir mago
+[] Pulir berserker
+[] Pulir jefe
+
+[] Disenio arquero
+[] Disenio mago
+[] Disenio berserker
+[] Disenio jefe
+
+[] Animaciones arquero
+[] Animaciones mago
+[] Animaciones berserker
+[] Animaciones jefe
+
+[] Terreno mejorado
+[] Personaje con sprites pulidos
+
+CUANDO SE GANA
+Sistema de oleadas 
+Boss final

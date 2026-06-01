@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://8o10rd76dja7"]
+[gd_scene load_steps=20 format=3 uid="uid://8o10rd76dja7"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hyiwn"]
 [ext_resource type="PackedScene" uid="uid://dp3v5iocdqtj2" path="res://scenes/player.tscn" id="2_rl6d3"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://c6u4oegopnuge" path="res://scenes/mage.tscn" id="12_0wrcj"]
 [ext_resource type="PackedScene" path="res://scenes/berserker.tscn" id="13_vjdqi"]
 [ext_resource type="PackedScene" path="res://scenes/boss.tscn" id="14_p4n2m"]
+[ext_resource type="PackedScene" path="res://scenes/ground_rain.tscn" id="15_t4c5q"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f0l8l"]
 bg_color = Color(0.1, 0.1, 0.1, 0.8)
@@ -42,6 +43,8 @@ texture = ExtResource("10_r780o")
 centered = false
 region_enabled = true
 region_rect = Rect2(-10000, -10000, 3000, 3000)
+
+[node name="GroundRain" parent="." instance=ExtResource("15_t4c5q")]
 
 [node name="Player" parent="." instance=ExtResource("2_rl6d3")]
 z_index = 1
