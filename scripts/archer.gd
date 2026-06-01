@@ -10,6 +10,7 @@ signal arrow_shot(arrow: Area2D)
 @export var arrow_lifetime: float = 10.0
 @export var shoot_windup: float = 0.5
 @export var shoot_cooldown: float = 3.0
+@export var muzzle_offset: Vector2 = Vector2(0.0, 66.0)
 
 enum ArcherState {
 	MOVING,
@@ -84,12 +85,13 @@ func _shoot_arrow() -> void:
 	if not arrow_scene:
 		return
 	
-	var shoot_direction := (player.global_position - global_position).normalized()
+	var muzzle_position := _get_muzzle_global_position()
+	var shoot_direction := (player.global_position - muzzle_position).normalized()
 	if shoot_direction == Vector2.ZERO:
 		shoot_direction = Vector2.RIGHT
 	
 	var arrow := arrow_scene.instantiate()
-	arrow.global_position = global_position
+	arrow.global_position = muzzle_position
 	if arrow.has_method("setup"):
 		arrow.setup(shoot_direction, arrow_speed, arrow_lifetime)
 	get_tree().current_scene.add_child(arrow)
@@ -116,14 +118,18 @@ func _hide_telegraph() -> void:
 func _update_telegraph() -> void:
 	if not is_instance_valid(player):
 		return
+	var local_muzzle := to_local(_get_muzzle_global_position())
 	var local_target := to_local(player.global_position)
 	telegraph_line.clear_points()
-	telegraph_line.add_point(Vector2.ZERO)
+	telegraph_line.add_point(local_muzzle)
 	telegraph_line.add_point(local_target)
 
 func _face_player() -> void:
 	if is_instance_valid(player):
 		visual.rotation = (player.global_position - global_position).angle() - PI / 2
+
+func _get_muzzle_global_position() -> Vector2:
+	return global_position + muzzle_offset.rotated(visual.rotation)
 
 func die() -> void:
 	_hide_telegraph()

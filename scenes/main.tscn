@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://cpuavmrgs713w" path="res://scenes/orc_brute.tscn" id="6_ohvmb"]
 [ext_resource type="Script" path="res://scripts/ground_variations.gd" id="8_txakl"]
 [ext_resource type="Texture2D" uid="uid://dtifo0f33ghwm" path="res://sprites/tiles/tile_1.png" id="10_r780o"]
-[ext_resource type="PackedScene" path="res://scenes/archer.tscn" id="11_7xhwn"]
+[ext_resource type="PackedScene" uid="uid://b6o73a5lhv1ga" path="res://scenes/archer.tscn" id="11_7xhwn"]
 [ext_resource type="PackedScene" uid="uid://c6u4oegopnuge" path="res://scenes/mage.tscn" id="12_0wrcj"]
 [ext_resource type="PackedScene" path="res://scenes/berserker.tscn" id="13_vjdqi"]
 [ext_resource type="PackedScene" path="res://scenes/boss.tscn" id="14_p4n2m"]
