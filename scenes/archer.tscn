@@ -1,14 +1,11 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://ycxyb3w34d3v"]
 
-[ext_resource type="PackedScene" path="res://scenes/orc.tscn" id="1_7eu2k"]
-[ext_resource type="Script" path="res://scripts/archer.gd" id="2_b0dba"]
+[ext_resource type="PackedScene" uid="uid://bf6tun472e7x8" path="res://scenes/orc.tscn" id="1_7eu2k"]
+[ext_resource type="Script" uid="uid://bfu4vpwfbvmwi" path="res://scripts/archer.gd" id="2_b0dba"]
 [ext_resource type="PackedScene" path="res://scenes/arrow.tscn" id="3_f4wm5"]
 
-[node name="Archer" instance=ExtResource("1_7eu2k")]
+[node name="Archer" unique_id=391954899 instance=ExtResource("1_7eu2k")]
 script = ExtResource("2_b0dba")
-move_speed = 85.0
-visual_color = Color(0.42, 0.64, 0.28, 1)
-pickup_drop_chance = 0.2
 arrow_scene = ExtResource("3_f4wm5")
 archer_move_speed = 85.0
 archer_attack_range = 420.0
@@ -16,12 +13,17 @@ arrow_speed = 520.0
 arrow_lifetime = 10.0
 shoot_windup = 0.5
 shoot_cooldown = 3.0
+move_speed = 85.0
+visual_color = Color(0.42, 0.64, 0.28, 1)
 
 [node name="OrcSpriteAnimator2D" parent="." index="0"]
 modulate = Color(0.42, 0.64, 0.28, 1)
 scale = Vector2(0.18, 0.18)
+animation = &"idle"
+frame = 0
+frame_progress = 0.0
 
-[node name="TelegraphLine" type="Line2D" parent="." index="3"]
+[node name="TelegraphLine" type="Line2D" parent="." index="3" unique_id=375001659]
 visible = false
 z_index = 5
 width = 3.0
