@@ -52,7 +52,7 @@ func _ready() -> void:
 	go_time.modulate.a = 0.0
 	go_highscore.modulate.a = 0.0
 	go_prompt.modulate.a = 0.0
-	AudioManager.play_music()
+	AudioManager.play_game_music()
 
 func _process(_delta: float) -> void:
 	if not player.is_dead:

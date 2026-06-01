@@ -9,6 +9,8 @@ extends Control
 var blink_time: float = 0.0
 
 func _ready() -> void:
+	AudioManager.play_menu_music()
+	
 	# Mostrar highscore si existe
 	if GameState.highscore > 0:
 		highscore_label.text = "Highscore: %d" % GameState.highscore

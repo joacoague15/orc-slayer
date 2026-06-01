@@ -93,7 +93,17 @@ func _shoot_arrow() -> void:
 	if arrow.has_method("setup"):
 		arrow.setup(shoot_direction, arrow_speed, arrow_lifetime)
 	get_tree().current_scene.add_child(arrow)
+	_play_fire_animation()
 	arrow_shot.emit(arrow)
+
+func _play_fire_animation() -> void:
+	visual.play("attack")
+	visual.animation_finished.connect(_on_fire_animation_finished, CONNECT_ONE_SHOT)
+
+func _on_fire_animation_finished() -> void:
+	if is_dead:
+		return
+	visual.play("idle")
 
 func _show_telegraph() -> void:
 	telegraph_line.visible = true

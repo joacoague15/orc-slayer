@@ -1,8 +1,101 @@
-[gd_scene format=3 uid="uid://ycxyb3w34d3v"]
+[gd_scene load_steps=20 format=3 uid="uid://ycxyb3w34d3v"]
 
 [ext_resource type="PackedScene" uid="uid://bf6tun472e7x8" path="res://scenes/orc.tscn" id="1_7eu2k"]
-[ext_resource type="Script" uid="uid://bfu4vpwfbvmwi" path="res://scripts/archer.gd" id="2_b0dba"]
+[ext_resource type="Script" path="res://scripts/archer.gd" id="2_b0dba"]
 [ext_resource type="PackedScene" path="res://scenes/arrow.tscn" id="3_f4wm5"]
+[ext_resource type="Texture2D" uid="uid://cfcjgk65pyern" path="res://sprites/animations_sprites/archer_fire_animation/archer_fire_animation_frame_0000.png" id="4_n6xpu"]
+[ext_resource type="Texture2D" uid="uid://db3gr5al7ddt2" path="res://sprites/animations_sprites/archer_fire_animation/archer_fire_animation_frame_0027.png" id="5_0dtbr"]
+[ext_resource type="Texture2D" uid="uid://d4b6fcknce7vw" path="res://sprites/animations_sprites/archer_fire_animation/archer_fire_animation_frame_0028.png" id="6_cslck"]
+[ext_resource type="Texture2D" uid="uid://tkdtic0stmg5" path="res://sprites/animations_sprites/archer_fire_animation/archer_fire_animation_frame_0029.png" id="7_wv21o"]
+[ext_resource type="Texture2D" uid="uid://ubuexq6yubqr" path="res://sprites/animations_sprites/archer_fire_animation/archer_fire_animation_frame_0030.png" id="8_50bwp"]
+[ext_resource type="Texture2D" uid="uid://b22wcw7ob2v3u" path="res://sprites/animations_sprites/archer_fire_animation/archer_fire_animation_frame_0031.png" id="9_r13lx"]
+[ext_resource type="Texture2D" uid="uid://n5oj16xn124r" path="res://sprites/animations_sprites/archer_fire_animation/archer_fire_animation_frame_0036.png" id="10_oy8l2"]
+[ext_resource type="Texture2D" uid="uid://bj385bieujdqi" path="res://sprites/animations_sprites/archer_fire_animation/archer_fire_animation_frame_0040.png" id="11_1kefv"]
+[ext_resource type="Texture2D" uid="uid://cve7bwbyoh3o" path="res://sprites/animations_sprites/archer_death_animation/archer_death_animation_frame_0006.png" id="12_fd0yl"]
+[ext_resource type="Texture2D" uid="uid://cvd0ru8gxqm1p" path="res://sprites/animations_sprites/archer_death_animation/archer_death_animation_frame_0009.png" id="13_iy7x0"]
+[ext_resource type="Texture2D" uid="uid://bc0w7vxm2d1gc" path="res://sprites/animations_sprites/archer_death_animation/archer_death_animation_frame_0010.png" id="14_k0j7y"]
+[ext_resource type="Texture2D" uid="uid://sfdhagjj4rvl" path="res://sprites/animations_sprites/archer_death_animation/archer_death_animation_frame_0012.png" id="15_epj0l"]
+[ext_resource type="Texture2D" uid="uid://c6xwreij5cx2i" path="res://sprites/animations_sprites/archer_death_animation/archer_death_animation_frame_0013.png" id="16_8dnq5"]
+[ext_resource type="Texture2D" uid="uid://iqqe1hfxma8s" path="res://sprites/animations_sprites/archer_death_animation/archer_death_animation_frame_0015.png" id="17_d60yb"]
+[ext_resource type="Texture2D" uid="uid://doba4l35vxj6k" path="res://sprites/animations_sprites/archer_death_animation/archer_death_animation_frame_0016.png" id="18_22y80"]
+[ext_resource type="Texture2D" uid="uid://fw206go7frun" path="res://sprites/animations_sprites/archer_death_animation/archer_death_animation_frame_0017.png" id="19_elf3h"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6wsw2"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_n6xpu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_0dtbr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_cslck")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_wv21o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_50bwp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_r13lx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_oy8l2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_1kefv")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 16.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_n6xpu")
+}],
+"loop": false,
+"name": &"attack_to_idle",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("12_fd0yl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_iy7x0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_k0j7y")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_epj0l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_8dnq5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_d60yb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_22y80")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_elf3h")
+}],
+"loop": false,
+"name": &"death",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_n6xpu")
+}],
+"loop": false,
+"name": &"idle",
+"speed": 1.0
+}]
 
 [node name="Archer" unique_id=391954899 instance=ExtResource("1_7eu2k")]
 script = ExtResource("2_b0dba")
@@ -19,6 +112,7 @@ visual_color = Color(0.42, 0.64, 0.28, 1)
 [node name="OrcSpriteAnimator2D" parent="." index="0"]
 modulate = Color(0.42, 0.64, 0.28, 1)
 scale = Vector2(0.18, 0.18)
+sprite_frames = SubResource("SpriteFrames_6wsw2")
 animation = &"idle"
 frame = 0
 frame_progress = 0.0

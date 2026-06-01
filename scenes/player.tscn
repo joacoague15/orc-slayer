@@ -1,8 +1,8 @@
-[gd_scene format=3 uid="uid://dp3v5iocdqtj2"]
+[gd_scene load_steps=31 format=3 uid="uid://dp3v5iocdqtj2"]
 
-[ext_resource type="Script" uid="uid://dwpe535mad6at" path="res://scripts/player.gd" id="1_tlp8j"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_tlp8j"]
 [ext_resource type="PackedScene" uid="uid://bh7ad0ocsom3i" path="res://scenes/slice_effect.tscn" id="2_qg56k"]
-[ext_resource type="Script" uid="uid://dvhqodimks1u2" path="res://scripts/shake_camera.gd" id="3_83t3e"]
+[ext_resource type="Script" path="res://scripts/shake_camera.gd" id="3_83t3e"]
 [ext_resource type="Texture2D" uid="uid://khdj6p7j847" path="res://sprites/animations_sprites/slice_player/frame_6.png" id="3_v3oek"]
 [ext_resource type="Texture2D" uid="uid://ctwsiiehx6mro" path="res://sprites/animations_sprites/slice_player/frame_5.png" id="4_h6lbr"]
 [ext_resource type="Texture2D" uid="uid://b74r2gwcinsul" path="res://sprites/animations_sprites/slice_player/frame_4.png" id="5_td68s"]
@@ -243,21 +243,21 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lnb5w"]
 size = Vector2(49.5, 37.5)
 
-[node name="Player" type="CharacterBody2D" unique_id=1373231257 groups=["player"]]
+[node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_mask = 0
 script = ExtResource("1_tlp8j")
 slice_scene = ExtResource("2_qg56k")
 
-[node name="PlayerSprite" type="AnimatedSprite2D" parent="." unique_id=1784435229]
+[node name="PlayerSprite" type="AnimatedSprite2D" parent="."]
 physics_interpolation_mode = 2
 scale = Vector2(0.18, 0.18)
 sprite_frames = SubResource("SpriteFrames_fwcdg")
 animation = &"slice_1"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1441023259]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-0.5, -5.5)
 scale = Vector2(2, 2)
 shape = SubResource("RectangleShape2D_lnb5w")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=632701228]
+[node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("3_83t3e")
