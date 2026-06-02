@@ -1,8 +1,117 @@
-[gd_scene load_steps=4 format=3 uid="uid://c6u4oegopnuge"]
+[gd_scene load_steps=25 format=3 uid="uid://c6u4oegopnuge"]
 
 [ext_resource type="PackedScene" uid="uid://bf6tun472e7x8" path="res://scenes/orc.tscn" id="1_vlm5i"]
 [ext_resource type="Script" path="res://scripts/mage.gd" id="2_fmw2m"]
 [ext_resource type="PackedScene" path="res://scenes/arcane_bolt.tscn" id="3_skk7e"]
+[ext_resource type="Texture2D" uid="uid://rrbvgc0odm0p" path="res://sprites/animations_sprites/mage_attack/mage_animation_frame_0000.png" id="4_y5ggt"]
+[ext_resource type="Texture2D" uid="uid://b53oae1biu23r" path="res://sprites/animations_sprites/mage_attack/mage_animation_frame_0001.png" id="5_tx8me"]
+[ext_resource type="Texture2D" uid="uid://bv2aim6iohx0i" path="res://sprites/animations_sprites/mage_attack/mage_animation_frame_0002.png" id="6_uwiod"]
+[ext_resource type="Texture2D" uid="uid://dnfcird4faaxj" path="res://sprites/animations_sprites/mage_attack/mage_animation_frame_0003.png" id="7_g6fmi"]
+[ext_resource type="Texture2D" uid="uid://dl25fumupew8w" path="res://sprites/animations_sprites/mage_attack/mage_animation_frame_0004.png" id="8_s8cem"]
+[ext_resource type="Texture2D" uid="uid://dodlp0tmdf3w3" path="res://sprites/animations_sprites/mage_attack/mage_animation_frame_0005.png" id="9_ba0tq"]
+[ext_resource type="Texture2D" uid="uid://b76e0degfggvc" path="res://sprites/animations_sprites/mage_attack/mage_animation_frame_0006.png" id="10_5c0ms"]
+[ext_resource type="Texture2D" uid="uid://dgxfinfquxsh4" path="res://sprites/animations_sprites/mage_attack/mage_animation_frame_0007.png" id="11_x8jfs"]
+[ext_resource type="Texture2D" uid="uid://be0hmg7wbv3hn" path="res://sprites/animations_sprites/mage_attack/mage_animation_frame_0008.png" id="12_2hfc2"]
+[ext_resource type="Texture2D" uid="uid://nhe1ahrds88i" path="res://sprites/animations_sprites/mage_death_animation/mage_animation_frame_0000.png" id="13_0o3ou"]
+[ext_resource type="Texture2D" uid="uid://bwx2drbekes76" path="res://sprites/animations_sprites/mage_death_animation/mage_animation_frame_0011.png" id="14_5ah5u"]
+[ext_resource type="Texture2D" uid="uid://ca2s6fb0fvi5k" path="res://sprites/animations_sprites/mage_death_animation/mage_animation_frame_0013.png" id="15_a8smg"]
+[ext_resource type="Texture2D" uid="uid://b3sojdeaijod" path="res://sprites/animations_sprites/mage_death_animation/mage_animation_frame_0014.png" id="16_k0dc2"]
+[ext_resource type="Texture2D" uid="uid://b48ywmwsf31sw" path="res://sprites/animations_sprites/mage_death_animation/mage_animation_frame_0016.png" id="17_6jbtr"]
+[ext_resource type="Texture2D" uid="uid://borxqr1sycb6m" path="res://sprites/animations_sprites/mage_death_animation/mage_animation_frame_0017.png" id="18_4j5it"]
+[ext_resource type="Texture2D" uid="uid://evqt4qlpghkl" path="res://sprites/animations_sprites/mage_death_animation/mage_animation_frame_0019.png" id="19_a4iog"]
+[ext_resource type="Texture2D" uid="uid://bav8emf8kd5nb" path="res://sprites/animations_sprites/mage_death_animation/mage_animation_frame_0021.png" id="20_xdx80"]
+[ext_resource type="Texture2D" uid="uid://d2hncsh54u7dq" path="res://sprites/animations_sprites/mage_death_animation/mage_animation_frame_0022.png" id="21_0syg4"]
+[ext_resource type="Texture2D" uid="uid://eoidmqrdrb04" path="res://sprites/animations_sprites/mage_death_animation/mage_animation_frame_0023.png" id="22_b7tte"]
+[ext_resource type="Texture2D" uid="uid://cdrp56r8733rq" path="res://sprites/animations_sprites/mage_death_animation/mage_animation_frame_0024.png" id="23_f6ixw"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_q8fsn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_y5ggt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_tx8me")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_uwiod")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_g6fmi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_s8cem")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_ba0tq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_5c0ms")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_x8jfs")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_2hfc2")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_y5ggt")
+}],
+"loop": false,
+"name": &"attack_to_idle",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("13_0o3ou")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_5ah5u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_a8smg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_k0dc2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_6jbtr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_4j5it")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_a4iog")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_xdx80")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_0syg4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_b7tte")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_f6ixw")
+}],
+"loop": false,
+"name": &"death",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_y5ggt")
+}],
+"loop": false,
+"name": &"idle",
+"speed": 1.0
+}]
 
 [node name="Mage" instance=ExtResource("1_vlm5i")]
 script = ExtResource("2_fmw2m")
@@ -14,15 +123,19 @@ arcane_bolt_speed = 360.0
 bolt_split_distance = 200.0
 split_bolt_travel_distance = 360.0
 attack_cooldown = 3.0
+cast_origin_offset = Vector2(0, 36)
 move_speed = 97.5
-visual_color = Color(0.48, 0.23, 0.68, 1)
+blood_color = Color(0.253894, 0.287159, 0.804483, 1)
 
 [node name="OrcSpriteAnimator2D" parent="." index="0"]
-modulate = Color(0.48, 0.23, 0.68, 1)
 scale = Vector2(0.18, 0.18)
+sprite_frames = SubResource("SpriteFrames_q8fsn")
+animation = &"idle"
+frame = 0
+frame_progress = 0.0
 
 [node name="TelegraphGlow" type="Polygon2D" parent="." index="3"]
 visible = false
 z_index = 5
-color = Color(0.85, 0.25, 1, 0.75)
+color = Color(0.25, 0.85, 1, 0.75)
 polygon = PackedVector2Array(0, -28, 20, -20, 28, 0, 20, 20, 0, 28, -20, 20, -28, 0, -20, -20)

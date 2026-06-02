@@ -17,6 +17,7 @@ const NO_SPLIT_DISTANCE: float = 50.0
 @export var bolt_split_distance: float = 200.0
 @export var split_bolt_travel_distance: float = 360.0
 @export var attack_cooldown: float = 3.0
+@export var cast_origin_offset: Vector2 = Vector2(0.0, 36.0)
 
 enum MageState {
 	POSITIONING,
@@ -117,30 +118,43 @@ func _start_telegraph() -> void:
 	mage_state = MageState.TELEGRAPHING
 	mage_telegraph_timer = TELEGRAPH_DURATION
 	velocity = Vector2.ZERO
+	visual.modulate = Color.RED
 	_show_telegraph()
 
 func _start_burst() -> void:
 	_hide_telegraph()
+	visual.modulate = visual_color
 	mage_state = MageState.BURSTING
 	burst_index = 0
 	burst_interval_timer = 0.0
-	burst_base_direction = (player.global_position - global_position).normalized()
+	var cast_origin: Vector2 = _get_cast_origin_global_position()
+	burst_base_direction = (player.global_position - cast_origin).normalized()
 	if burst_base_direction == Vector2.ZERO:
 		burst_base_direction = Vector2.RIGHT
-	burst_should_split = global_position.distance_to(player.global_position) >= NO_SPLIT_DISTANCE
+	burst_should_split = cast_origin.distance_to(player.global_position) >= NO_SPLIT_DISTANCE
+	_play_attack_animation()
 
 func _start_cooldown() -> void:
 	mage_state = MageState.COOLDOWN
 	cooldown_timer = attack_cooldown
 	burst_interval_timer = 0.0
 
+func _play_attack_animation() -> void:
+	visual.play("attack")
+	visual.animation_finished.connect(_on_attack_animation_finished, CONNECT_ONE_SHOT)
+
+func _on_attack_animation_finished() -> void:
+	if is_dead:
+		return
+	visual.play("idle")
+
 func _cast_bolt(angle_degrees: float) -> void:
 	if not arcane_bolt_scene:
 		return
 	
-	var bolt_direction := burst_base_direction.rotated(deg_to_rad(angle_degrees))
+	var bolt_direction: Vector2 = burst_base_direction.rotated(deg_to_rad(angle_degrees))
 	var bolt := arcane_bolt_scene.instantiate()
-	bolt.global_position = global_position
+	bolt.global_position = _get_cast_origin_global_position()
 	if bolt.has_method("setup"):
 		bolt.setup(
 			bolt_direction,
@@ -152,6 +166,9 @@ func _cast_bolt(angle_degrees: float) -> void:
 	get_tree().current_scene.add_child(bolt)
 	bolt_cast.emit(bolt)
 
+func _get_cast_origin_global_position() -> Vector2:
+	return global_position + cast_origin_offset.rotated(visual.rotation)
+
 func _show_telegraph() -> void:
 	telegraph_glow.visible = true
 	_update_telegraph()
@@ -161,7 +178,7 @@ func _hide_telegraph() -> void:
 
 func _update_telegraph() -> void:
 	var pulse := 0.55 + sin(Time.get_ticks_msec() / 80.0) * 0.2
-	telegraph_glow.modulate = Color(0.85, 0.25, 1.0, pulse)
+	telegraph_glow.modulate = Color(0.25, 0.85, 1.0, pulse)
 
 func _face_player() -> void:
 	if is_instance_valid(player):
