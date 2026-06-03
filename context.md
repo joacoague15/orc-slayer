@@ -149,13 +149,56 @@ Spin = Berserker (zona de daño a evitar)
 Leap = Arquero (proyectil área que hay que esquivar agresivamente)
 Taunt = Mago (múltiples amenazas simultáneas)
 
-5. SISTEMA DE SPAWN Y PROGRESIÓN
-5.1 Fase de Oleadas (pre-boss)
-Aceleración: Cada x orcos muertos, la cantidad de orcos va subiendo
-Puntos de spawn: de cualquier lado de la pantalla
-Spawn aleatorio: Cualquier dirección, cualquier tipo de orco (según pesos)
+5. SISTEMA DE OLEADAS Y SPAWN
+5.1 Estructura general
+El juego usa un sistema cerrado de 7 waves.
+Las waves 1 a 6 son pre-boss.
+La wave 7 es la wave del Warlord.
+Mientras el Warlord no esté implementado o conectado, la wave 7 entra en estado BOSS PENDING.
+Boss pending no es victoria ni game over: detiene el spawner, deja la run viva y muestra un mensaje claro de placeholder.
+Cada wave debe ser más complicada que la anterior por una combinación de:
+Más enemigos requeridos para avanzar.
+Mayor cantidad máxima de enemigos vivos.
+Menor intervalo de spawn.
+Mayor presencia de enemigos que fuerzan respuestas específicas: Archer, Berserker y Mage.
 
-5.2 Panel TEST SPAWNS
+Las waves avanzan por kills de enemigos, no por tiempo.
+El spawner se pausa al completar una wave.
+Entre waves hay una pausa corta para respirar y comunicar el avance.
+Puntos de spawn: de cualquier lado de la pantalla.
+Spawn aleatorio: cualquier dirección, cualquier tipo habilitado según pesos de la wave.
+Los pesos son relativos. No tienen que sumar 1.0; el spawner normaliza internamente.
+El panel TEST SPAWNS multiplica estos pesos runtime, pero no reemplaza la tabla base de waves.
+
+5.2 Tabla de waves
+Enemy keys:
+grunt = orc_normal_scene
+scout = orc_scout_scene (variante legacy válida)
+brute = orc_brute_scene (variante legacy válida)
+archer = orc_archer_scene
+mage = orc_mage_scene
+berserker = orc_berserker_scene
+
+| Wave | Kills para avanzar | Max enemigos vivos | Spawn interval | Grunt | Scout | Brute | Archer | Mage | Berserker | Objetivo de diseño |
+| - | -: | -: | -: | -: | -: | -: | -: | -: | -: | - |
+| 1 | 12 | 10 | 1.20s | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | Enseñar persecución básica y combo. |
+| 2 | 18 | 16 | 1.05s | 0.70 | 0.20 | 0.00 | 0.10 | 0.00 | 0.00 | Introducir presión lateral leve con Archer. |
+| 3 | 24 | 24 | 0.90s | 0.52 | 0.16 | 0.00 | 0.20 | 0.12 | 0.00 | Introducir Mage y movimiento constante. |
+| 4 | 30 | 34 | 0.78s | 0.42 | 0.12 | 0.08 | 0.22 | 0.12 | 0.04 | Introducir Berserker sin saturar. |
+| 5 | 38 | 48 | 0.66s | 0.32 | 0.10 | 0.10 | 0.24 | 0.16 | 0.08 | Mezclar amenazas de distancia y cazador. |
+| 6 | 48 | 64 | 0.54s | 0.24 | 0.08 | 0.12 | 0.25 | 0.18 | 0.13 | Test pre-boss: presión alta sin jefe. |
+| 7 | Boss | Boss + summons | Boss sequence | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | Limpiar arena y ejecutar transición al Warlord o BOSS PENDING. |
+
+5.3 Transición entre waves
+Al completar los kills requeridos de una wave:
+El spawner deja de crear enemigos.
+Los enemigos vivos restantes permanecen en pantalla, salvo en la transición al boss.
+Cuando ya no quedan enemigos vivos, comienza la pausa entre waves.
+Pausa entre waves: 2.0 segundos.
+Se muestra marcador de oleada al comienzo de cada wave.
+El combo no se resetea por cambio de wave; solo se resetea por su timer normal de 3.5 segundos.
+
+5.4 Panel TEST SPAWNS
 Ubicación: Main menu
 Uso: herramienta de test runtime para ajustar la composición del spawner antes de iniciar una run.
 Control por enemigo:
@@ -163,16 +206,22 @@ Toggle ON/OFF.
 Slider de multiplicador de peso entre x0.0 y x3.0.
 La configuración se guarda en GameState durante runtime. No se persiste en disco y no es meta-progresión.
 
-5.3 Trigger del Jefe
-Condición: Matar X orcos (configurable para balance)
+5.5 Trigger del Jefe
+Condición: completar la wave 6 y limpiar los enemigos restantes.
 Secuencia:
-Se alcanzan X kills
-Todos los orcos restantes en pantalla mueren instantáneamente
+Se completa la wave 6.
+El spawner se detiene.
+Los enemigos restantes se limpian antes de la entrada del boss.
 3 segundos de pausa (audio de alerta, pantalla tiembla leve)
 Aparece el Warlord en el punto de spawn más lejano del jugador
 Música de boss comienza
+Si el Warlord no está disponible:
+No se instancia ningún jefe.
+El spawner queda detenido.
+Se muestra "BOSS PENDING" en pantalla.
+La run no se marca como victoria.
 
-5.4 Victoria
+5.6 Victoria
 Al matar al Warlord: pantalla de victoria 
 Muestra: Score final, combo máximo, tiempo, orcos matados
 
@@ -284,14 +333,14 @@ cosas a pulir:
 [] Pulir berserker
 [] Pulir jefe
 
-[] Disenio arquero
-[] Disenio mago
-[] Disenio berserker
+[x] Disenio arquero
+[x] Disenio mago
+[x] Disenio berserker
 [] Disenio jefe
 
-[] Animaciones arquero
-[] Animaciones mago
-[] Animaciones berserker
+[x] Animaciones arquero
+[x] Animaciones mago
+[x] Animaciones berserker
 [] Animaciones jefe
 
 [] Terreno mejorado

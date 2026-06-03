@@ -1,6 +1,63 @@
 # scripts/spawner.gd
 extends Node2D
 
+signal wave_started(wave_number: int, kills_required: int)
+signal wave_completed(wave_number: int)
+signal boss_wave_reached
+
+const BOSS_WAVE_NUMBER: int = 7
+const WAVE_CONFIGS: Array[Dictionary] = [
+	{
+		"number": 1,
+		"kills_required": 12,
+		"max_orcs": 10,
+		"spawn_interval": 1.20,
+		"weights": {"normal": 1.00, "scout": 0.00, "brute": 0.00, "archer": 0.00, "mage": 0.00, "berserker": 0.00},
+	},
+	{
+		"number": 2,
+		"kills_required": 18,
+		"max_orcs": 16,
+		"spawn_interval": 1.05,
+		"weights": {"normal": 0.70, "scout": 0.20, "brute": 0.00, "archer": 0.10, "mage": 0.00, "berserker": 0.00},
+	},
+	{
+		"number": 3,
+		"kills_required": 24,
+		"max_orcs": 24,
+		"spawn_interval": 0.90,
+		"weights": {"normal": 0.52, "scout": 0.16, "brute": 0.00, "archer": 0.20, "mage": 0.12, "berserker": 0.00},
+	},
+	{
+		"number": 4,
+		"kills_required": 30,
+		"max_orcs": 34,
+		"spawn_interval": 0.78,
+		"weights": {"normal": 0.42, "scout": 0.12, "brute": 0.08, "archer": 0.22, "mage": 0.12, "berserker": 0.04},
+	},
+	{
+		"number": 5,
+		"kills_required": 38,
+		"max_orcs": 48,
+		"spawn_interval": 0.66,
+		"weights": {"normal": 0.32, "scout": 0.10, "brute": 0.10, "archer": 0.24, "mage": 0.16, "berserker": 0.08},
+	},
+	{
+		"number": 6,
+		"kills_required": 48,
+		"max_orcs": 64,
+		"spawn_interval": 0.54,
+		"weights": {"normal": 0.24, "scout": 0.08, "brute": 0.12, "archer": 0.25, "mage": 0.18, "berserker": 0.13},
+	},
+	{
+		"number": 7,
+		"kills_required": 0,
+		"max_orcs": 0,
+		"spawn_interval": 0.0,
+		"weights": {"normal": 0.00, "scout": 0.00, "brute": 0.00, "archer": 0.00, "mage": 0.00, "berserker": 0.00},
+	},
+]
+
 @export var orc_normal_scene: PackedScene
 @export var orc_scout_scene: PackedScene
 @export var orc_brute_scene: PackedScene
@@ -8,39 +65,17 @@ extends Node2D
 @export var orc_mage_scene: PackedScene
 @export var orc_berserker_scene: PackedScene
 
-@export_group("Spawn Weights")
-@export var mid_scout_weight: float = 0.20
-@export var mid_archer_weight: float = 0.15
-@export var mid_mage_weight: float = 0.40
-@export var mid_berserker_weight: float = 0.10
-@export var hard_scout_weight: float = 0.10
-@export var hard_brute_weight: float = 0.10
-@export var hard_archer_weight: float = 0.20
-@export var hard_mage_weight: float = 0.45
-@export var hard_berserker_weight: float = 0.15
-@export var late_scout_weight: float = 0.10
-@export var late_brute_weight: float = 0.10
-@export var late_archer_weight: float = 0.20
-@export var late_mage_weight: float = 0.50
-@export var late_berserker_weight: float = 0.20
-
-@export var initial_spawn_interval: float = 1.2
-@export var min_spawn_interval: float = 0.2
-@export var difficulty_step: float = 15.0
-@export var difficulty_multiplier: float = 0.9
-@export var max_orcs: int = 150
 @export var spawn_distance_buffer: float = 50.0
 
-var current_spawn_interval: float
 var time_since_last_spawn: float = 0.0
-var time_since_last_difficulty_increase: float = 0.0
-var elapsed_time: float = 0.0
 var spawning_enabled: bool = true
+var current_wave_index: int = 0
+var current_wave_kills: int = 0
+var wave_active: bool = false
 
 var player: Node2D
 
 func _ready() -> void:
-	current_spawn_interval = initial_spawn_interval
 	player = get_tree().get_first_node_in_group("player")
 
 func _process(delta: float) -> void:
@@ -48,25 +83,54 @@ func _process(delta: float) -> void:
 		return
 	if not spawning_enabled:
 		return
+	if not wave_active:
+		return
 	
 	if not is_instance_valid(player):
 		return
 	
-	elapsed_time += delta
 	time_since_last_spawn += delta
-	time_since_last_difficulty_increase += delta
-	
-	if time_since_last_difficulty_increase >= difficulty_step:
-		time_since_last_difficulty_increase = 0.0
-		current_spawn_interval = max(
-			min_spawn_interval,
-			current_spawn_interval * difficulty_multiplier
-		)
-	
-	if time_since_last_spawn >= current_spawn_interval:
+	var wave := get_current_wave()
+	if time_since_last_spawn >= float(wave["spawn_interval"]):
 		time_since_last_spawn = 0.0
-		if get_orc_count() < max_orcs:
+		if get_orc_count() < int(wave["max_orcs"]):
 			spawn_orc()
+
+func start_waves() -> void:
+	current_wave_index = 0
+	current_wave_kills = 0
+	_start_current_wave()
+
+func notify_enemy_killed() -> void:
+	if not wave_active:
+		return
+	var wave := get_current_wave()
+	if int(wave["number"]) >= BOSS_WAVE_NUMBER:
+		return
+	current_wave_kills += 1
+	if current_wave_kills >= int(wave["kills_required"]):
+		_complete_current_wave()
+
+func start_next_wave() -> void:
+	if current_wave_index >= WAVE_CONFIGS.size() - 1:
+		return
+	current_wave_index += 1
+	current_wave_kills = 0
+	_start_current_wave()
+
+func _start_current_wave() -> void:
+	var wave := get_current_wave()
+	time_since_last_spawn = 0.0
+	spawning_enabled = int(wave["number"]) < BOSS_WAVE_NUMBER
+	wave_active = spawning_enabled
+	wave_started.emit(int(wave["number"]), int(wave["kills_required"]))
+	if int(wave["number"]) == BOSS_WAVE_NUMBER:
+		boss_wave_reached.emit()
+
+func _complete_current_wave() -> void:
+	spawning_enabled = false
+	wave_active = false
+	wave_completed.emit(int(get_current_wave()["number"]))
 
 func spawn_orc() -> void:
 	var scene := pick_orc_scene()
@@ -78,64 +142,15 @@ func spawn_orc() -> void:
 	get_parent().add_child(orc)
 
 func pick_orc_scene() -> PackedScene:
-	if elapsed_time < 15.0:
-		return _pick_weighted_orc_scene([
-			{"key": "normal", "scene": orc_normal_scene, "weight": 1.0},
-		])
-	elif elapsed_time < 20.0:
-		return _pick_weighted_orc_scene([
-			{"key": "scout", "scene": orc_scout_scene, "weight": mid_scout_weight},
-			{"key": "archer", "scene": orc_archer_scene, "weight": mid_archer_weight},
-			{"key": "mage", "scene": orc_mage_scene, "weight": mid_mage_weight},
-			{"key": "normal", "scene": orc_normal_scene, "weight": _remaining_weight([
-				mid_scout_weight,
-				mid_archer_weight,
-				mid_mage_weight,
-			])},
-		])
-	elif elapsed_time < 45.0:
-		return _pick_weighted_orc_scene([
-			{"key": "scout", "scene": orc_scout_scene, "weight": mid_scout_weight},
-			{"key": "archer", "scene": orc_archer_scene, "weight": mid_archer_weight},
-			{"key": "mage", "scene": orc_mage_scene, "weight": mid_mage_weight},
-			{"key": "berserker", "scene": orc_berserker_scene, "weight": mid_berserker_weight},
-			{"key": "normal", "scene": orc_normal_scene, "weight": _remaining_weight([
-				mid_scout_weight,
-				mid_archer_weight,
-				mid_mage_weight,
-				mid_berserker_weight,
-			])},
-		])
-	elif elapsed_time < 90.0:
-		return _pick_weighted_orc_scene([
-			{"key": "scout", "scene": orc_scout_scene, "weight": hard_scout_weight},
-			{"key": "brute", "scene": orc_brute_scene, "weight": hard_brute_weight},
-			{"key": "archer", "scene": orc_archer_scene, "weight": hard_archer_weight},
-			{"key": "mage", "scene": orc_mage_scene, "weight": hard_mage_weight},
-			{"key": "berserker", "scene": orc_berserker_scene, "weight": hard_berserker_weight},
-			{"key": "normal", "scene": orc_normal_scene, "weight": _remaining_weight([
-				hard_scout_weight,
-				hard_brute_weight,
-				hard_archer_weight,
-				hard_mage_weight,
-				hard_berserker_weight,
-			])},
-		])
-	else:
-		return _pick_weighted_orc_scene([
-			{"key": "scout", "scene": orc_scout_scene, "weight": late_scout_weight},
-			{"key": "brute", "scene": orc_brute_scene, "weight": late_brute_weight},
-			{"key": "archer", "scene": orc_archer_scene, "weight": late_archer_weight},
-			{"key": "mage", "scene": orc_mage_scene, "weight": late_mage_weight},
-			{"key": "berserker", "scene": orc_berserker_scene, "weight": late_berserker_weight},
-			{"key": "normal", "scene": orc_normal_scene, "weight": _remaining_weight([
-				late_scout_weight,
-				late_brute_weight,
-				late_archer_weight,
-				late_mage_weight,
-				late_berserker_weight,
-			])},
-		])
+	var weights: Dictionary = get_current_wave()["weights"]
+	return _pick_weighted_orc_scene([
+		{"key": "normal", "scene": orc_normal_scene, "weight": weights["normal"]},
+		{"key": "scout", "scene": orc_scout_scene, "weight": weights["scout"]},
+		{"key": "brute", "scene": orc_brute_scene, "weight": weights["brute"]},
+		{"key": "archer", "scene": orc_archer_scene, "weight": weights["archer"]},
+		{"key": "mage", "scene": orc_mage_scene, "weight": weights["mage"]},
+		{"key": "berserker", "scene": orc_berserker_scene, "weight": weights["berserker"]},
+	])
 
 func _pick_weighted_orc_scene(entries: Array) -> PackedScene:
 	var total_weight := 0.0
@@ -165,12 +180,6 @@ func _get_entry_weight(entry: Dictionary) -> float:
 	var base_weight: float = max(float(entry["weight"]), 0.0)
 	return base_weight * GameState.get_spawn_enemy_weight_factor(entry["key"])
 
-func _remaining_weight(weights: Array) -> float:
-	var used_weight := 0.0
-	for weight in weights:
-		used_weight += float(weight)
-	return max(1.0 - used_weight, 0.0)
-
 func get_spawn_position() -> Vector2:
 	var viewport_size := get_viewport().get_visible_rect().size
 	var spawn_radius: float = max(viewport_size.x, viewport_size.y) / 2.0 + spawn_distance_buffer
@@ -184,3 +193,15 @@ func get_orc_count() -> int:
 
 func set_spawning_enabled(enabled: bool) -> void:
 	spawning_enabled = enabled
+
+func get_current_wave() -> Dictionary:
+	return WAVE_CONFIGS[current_wave_index]
+
+func get_current_wave_number() -> int:
+	return int(get_current_wave()["number"])
+
+func get_current_wave_kills() -> int:
+	return current_wave_kills
+
+func get_current_wave_kills_required() -> int:
+	return int(get_current_wave()["kills_required"])

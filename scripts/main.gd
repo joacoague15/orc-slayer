@@ -1,15 +1,19 @@
 # scripts/main.gd
 extends Node2D
 
+const BOSS_WAVE_NUMBER: int = 7
+
 @export var boss_scene: PackedScene
-@export var boss_kill_trigger: int = 200
+@export var boss_pending: bool = true
 @export var boss_spawn_delay: float = 3.0
 @export var boss_spawn_distance_buffer: float = 120.0
+@export var wave_transition_delay: float = 2.0
 
 @onready var player: Node2D = $Player
 @onready var spawner: Node2D = $Spawner
 @onready var score_label: Label = $UI/TopLeftPanel/ScoreLabel
 @onready var time_label: Label = $UI/TimeRow/TimeVBox/TimeLabel
+@onready var wave_marker_label: Label = $UI/WaveMarkerLabel
 
 # Nuevos refs para el game over screen
 @onready var game_over_screen: Control = $UI/GameOverScreen
@@ -25,6 +29,7 @@ extends Node2D
 
 var boss_spawn_started: bool = false
 var boss_instance: Node2D
+var wave_transition_running: bool = false
 
 func _ready() -> void:
 	GameState.reset_score()
@@ -33,10 +38,14 @@ func _ready() -> void:
 	GameState.score_changed.connect(_on_score_changed)
 	GameState.combo_changed.connect(_on_combo_changed)
 	GameState.kill_count_changed.connect(_on_kill_count_changed)
+	spawner.wave_started.connect(_on_wave_started)
+	spawner.wave_completed.connect(_on_wave_completed)
+	spawner.boss_wave_reached.connect(_on_boss_wave_reached)
 	score_label.text = "0"
 	time_label.text = "0:00"
 	combo_value_label.text = ""
 	combo_timer_bar.modulate.a = 0.0
+	wave_marker_label.modulate.a = 0.0
 	
 	# Asegurar que el game over screen arranque invisible
 	game_over_screen.modulate.a = 1.0  # el container sí está activo
@@ -47,6 +56,7 @@ func _ready() -> void:
 	go_highscore.modulate.a = 0.0
 	go_prompt.modulate.a = 0.0
 	AudioManager.play_game_music()
+	spawner.start_waves()
 
 func _process(_delta: float) -> void:
 	if not player.is_dead:
@@ -63,15 +73,41 @@ func _on_score_changed(new_score: int) -> void:
 	var tween := create_tween()
 	tween.tween_property(score_label, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
-func _on_kill_count_changed(kill_count: int) -> void:
-	if boss_spawn_started:
+func _on_kill_count_changed(_kill_count: int) -> void:
+	if boss_spawn_started or wave_transition_running:
 		return
-	if kill_count < boss_kill_trigger:
+	spawner.notify_enemy_killed()
+
+func _on_wave_started(wave_number: int, kills_required: int) -> void:
+	if wave_number >= BOSS_WAVE_NUMBER:
 		return
-	_start_boss_sequence()
+	_show_wave_marker("WAVE %d" % wave_number, "KILLS 0 / %d" % kills_required)
+
+func _on_wave_completed(wave_number: int) -> void:
+	if wave_transition_running:
+		return
+	if wave_number >= BOSS_WAVE_NUMBER - 1:
+		_start_boss_sequence()
+		return
+	_start_wave_transition(wave_number)
+
+func _start_wave_transition(wave_number: int) -> void:
+	wave_transition_running = true
+	_show_wave_marker("WAVE %d CLEAR" % wave_number, "CLEAN UP")
+	await _wait_for_orcs_cleared()
+	if GameState.game_over or player.is_dead:
+		wave_transition_running = false
+		return
+	await get_tree().create_timer(wave_transition_delay).timeout
+	if GameState.game_over or player.is_dead:
+		wave_transition_running = false
+		return
+	wave_transition_running = false
+	spawner.start_next_wave()
 
 func _start_boss_sequence() -> void:
 	boss_spawn_started = true
+	wave_transition_running = true
 	if spawner.has_method("set_spawning_enabled"):
 		spawner.set_spawning_enabled(false)
 	_clear_existing_orcs()
@@ -82,7 +118,16 @@ func _start_boss_sequence() -> void:
 	await get_tree().create_timer(boss_spawn_delay).timeout
 	if GameState.game_over or player.is_dead:
 		return
+	spawner.start_next_wave()
+
+func _on_boss_wave_reached() -> void:
+	if boss_pending or not boss_scene:
+		_show_boss_pending()
+		return
 	_spawn_boss()
+
+func _show_boss_pending() -> void:
+	_show_wave_marker("BOSS PENDING", "WARLORD NOT CONNECTED")
 
 func _clear_existing_orcs() -> void:
 	for orc in get_tree().get_nodes_in_group("orcs"):
@@ -116,6 +161,26 @@ func _get_boss_spawn_position() -> Vector2:
 			best_distance = distance
 			best_position = candidate
 	return best_position
+
+func _wait_for_orcs_cleared() -> void:
+	while get_tree().get_nodes_in_group("orcs").size() > 0:
+		if GameState.game_over or player.is_dead:
+			return
+		await get_tree().process_frame
+
+func _show_wave_marker(title: String, subtitle: String = "") -> void:
+	wave_marker_label.text = title
+	if subtitle != "":
+		wave_marker_label.text += "\n%s" % subtitle
+	wave_marker_label.scale = Vector2(1.2, 1.2)
+	wave_marker_label.modulate.a = 0.0
+	
+	var tween := create_tween()
+	tween.tween_property(wave_marker_label, "modulate:a", 1.0, 0.2)
+	tween.parallel().tween_property(wave_marker_label, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	if title != "BOSS PENDING":
+		tween.tween_interval(1.2)
+		tween.tween_property(wave_marker_label, "modulate:a", 0.0, 0.3)
 
 func _on_combo_changed(combo: int) -> void:
 	if combo >= 2:
