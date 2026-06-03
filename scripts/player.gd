@@ -80,11 +80,7 @@ func _physics_process(delta: float) -> void:
 			return
 	
 	# Movimiento
-	var current_speed := move_speed
-	if _is_in_slice_animation():
-		current_speed *= slice_speed_multiplier
-	
-	velocity = input_vector * current_speed
+	velocity = input_vector * move_speed
 	move_and_slide()
 	
 	# Rotación del sprite hacia el mouse
