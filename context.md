@@ -56,6 +56,9 @@ Corre directo al jugador persiguiendolo
 Velocidad: más lento que el jugador
 No tiene ataque a distancia
 Wind-up de ataque: 0.08s. Si llega al jugador, casi no hay ventana de reacción: es matarlo antes de que llegue o morir.
+Escena usada: solo `orc.tscn`.
+Variación runtime permitida: tamaño y velocidad levemente variables por instancia.
+No usar `orc_2.tscn`, `orc_3.tscn`, `orc_4.tscn`, `orc_brute.tscn` ni `orc_scout.tscn` para spawn.
 Muere al tocar el arco de ataque del jugador
 Muere de un golpe
 Counterplay:
@@ -181,21 +184,19 @@ El panel TEST SPAWNS multiplica estos pesos runtime, pero no reemplaza la tabla 
 5.2 Tabla de waves
 Enemy keys:
 grunt = orc_normal_scene
-scout = orc_scout_scene (variante legacy válida)
-brute = orc_brute_scene (variante legacy válida)
 archer = orc_archer_scene
 mage = orc_mage_scene
 berserker = orc_berserker_scene
 
-| Wave | Kills para avanzar | Max enemigos vivos | Spawn interval | Grunt | Scout | Brute | Archer | Mage | Berserker | Objetivo de diseño |
-| - | -: | -: | -: | -: | -: | -: | -: | -: | -: | - |
-| 1 | 24 | 16 | 1.20s | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | Enseñar persecución básica y combo con orc y archer. |
-| 2 | 50 | 32 | 1.05s | 0.70 | 0.20 | 0.00 | 0.10 | 0.00 | 0.00 | Introducir presión lateral leve con Archer. |
-| 3 | 70 | 24 | 0.90s | 0.52 | 0.16 | 0.00 | 0.20 | 0.12 | 0.00 | Introducir Mage y movimiento constante. |
-| 4 | 100 | 34 | 0.78s | 0.42 | 0.12 | 0.08 | 0.22 | 0.12 | 0.04 | Introducir Berserker sin saturar. |
-| 5 | 100 | 48 | 0.66s | 0.32 | 0.10 | 0.10 | 0.24 | 0.16 | 0.08 | Mezclar amenazas de distancia y cazador. |
-| 6 | 160 | 64 | 0.54s | 0.24 | 0.08 | 0.12 | 0.25 | 0.18 | 0.13 | Test pre-boss: presión alta sin jefe. |
-| 7 | Boss | Boss + summons | Boss sequence | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | Limpiar arena y ejecutar transición al Warlord o BOSS PENDING. |
+| Wave | Kills para avanzar | Max enemigos vivos | Spawn interval | Grunt | Archer | Mage | Berserker | Objetivo de diseño |
+| - | -: | -: | -: | -: | -: | -: | -: | - |
+| 1 | 24 | 16 | 1.20s | 1.00 | 0.00 | 0.00 | 0.00 | Enseñar persecución básica y combo con orc y archer. |
+| 2 | 50 | 32 | 1.05s | 0.90 | 0.10 | 0.00 | 0.00 | Introducir presión lateral leve con Archer. |
+| 3 | 70 | 24 | 0.90s | 0.68 | 0.20 | 0.12 | 0.00 | Introducir Mage y movimiento constante. |
+| 4 | 100 | 34 | 0.78s | 0.62 | 0.22 | 0.12 | 0.04 | Introducir Berserker sin saturar. |
+| 5 | 100 | 48 | 0.66s | 0.52 | 0.24 | 0.16 | 0.08 | Mezclar amenazas de distancia y cazador. |
+| 6 | 160 | 64 | 0.54s | 0.44 | 0.25 | 0.18 | 0.13 | Test pre-boss: presión alta sin jefe. |
+| 7 | Boss | Boss + summons | Boss sequence | 0.00 | 0.00 | 0.00 | 0.00 | Limpiar arena y ejecutar transición al Warlord o BOSS PENDING. |
 
 5.3 Distribución de weights
 Los valores de la tabla son pesos base por wave.
@@ -210,16 +211,14 @@ probabilidad_enemigo = peso_efectivo_enemigo / suma_de_todos_los_pesos_efectivos
 
 Ejemplo sin modificadores:
 Wave 4 suma 1.00 total:
-Grunt 0.42 = 42%
-Scout 0.12 = 12%
-Brute 0.08 = 8%
+Grunt 0.62 = 62%
 Archer 0.22 = 22%
 Mage 0.12 = 12%
 Berserker 0.04 = 4%
 
 Ejemplo con TEST SPAWNS:
 Si en Wave 4 Berserker está x3.0, su peso efectivo pasa de 0.04 a 0.12.
-La suma total pasa a 1.08.
+La suma total pasa a 1.08 porque Grunt 0.62 + Archer 0.22 + Mage 0.12 + Berserker 0.12.
 La probabilidad real de Berserker pasa a 0.12 / 1.08 = 11.1%.
 El resto de enemigos baja proporcionalmente porque la normalización se recalcula.
 

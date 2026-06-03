@@ -4,8 +4,6 @@ extends Control
 const SPAWN_PANEL_FONT := preload("res://fonts/PressStart2P-Regular.ttf")
 const SPAWN_ENEMY_ROWS: Array[Dictionary] = [
 	{"key": "normal", "label": "GRUNT"},
-	{"key": "scout", "label": "SCOUT"},
-	{"key": "brute", "label": "BRUTE"},
 	{"key": "archer", "label": "ARCHER"},
 	{"key": "mage", "label": "MAGE"},
 	{"key": "berserker", "label": "BERSERKER"},

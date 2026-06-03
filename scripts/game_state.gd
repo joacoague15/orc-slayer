@@ -25,16 +25,12 @@ var is_running: bool = false
 var game_over: bool = false
 var spawn_enemy_enabled: Dictionary = {
 	"normal": true,
-	"scout": true,
-	"brute": true,
 	"archer": true,
 	"mage": true,
 	"berserker": true,
 }
 var spawn_enemy_weight_multiplier: Dictionary = {
 	"normal": 1.0,
-	"scout": 1.0,
-	"brute": 1.0,
 	"archer": 1.0,
 	"mage": 1.0,
 	"berserker": 1.0,

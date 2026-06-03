@@ -9,63 +9,63 @@ const BOSS_WAVE_NUMBER: int = 7
 const WAVE_CONFIGS: Array[Dictionary] = [
 	{
 		"number": 1,
-		"kills_required": 12,
-		"max_orcs": 10,
+		"kills_required": 24,
+		"max_orcs": 16,
 		"spawn_interval": 1.20,
-		"weights": {"normal": 1.00, "scout": 0.00, "brute": 0.00, "archer": 0.00, "mage": 0.00, "berserker": 0.00},
+		"weights": {"normal": 1.00, "archer": 0.00, "mage": 0.00, "berserker": 0.00},
 	},
 	{
 		"number": 2,
-		"kills_required": 18,
-		"max_orcs": 16,
+		"kills_required": 50,
+		"max_orcs": 32,
 		"spawn_interval": 1.05,
-		"weights": {"normal": 0.70, "scout": 0.20, "brute": 0.00, "archer": 0.10, "mage": 0.00, "berserker": 0.00},
+		"weights": {"normal": 0.90, "archer": 0.10, "mage": 0.00, "berserker": 0.00},
 	},
 	{
 		"number": 3,
-		"kills_required": 24,
+		"kills_required": 70,
 		"max_orcs": 24,
 		"spawn_interval": 0.90,
-		"weights": {"normal": 0.52, "scout": 0.16, "brute": 0.00, "archer": 0.20, "mage": 0.12, "berserker": 0.00},
+		"weights": {"normal": 0.68, "archer": 0.20, "mage": 0.12, "berserker": 0.00},
 	},
 	{
 		"number": 4,
-		"kills_required": 30,
+		"kills_required": 100,
 		"max_orcs": 34,
 		"spawn_interval": 0.78,
-		"weights": {"normal": 0.42, "scout": 0.12, "brute": 0.08, "archer": 0.22, "mage": 0.12, "berserker": 0.04},
+		"weights": {"normal": 0.62, "archer": 0.22, "mage": 0.12, "berserker": 0.04},
 	},
 	{
 		"number": 5,
-		"kills_required": 38,
+		"kills_required": 100,
 		"max_orcs": 48,
 		"spawn_interval": 0.66,
-		"weights": {"normal": 0.32, "scout": 0.10, "brute": 0.10, "archer": 0.24, "mage": 0.16, "berserker": 0.08},
+		"weights": {"normal": 0.52, "archer": 0.24, "mage": 0.16, "berserker": 0.08},
 	},
 	{
 		"number": 6,
-		"kills_required": 48,
+		"kills_required": 160,
 		"max_orcs": 64,
 		"spawn_interval": 0.54,
-		"weights": {"normal": 0.24, "scout": 0.08, "brute": 0.12, "archer": 0.25, "mage": 0.18, "berserker": 0.13},
+		"weights": {"normal": 0.44, "archer": 0.25, "mage": 0.18, "berserker": 0.13},
 	},
 	{
 		"number": 7,
 		"kills_required": 0,
 		"max_orcs": 0,
 		"spawn_interval": 0.0,
-		"weights": {"normal": 0.00, "scout": 0.00, "brute": 0.00, "archer": 0.00, "mage": 0.00, "berserker": 0.00},
+		"weights": {"normal": 0.00, "archer": 0.00, "mage": 0.00, "berserker": 0.00},
 	},
 ]
 
 @export var orc_normal_scene: PackedScene
-@export var orc_scout_scene: PackedScene
-@export var orc_brute_scene: PackedScene
 @export var orc_archer_scene: PackedScene
 @export var orc_mage_scene: PackedScene
 @export var orc_berserker_scene: PackedScene
 
 @export var spawn_distance_buffer: float = 50.0
+@export var grunt_speed_variation: float = 0.12
+@export var grunt_size_variation: float = 0.10
 
 var time_since_last_spawn: float = 0.0
 var spawning_enabled: bool = true
@@ -139,14 +139,14 @@ func spawn_orc() -> void:
 	var orc := scene.instantiate()
 	# Posicionar ANTES de add_child para que _ready() corra con la pos correcta
 	orc.position = get_spawn_position()
+	if scene == orc_normal_scene:
+		_apply_grunt_variation(orc)
 	get_parent().add_child(orc)
 
 func pick_orc_scene() -> PackedScene:
 	var weights: Dictionary = get_current_wave()["weights"]
 	return _pick_weighted_orc_scene([
 		{"key": "normal", "scene": orc_normal_scene, "weight": weights["normal"]},
-		{"key": "scout", "scene": orc_scout_scene, "weight": weights["scout"]},
-		{"key": "brute", "scene": orc_brute_scene, "weight": weights["brute"]},
 		{"key": "archer", "scene": orc_archer_scene, "weight": weights["archer"]},
 		{"key": "mage", "scene": orc_mage_scene, "weight": weights["mage"]},
 		{"key": "berserker", "scene": orc_berserker_scene, "weight": weights["berserker"]},
@@ -190,6 +190,12 @@ func get_spawn_position() -> Vector2:
 
 func get_orc_count() -> int:
 	return get_tree().get_nodes_in_group("orcs").size()
+
+func _apply_grunt_variation(orc: Node) -> void:
+	var speed_factor := randf_range(1.0 - grunt_speed_variation, 1.0 + grunt_speed_variation)
+	var size_factor := randf_range(1.0 - grunt_size_variation, 1.0 + grunt_size_variation)
+	orc.set("move_speed", float(orc.get("move_speed")) * speed_factor)
+	orc.set("visual_scale", float(orc.get("visual_scale")) * size_factor)
 
 func set_spawning_enabled(enabled: bool) -> void:
 	spawning_enabled = enabled

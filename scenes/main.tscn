@@ -1,12 +1,10 @@
-[gd_scene load_steps=20 format=3 uid="uid://8o10rd76dja7"]
+[gd_scene load_steps=18 format=3 uid="uid://8o10rd76dja7"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hyiwn"]
 [ext_resource type="PackedScene" uid="uid://dp3v5iocdqtj2" path="res://scenes/player.tscn" id="2_rl6d3"]
 [ext_resource type="PackedScene" uid="uid://bf6tun472e7x8" path="res://scenes/orc.tscn" id="3_cgdby"]
 [ext_resource type="Script" path="res://scripts/spawner.gd" id="4_2bv7o"]
 [ext_resource type="FontFile" uid="uid://v2dqr2ab4mf5" path="res://fonts/PressStart2P-Regular.ttf" id="4_lowrd"]
-[ext_resource type="PackedScene" uid="uid://0qj0gy2vxwap" path="res://scenes/orc_scout.tscn" id="5_rd2mj"]
-[ext_resource type="PackedScene" uid="uid://cpuavmrgs713w" path="res://scenes/orc_brute.tscn" id="6_ohvmb"]
 [ext_resource type="Script" path="res://scripts/ground_variations.gd" id="8_txakl"]
 [ext_resource type="Texture2D" uid="uid://dtifo0f33ghwm" path="res://sprites/tiles/tile_1.png" id="10_r780o"]
 [ext_resource type="PackedScene" uid="uid://b6o73a5lhv1ga" path="res://scenes/archer.tscn" id="11_7xhwn"]
@@ -226,8 +224,6 @@ mouse_filter = 2
 [node name="Spawner" type="Node2D" parent="." groups=["spawner"]]
 script = ExtResource("4_2bv7o")
 orc_normal_scene = ExtResource("3_cgdby")
-orc_scout_scene = ExtResource("5_rd2mj")
-orc_brute_scene = ExtResource("6_ohvmb")
 orc_archer_scene = ExtResource("11_7xhwn")
 orc_mage_scene = ExtResource("12_0wrcj")
 orc_berserker_scene = ExtResource("13_vjdqi")
