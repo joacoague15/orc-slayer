@@ -75,26 +75,24 @@ Si dashás hacia él durante el wind-up, atravesás la flecha con i-frames y lo 
 Rol en el juego: Fuerza al jugador a jugar agresivo. Crea tensión cuando hay múltiples arqueros en lados opuestos.
 
 4.3 Orco Berserker
-Pregunta al jugador: "¿Podés leer mis patrones y agarrar el timing?"
+Pregunta al jugador: "¿Podés soportar la presión de un cazador que te encierra?"
 Conducta:
-Máquina de estados cíclica:
-plain
-VAGAR → (1.5-3.0s, dirección aleatoria, velocidad media)
-  ↓
-CARGAR → (0.3s, se detiene, destello ROJO, audio de gruñido)
-  ↓
-CARGA → (2.0s, velocidad muy alta, dirección BLOQUEADA hacia donde miraba, invulnerable durante carga)
-  ↓
-RECUPERACIÓN → (0.5s, aturdido, velocidad 0, super vulnerable)
-  ↓
-VAGAR
-Importante: Durante CARGA, no cambia de dirección. Va en línea recta.
-Importante: Si ya recorrio una distancia concreta en RECUPERACIÓN.
+Acecha al jugador mirándolo siempre.
+Se mueve alrededor del jugador, rodeándolo, manteniendo distancia media.
+Mientras acecha, intenta sostenerse entre 150 px y 240 px del jugador.
+Tiempo de acecho antes de atacar: aleatorio e impredecible entre 3.0s y 10.0s.
+Cuando decide atacar, se lanza contra el jugador y lo persigue sin detenerse.
+Durante el ataque, no bloquea dirección: ajusta su trayectoria constantemente hacia el jugador.
+Velocidad de acecho: 195 px/s.
+Velocidad de ataque: 806 px/s.
+Radio de golpe durante ataque: 34 px.
+Muere de un golpe como todo enemigo.
 Counterplay:
-Timing: Esperar la fase RECUPERACIÓN (1s) y atacar entonces.
-Dash: Dash perpendicular a su dirección de carga para esquivar, luego atacar en recovery.
-Error común: Atacar durante CARGAR (el wind-up). Es una trampa — él está a punto de acelerar.
-Rol en el juego: Añade imprevisibilidad y ritmo. Rompe la monotonía del "correr y matar". Fuerza al jugador a ser paciente.
+No dejar que te cierre el espacio mientras te rodea.
+Leer el cambio a rojo: cuando entra en ataque, ya no va a parar.
+Dash: usar i-frames para cruzarlo o reposicionarse cuando se lanza.
+Ofensivo: matarlo durante el acecho o durante su persecución si lográs entrar en rango sin tocarlo.
+Rol en el juego: Crea presión psicológica y control de espacio. No pide esperar una ventana fija: obliga a reaccionar a un cazador impredecible que pasa de acechar a perseguir de forma brutal.
 
 4.4 Orco Mago
 Pregunta al jugador: "¿Podés mantenerte en movimiento constante y leer los ángulos?"
