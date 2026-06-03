@@ -35,7 +35,7 @@ Screen shake
 Flash/brillo cuando dash está listo de nuevo
 3.4 Combo y Puntuación
 Combo: +1 por cada orco matado consecutivamente
-Reset: Si pasan 3.0 segundos sin matar un orco, el combo vuelve a 0
+Reset: Si pasan 3.5 segundos sin matar un orco, el combo vuelve a 0
 Sin tope: Puede seguir subiendo infinitamente
 Audio: El pitch de los SFX de kill sube con el combo (máx +4 semitonos)
 
@@ -155,6 +155,14 @@ Aceleración: Cada x orcos muertos, la cantidad de orcos va subiendo
 Puntos de spawn: de cualquier lado de la pantalla
 Spawn aleatorio: Cualquier dirección, cualquier tipo de orco (según pesos)
 
+5.2 Panel TEST SPAWNS
+Ubicación: Main menu
+Uso: herramienta de test runtime para ajustar la composición del spawner antes de iniciar una run.
+Control por enemigo:
+Toggle ON/OFF.
+Slider de multiplicador de peso entre x0.0 y x3.0.
+La configuración se guarda en GameState durante runtime. No se persiste en disco y no es meta-progresión.
+
 5.3 Trigger del Jefe
 Condición: Matar X orcos (configurable para balance)
 Secuencia:
@@ -210,7 +218,7 @@ Si una IA sugiere cambiar alguna de estas, la respuesta es "No, ya está decidid
 ✅ No hay meta-progresión (no desbloqueás nada permanente)
 ✅ Los enemigos son 4 + jefe (no más tipos en v2.0)
 ✅ El mago usa proyectiles con split angular (no teleport, no escudo)
-✅ El berserker usa carga en línea recta (no zigzag, no salto)
+✅ El berserker acecha rodeando al jugador y luego persigue sin detenerse, ajustando trayectoria constantemente
 ✅ El arquero usa flechas con tracking leve (no insta-hit, no spread shot)
 ✅ El boss tiene 1 fase con 5 sub-fases cíclicas (no múltiples fases de vida)
 ✅ La música es por tiempo

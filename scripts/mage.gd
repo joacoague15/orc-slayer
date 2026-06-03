@@ -34,12 +34,9 @@ var burst_index: int = 0
 var burst_base_direction: Vector2 = Vector2.RIGHT
 var burst_should_split: bool = true
 
-@onready var telegraph_glow: Polygon2D = $TelegraphGlow
-
 func _ready() -> void:
 	super()
 	move_speed = mage_move_speed
-	_hide_telegraph()
 
 func _physics_process(delta: float) -> void:
 	if GameState.game_over:
@@ -72,7 +69,6 @@ func _process_positioning() -> void:
 func _process_telegraphing(delta: float) -> void:
 	velocity = Vector2.ZERO
 	mage_telegraph_timer -= delta
-	_update_telegraph()
 	
 	if mage_telegraph_timer <= 0.0:
 		_start_burst()
@@ -119,10 +115,8 @@ func _start_telegraph() -> void:
 	mage_telegraph_timer = TELEGRAPH_DURATION
 	velocity = Vector2.ZERO
 	visual.modulate = Color.RED
-	_show_telegraph()
 
 func _start_burst() -> void:
-	_hide_telegraph()
 	visual.modulate = visual_color
 	mage_state = MageState.BURSTING
 	burst_index = 0
@@ -169,21 +163,9 @@ func _cast_bolt(angle_degrees: float) -> void:
 func _get_cast_origin_global_position() -> Vector2:
 	return global_position + cast_origin_offset.rotated(visual.rotation)
 
-func _show_telegraph() -> void:
-	telegraph_glow.visible = true
-	_update_telegraph()
-
-func _hide_telegraph() -> void:
-	telegraph_glow.visible = false
-
-func _update_telegraph() -> void:
-	var pulse := 0.55 + sin(Time.get_ticks_msec() / 80.0) * 0.2
-	telegraph_glow.modulate = Color(0.25, 0.85, 1.0, pulse)
-
 func _face_player() -> void:
 	if is_instance_valid(player):
 		visual.rotation = (player.global_position - global_position).angle() - PI / 2
 
 func die() -> void:
-	_hide_telegraph()
 	super()

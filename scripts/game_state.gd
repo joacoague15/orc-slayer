@@ -4,6 +4,7 @@ extends Node
 signal score_changed(new_score: int)
 signal combo_changed(combo: int)
 signal kill_count_changed(kill_count: int)
+signal spawn_weights_changed
 
 var score: int = 0
 var highscore: int = 0
@@ -22,6 +23,22 @@ var combo_timer: float = 0.0
 var time_survived: float = 0.0
 var is_running: bool = false
 var game_over: bool = false
+var spawn_enemy_enabled: Dictionary = {
+	"normal": true,
+	"scout": true,
+	"brute": true,
+	"archer": true,
+	"mage": true,
+	"berserker": true,
+}
+var spawn_enemy_weight_multiplier: Dictionary = {
+	"normal": 1.0,
+	"scout": 1.0,
+	"brute": 1.0,
+	"archer": 1.0,
+	"mage": 1.0,
+	"berserker": 1.0,
+}
 
 func _ready() -> void:
 	load_save()
@@ -76,6 +93,36 @@ func try_update_highscore() -> bool:
 		save_progress()
 		return true
 	return false
+
+func set_spawn_enemy_enabled(enemy_key: String, enabled: bool) -> void:
+	if not spawn_enemy_enabled.has(enemy_key):
+		return
+	spawn_enemy_enabled[enemy_key] = enabled
+	spawn_weights_changed.emit()
+
+func is_spawn_enemy_enabled(enemy_key: String) -> bool:
+	return bool(spawn_enemy_enabled.get(enemy_key, true))
+
+func set_spawn_enemy_weight_multiplier(enemy_key: String, multiplier: float) -> void:
+	if not spawn_enemy_weight_multiplier.has(enemy_key):
+		return
+	spawn_enemy_weight_multiplier[enemy_key] = clampf(multiplier, 0.0, 3.0)
+	spawn_weights_changed.emit()
+
+func get_spawn_enemy_weight_multiplier(enemy_key: String) -> float:
+	return float(spawn_enemy_weight_multiplier.get(enemy_key, 1.0))
+
+func get_spawn_enemy_weight_factor(enemy_key: String) -> float:
+	if not is_spawn_enemy_enabled(enemy_key):
+		return 0.0
+	return get_spawn_enemy_weight_multiplier(enemy_key)
+
+func reset_spawn_enemy_weights() -> void:
+	for enemy_key in spawn_enemy_enabled.keys():
+		spawn_enemy_enabled[enemy_key] = true
+	for enemy_key in spawn_enemy_weight_multiplier.keys():
+		spawn_enemy_weight_multiplier[enemy_key] = 1.0
+	spawn_weights_changed.emit()
 
 # === Anger system ===
 

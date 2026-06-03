@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://8o10rd76dja7"]
+[gd_scene load_steps=20 format=3 uid="uid://8o10rd76dja7"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hyiwn"]
 [ext_resource type="PackedScene" uid="uid://dp3v5iocdqtj2" path="res://scenes/player.tscn" id="2_rl6d3"]
@@ -15,12 +15,6 @@
 [ext_resource type="PackedScene" path="res://scenes/boss.tscn" id="14_p4n2m"]
 [ext_resource type="PackedScene" path="res://scenes/ground_rain.tscn" id="15_t4c5q"]
 [ext_resource type="Shader" path="res://shaders/screen_grit.gdshader" id="16_stsxk"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f0l8l"]
-bg_color = Color(0.1, 0.1, 0.1, 0.8)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gb467"]
-bg_color = Color(1, 0.3, 0.1, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51kyq"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -106,32 +100,6 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_font_sizes/font_size = 36
 text = "Score: 0"
-horizontal_alignment = 1
-
-[node name="AngerContainer" type="VBoxContainer" parent="UI/GameOverScreen/StatsContainer"]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="LevelLabel" type="Label" parent="UI/GameOverScreen/StatsContainer/AngerContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.5, 0.1, 1)
-theme_override_font_sizes/font_size = 28
-text = "LEVEL 1"
-horizontal_alignment = 1
-
-[node name="AngerBar" type="ProgressBar" parent="UI/GameOverScreen/StatsContainer/AngerContainer"]
-custom_minimum_size = Vector2(300, 20)
-layout_mode = 2
-theme_override_styles/background = SubResource("StyleBoxFlat_f0l8l")
-theme_override_styles/fill = SubResource("StyleBoxFlat_gb467")
-show_percentage = false
-
-[node name="AngerValueLabel" type="Label" parent="UI/GameOverScreen/StatsContainer/AngerContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
-theme_override_font_sizes/font_size = 18
-text = "0 / 100"
 horizontal_alignment = 1
 
 [node name="HighscoreLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]

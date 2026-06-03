@@ -133,9 +133,3 @@ sprite_frames = SubResource("SpriteFrames_q8fsn")
 animation = &"idle"
 frame = 0
 frame_progress = 0.0
-
-[node name="TelegraphGlow" type="Polygon2D" parent="." index="3"]
-visible = false
-z_index = 5
-color = Color(0.25, 0.85, 1, 0.75)
-polygon = PackedVector2Array(0, -28, 20, -20, 28, 0, 20, 20, 0, 28, -20, 20, -28, 0, -20, -20)

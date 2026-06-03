@@ -20,8 +20,6 @@ var berserker_state: BerserkerState = BerserkerState.STALK
 var state_timer: float = 0.0
 var orbit_direction: float = 1.0
 
-@onready var telegraph_flash: Polygon2D = $TelegraphFlash
-
 func _ready() -> void:
 	super()
 	_start_stalk()
@@ -48,7 +46,6 @@ func _physics_process(delta: float) -> void:
 func _process_stalk(delta: float) -> void:
 	state_timer -= delta
 	velocity = _get_stalk_velocity()
-	_update_telegraph_flash()
 
 	if state_timer <= 0.0:
 		_start_attack()
@@ -65,12 +62,12 @@ func _start_stalk() -> void:
 	state_timer = randf_range(STALK_MIN_DURATION, STALK_MAX_DURATION)
 	orbit_direction = -1.0 if randf() < 0.5 else 1.0
 	visual.modulate = visual_color
-	telegraph_flash.visible = true
+	visual.play("idle")
 
 func _start_attack() -> void:
 	berserker_state = BerserkerState.ATTACK
 	visual.modulate = Color(1.0, 0.15, 0.1, 1.0)
-	telegraph_flash.visible = true
+	visual.play("attack")
 
 	var camera := player.get_node_or_null("Camera2D")
 	if camera and camera.has_method("shake"):
@@ -103,14 +100,8 @@ func _try_hit_player() -> void:
 	if player.has_method("die"):
 		player.die()
 
-func _update_telegraph_flash() -> void:
-	var pulse_speed := 75.0 if berserker_state == BerserkerState.STALK else 28.0
-	var pulse := 0.35 + sin(Time.get_ticks_msec() / pulse_speed) * 0.2
-	telegraph_flash.modulate = Color(1.0, 0.0, 0.0, pulse)
-
 func _face_player() -> void:
 	visual.rotation = (player.global_position - global_position).angle() - PI / 2.0
 
 func die() -> void:
-	telegraph_flash.visible = false
 	super()

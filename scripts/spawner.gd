@@ -70,58 +70,106 @@ func _process(delta: float) -> void:
 
 func spawn_orc() -> void:
 	var scene := pick_orc_scene()
+	if not scene:
+		return
 	var orc := scene.instantiate()
 	# Posicionar ANTES de add_child para que _ready() corra con la pos correcta
 	orc.position = get_spawn_position()
 	get_parent().add_child(orc)
 
 func pick_orc_scene() -> PackedScene:
-	var roll := randf()
-	
 	if elapsed_time < 15.0:
-		return orc_normal_scene
+		return _pick_weighted_orc_scene([
+			{"key": "normal", "scene": orc_normal_scene, "weight": 1.0},
+		])
 	elif elapsed_time < 20.0:
-		if roll < mid_scout_weight:
-			return orc_scout_scene
-		if roll < mid_scout_weight + mid_archer_weight:
-			return orc_archer_scene
-		if roll < mid_scout_weight + mid_archer_weight + mid_mage_weight:
-			return orc_mage_scene
-		return orc_normal_scene
+		return _pick_weighted_orc_scene([
+			{"key": "scout", "scene": orc_scout_scene, "weight": mid_scout_weight},
+			{"key": "archer", "scene": orc_archer_scene, "weight": mid_archer_weight},
+			{"key": "mage", "scene": orc_mage_scene, "weight": mid_mage_weight},
+			{"key": "normal", "scene": orc_normal_scene, "weight": _remaining_weight([
+				mid_scout_weight,
+				mid_archer_weight,
+				mid_mage_weight,
+			])},
+		])
 	elif elapsed_time < 45.0:
-		if roll < mid_scout_weight:
-			return orc_scout_scene
-		if roll < mid_scout_weight + mid_archer_weight:
-			return orc_archer_scene
-		if roll < mid_scout_weight + mid_archer_weight + mid_mage_weight:
-			return orc_mage_scene
-		if roll < mid_scout_weight + mid_archer_weight + mid_mage_weight + mid_berserker_weight:
-			return orc_berserker_scene
-		return orc_normal_scene
+		return _pick_weighted_orc_scene([
+			{"key": "scout", "scene": orc_scout_scene, "weight": mid_scout_weight},
+			{"key": "archer", "scene": orc_archer_scene, "weight": mid_archer_weight},
+			{"key": "mage", "scene": orc_mage_scene, "weight": mid_mage_weight},
+			{"key": "berserker", "scene": orc_berserker_scene, "weight": mid_berserker_weight},
+			{"key": "normal", "scene": orc_normal_scene, "weight": _remaining_weight([
+				mid_scout_weight,
+				mid_archer_weight,
+				mid_mage_weight,
+				mid_berserker_weight,
+			])},
+		])
 	elif elapsed_time < 90.0:
-		if roll < hard_scout_weight:
-			return orc_scout_scene
-		if roll < hard_scout_weight + hard_brute_weight:
-			return orc_brute_scene
-		if roll < hard_scout_weight + hard_brute_weight + hard_archer_weight:
-			return orc_archer_scene
-		if roll < hard_scout_weight + hard_brute_weight + hard_archer_weight + hard_mage_weight:
-			return orc_mage_scene
-		if roll < hard_scout_weight + hard_brute_weight + hard_archer_weight + hard_mage_weight + hard_berserker_weight:
-			return orc_berserker_scene
-		return orc_normal_scene
+		return _pick_weighted_orc_scene([
+			{"key": "scout", "scene": orc_scout_scene, "weight": hard_scout_weight},
+			{"key": "brute", "scene": orc_brute_scene, "weight": hard_brute_weight},
+			{"key": "archer", "scene": orc_archer_scene, "weight": hard_archer_weight},
+			{"key": "mage", "scene": orc_mage_scene, "weight": hard_mage_weight},
+			{"key": "berserker", "scene": orc_berserker_scene, "weight": hard_berserker_weight},
+			{"key": "normal", "scene": orc_normal_scene, "weight": _remaining_weight([
+				hard_scout_weight,
+				hard_brute_weight,
+				hard_archer_weight,
+				hard_mage_weight,
+				hard_berserker_weight,
+			])},
+		])
 	else:
-		if roll < late_scout_weight:
-			return orc_scout_scene
-		if roll < late_scout_weight + late_brute_weight:
-			return orc_brute_scene
-		if roll < late_scout_weight + late_brute_weight + late_archer_weight:
-			return orc_archer_scene
-		if roll < late_scout_weight + late_brute_weight + late_archer_weight + late_mage_weight:
-			return orc_mage_scene
-		if roll < late_scout_weight + late_brute_weight + late_archer_weight + late_mage_weight + late_berserker_weight:
-			return orc_berserker_scene
-		return orc_normal_scene
+		return _pick_weighted_orc_scene([
+			{"key": "scout", "scene": orc_scout_scene, "weight": late_scout_weight},
+			{"key": "brute", "scene": orc_brute_scene, "weight": late_brute_weight},
+			{"key": "archer", "scene": orc_archer_scene, "weight": late_archer_weight},
+			{"key": "mage", "scene": orc_mage_scene, "weight": late_mage_weight},
+			{"key": "berserker", "scene": orc_berserker_scene, "weight": late_berserker_weight},
+			{"key": "normal", "scene": orc_normal_scene, "weight": _remaining_weight([
+				late_scout_weight,
+				late_brute_weight,
+				late_archer_weight,
+				late_mage_weight,
+				late_berserker_weight,
+			])},
+		])
+
+func _pick_weighted_orc_scene(entries: Array) -> PackedScene:
+	var total_weight := 0.0
+	for entry in entries:
+		total_weight += _get_entry_weight(entry)
+	
+	if total_weight <= 0.0:
+		return null
+	
+	var roll := randf() * total_weight
+	var cursor := 0.0
+	var fallback_scene: PackedScene = null
+	for entry in entries:
+		var entry_weight := _get_entry_weight(entry)
+		if entry_weight <= 0.0:
+			continue
+		fallback_scene = entry["scene"]
+		cursor += entry_weight
+		if roll <= cursor:
+			return entry["scene"]
+	
+	return fallback_scene
+
+func _get_entry_weight(entry: Dictionary) -> float:
+	if not entry["scene"]:
+		return 0.0
+	var base_weight: float = max(float(entry["weight"]), 0.0)
+	return base_weight * GameState.get_spawn_enemy_weight_factor(entry["key"])
+
+func _remaining_weight(weights: Array) -> float:
+	var used_weight := 0.0
+	for weight in weights:
+		used_weight += float(weight)
+	return max(1.0 - used_weight, 0.0)
 
 func get_spawn_position() -> Vector2:
 	var viewport_size := get_viewport().get_visible_rect().size
