@@ -6,6 +6,9 @@ var slice_stream: AudioStream = preload("res://audio/sfx/slice.wav")
 var orc_death_stream: AudioStream = preload("res://audio/sfx/orc_death.wav")
 var player_death_stream: AudioStream = preload("res://audio/sfx/player_death.wav")
 var pickup_stream: AudioStream = preload("res://audio/sfx/pickup.wav")
+var berserker_attack_stream: AudioStream = preload("res://audio/sfx/berserker_attack.wav")
+var mage_attack_stream: AudioStream = preload("res://audio/sfx/mage_attack.wav")
+var archer_attack_stream: AudioStream = preload("res://audio/sfx/archer_attack.wav")
 var game_music_stream: AudioStream = preload("res://audio/music/background.ogg")
 var menu_music_stream: AudioStream = preload("res://audio/music/main_menu.mp3")
 
@@ -84,7 +87,7 @@ func stop_music() -> void:
 	current_music_key = ""
 	music_player.stop()
 
-func _play_sfx(stream: AudioStream, key: String, pitch_variation: float = 0.0) -> void:
+func _play_sfx(stream: AudioStream, key: String, pitch_variation: float = 0.0, volume_multiplier: float = 1.0) -> void:
 	# Cooldown anti-spam
 	var now := Time.get_ticks_msec() / 1000.0
 	if last_played_times.has(key):
@@ -96,7 +99,7 @@ func _play_sfx(stream: AudioStream, key: String, pitch_variation: float = 0.0) -
 	for p in sfx_players:
 		if not p.playing:
 			p.stream = stream
-			p.volume_db = sfx_volume_db
+			p.volume_db = sfx_volume_db + linear_to_db(volume_multiplier)
 			if pitch_variation > 0.0:
 				p.pitch_scale = randf_range(1.0 - pitch_variation, 1.0 + pitch_variation)
 			else:
@@ -126,3 +129,12 @@ func play_player_death() -> void:
 
 func play_pickup() -> void:
 	_play_sfx(pickup_stream, "pickup", 0.1)
+
+func play_berserker_attack() -> void:
+	_play_sfx(berserker_attack_stream, "berserker_attack", 0.05, 0.6)
+
+func play_mage_attack() -> void:
+	_play_sfx(mage_attack_stream, "mage_attack", 0.05, 1.5)
+
+func play_archer_attack() -> void:
+	_play_sfx(archer_attack_stream, "archer_attack", 0.05, 0.8)

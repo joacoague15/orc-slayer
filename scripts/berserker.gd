@@ -68,6 +68,7 @@ func _start_attack() -> void:
 	berserker_state = BerserkerState.ATTACK
 	visual.modulate = Color(1.0, 0.15, 0.1, 1.0)
 	visual.play("attack")
+	AudioManager.play_berserker_attack()
 
 	var camera := player.get_node_or_null("Camera2D")
 	if camera and camera.has_method("shake"):

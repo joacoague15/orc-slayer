@@ -115,6 +115,7 @@ func _start_telegraph() -> void:
 	mage_telegraph_timer = TELEGRAPH_DURATION
 	velocity = Vector2.ZERO
 	visual.modulate = Color.RED
+	AudioManager.play_mage_attack()
 
 func _start_burst() -> void:
 	visual.modulate = visual_color

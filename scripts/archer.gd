@@ -97,6 +97,7 @@ func _shoot_arrow() -> void:
 	if arrow.has_method("setup"):
 		arrow.setup(shoot_direction, arrow_speed, arrow_lifetime)
 	get_tree().current_scene.add_child(arrow)
+	AudioManager.play_archer_attack()
 	_play_fire_animation()
 	arrow_shot.emit(arrow)
 

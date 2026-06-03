@@ -181,15 +181,43 @@ berserker = orc_berserker_scene
 
 | Wave | Kills para avanzar | Max enemigos vivos | Spawn interval | Grunt | Scout | Brute | Archer | Mage | Berserker | Objetivo de diseño |
 | - | -: | -: | -: | -: | -: | -: | -: | -: | -: | - |
-| 1 | 12 | 10 | 1.20s | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | Enseñar persecución básica y combo. |
-| 2 | 18 | 16 | 1.05s | 0.70 | 0.20 | 0.00 | 0.10 | 0.00 | 0.00 | Introducir presión lateral leve con Archer. |
-| 3 | 24 | 24 | 0.90s | 0.52 | 0.16 | 0.00 | 0.20 | 0.12 | 0.00 | Introducir Mage y movimiento constante. |
-| 4 | 30 | 34 | 0.78s | 0.42 | 0.12 | 0.08 | 0.22 | 0.12 | 0.04 | Introducir Berserker sin saturar. |
-| 5 | 38 | 48 | 0.66s | 0.32 | 0.10 | 0.10 | 0.24 | 0.16 | 0.08 | Mezclar amenazas de distancia y cazador. |
-| 6 | 48 | 64 | 0.54s | 0.24 | 0.08 | 0.12 | 0.25 | 0.18 | 0.13 | Test pre-boss: presión alta sin jefe. |
+| 1 | 24 | 16 | 1.20s | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | Enseñar persecución básica y combo con orc y archer. |
+| 2 | 50 | 32 | 1.05s | 0.70 | 0.20 | 0.00 | 0.10 | 0.00 | 0.00 | Introducir presión lateral leve con Archer. |
+| 3 | 70 | 24 | 0.90s | 0.52 | 0.16 | 0.00 | 0.20 | 0.12 | 0.00 | Introducir Mage y movimiento constante. |
+| 4 | 100 | 34 | 0.78s | 0.42 | 0.12 | 0.08 | 0.22 | 0.12 | 0.04 | Introducir Berserker sin saturar. |
+| 5 | 100 | 48 | 0.66s | 0.32 | 0.10 | 0.10 | 0.24 | 0.16 | 0.08 | Mezclar amenazas de distancia y cazador. |
+| 6 | 160 | 64 | 0.54s | 0.24 | 0.08 | 0.12 | 0.25 | 0.18 | 0.13 | Test pre-boss: presión alta sin jefe. |
 | 7 | Boss | Boss + summons | Boss sequence | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | Limpiar arena y ejecutar transición al Warlord o BOSS PENDING. |
 
-5.3 Transición entre waves
+5.3 Distribución de weights
+Los valores de la tabla son pesos base por wave.
+Para cada spawn, el spawner calcula un peso efectivo por enemigo:
+peso_efectivo = peso_base_de_wave * multiplicador_TEST_SPAWNS
+Si el toggle TEST SPAWNS de un enemigo está OFF, su peso efectivo es 0.0.
+Si el multiplicador TEST SPAWNS está en x0.0, su peso efectivo es 0.0.
+Los enemigos con peso efectivo 0.0 no pueden spawnear.
+
+La probabilidad real de cada enemigo se calcula normalizando los pesos efectivos:
+probabilidad_enemigo = peso_efectivo_enemigo / suma_de_todos_los_pesos_efectivos_de_la_wave
+
+Ejemplo sin modificadores:
+Wave 4 suma 1.00 total:
+Grunt 0.42 = 42%
+Scout 0.12 = 12%
+Brute 0.08 = 8%
+Archer 0.22 = 22%
+Mage 0.12 = 12%
+Berserker 0.04 = 4%
+
+Ejemplo con TEST SPAWNS:
+Si en Wave 4 Berserker está x3.0, su peso efectivo pasa de 0.04 a 0.12.
+La suma total pasa a 1.08.
+La probabilidad real de Berserker pasa a 0.12 / 1.08 = 11.1%.
+El resto de enemigos baja proporcionalmente porque la normalización se recalcula.
+
+Si todos los pesos efectivos quedan en 0.0, el spawner no instancia enemigos hasta que al menos un enemigo vuelva a estar habilitado con peso mayor a 0.0.
+
+5.4 Transición entre waves
 Al completar los kills requeridos de una wave:
 El spawner deja de crear enemigos.
 Los enemigos vivos restantes permanecen en pantalla, salvo en la transición al boss.
@@ -198,7 +226,7 @@ Pausa entre waves: 2.0 segundos.
 Se muestra marcador de oleada al comienzo de cada wave.
 El combo no se resetea por cambio de wave; solo se resetea por su timer normal de 3.5 segundos.
 
-5.4 Panel TEST SPAWNS
+5.5 Panel TEST SPAWNS
 Ubicación: Main menu
 Uso: herramienta de test runtime para ajustar la composición del spawner antes de iniciar una run.
 Control por enemigo:
@@ -206,7 +234,7 @@ Toggle ON/OFF.
 Slider de multiplicador de peso entre x0.0 y x3.0.
 La configuración se guarda en GameState durante runtime. No se persiste en disco y no es meta-progresión.
 
-5.5 Trigger del Jefe
+5.6 Trigger del Jefe
 Condición: completar la wave 6 y limpiar los enemigos restantes.
 Secuencia:
 Se completa la wave 6.
@@ -221,7 +249,7 @@ El spawner queda detenido.
 Se muestra "BOSS PENDING" en pantalla.
 La run no se marca como victoria.
 
-5.6 Victoria
+5.7 Victoria
 Al matar al Warlord: pantalla de victoria 
 Muestra: Score final, combo máximo, tiempo, orcos matados
 
