@@ -56,17 +56,6 @@ region_enabled = true
 region_rect = Rect2(-10000, -10000, 3000, 3000)
 
 [node name="GroundRain" parent="." instance=ExtResource("15_t4c5q")]
-puddles_enabled = null
-initial_puddle_count = null
-puddle_cap = null
-puddle_spawn_interval_min = null
-puddle_spawn_interval_max = null
-puddle_radius_min = null
-puddle_radius_max = null
-puddle_color = null
-puddle_reflection_color = null
-blood_stain_color = null
-max_stains_per_puddle = null
 
 [node name="Player" parent="." instance=ExtResource("2_rl6d3")]
 z_index = 1

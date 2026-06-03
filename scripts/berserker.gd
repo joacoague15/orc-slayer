@@ -1,35 +1,30 @@
 # scripts/berserker.gd
 extends "res://scripts/orc.gd"
 
-const WANDER_MIN_DURATION: float = 1.5
-const WANDER_MAX_DURATION: float = 3.0
-const WINDUP_DURATION: float = 0.3
-const CHARGE_DURATION: float = 2.0
-const RECOVERY_DURATION: float = 0.5
+const STALK_MIN_DURATION: float = 3.0
+const STALK_MAX_DURATION: float = 10.0
 
-@export var wander_speed: float = 195.0
-@export var charge_speed: float = 806.0
-@export var charge_hit_radius: float = 34.0
-@export var charge_max_distance: float = 900.0
+@export var stalk_speed: float = 195.0
+@export var attack_speed: float = 806.0
+@export var attack_hit_radius: float = 34.0
+@export var stalk_min_distance: float = 150.0
+@export var stalk_max_distance: float = 240.0
+@export var orbit_bias: float = 0.75
 
 enum BerserkerState {
-	WANDER,
-	WINDUP,
-	CHARGE,
-	RECOVERY,
+	STALK,
+	ATTACK,
 }
 
-var berserker_state: BerserkerState = BerserkerState.WANDER
+var berserker_state: BerserkerState = BerserkerState.STALK
 var state_timer: float = 0.0
-var wander_direction: Vector2 = Vector2.RIGHT
-var charge_direction: Vector2 = Vector2.RIGHT
-var charge_start_position: Vector2 = Vector2.ZERO
+var orbit_direction: float = 1.0
 
 @onready var telegraph_flash: Polygon2D = $TelegraphFlash
 
 func _ready() -> void:
 	super()
-	_start_wander()
+	_start_stalk()
 
 func _physics_process(delta: float) -> void:
 	if GameState.game_over:
@@ -40,105 +35,82 @@ func _physics_process(delta: float) -> void:
 	if not is_instance_valid(player):
 		velocity = Vector2.ZERO
 		return
-	
+
 	match berserker_state:
-		BerserkerState.WANDER:
-			_process_wander(delta)
-		BerserkerState.WINDUP:
-			_process_windup(delta)
-		BerserkerState.CHARGE:
-			_process_charge(delta)
-		BerserkerState.RECOVERY:
-			_process_recovery(delta)
-	
+		BerserkerState.STALK:
+			_process_stalk(delta)
+		BerserkerState.ATTACK:
+			_process_attack()
+
 	move_and_slide()
-	_update_visual_rotation()
+	_face_player()
 
-func _process_wander(delta: float) -> void:
+func _process_stalk(delta: float) -> void:
 	state_timer -= delta
-	velocity = wander_direction * wander_speed
-	
-	if state_timer <= 0.0:
-		_start_windup()
-
-func _process_windup(delta: float) -> void:
-	state_timer -= delta
-	velocity = Vector2.ZERO
+	velocity = _get_stalk_velocity()
 	_update_telegraph_flash()
-	
-	if state_timer <= 0.0:
-		_start_charge()
 
-func _process_charge(delta: float) -> void:
-	state_timer -= delta
-	velocity = charge_direction * charge_speed
+	if state_timer <= 0.0:
+		_start_attack()
+
+func _process_attack() -> void:
+	var attack_direction := (player.global_position - global_position).normalized()
+	if attack_direction == Vector2.ZERO:
+		attack_direction = Vector2.RIGHT
+	velocity = attack_direction * attack_speed
 	_try_hit_player()
-	
-	var charged_distance := global_position.distance_to(charge_start_position)
-	if state_timer <= 0.0 or charged_distance >= charge_max_distance:
-		_start_recovery()
 
-func _process_recovery(delta: float) -> void:
-	state_timer -= delta
-	velocity = Vector2.ZERO
-	
-	if state_timer <= 0.0:
-		_start_wander()
-
-func _start_wander() -> void:
-	berserker_state = BerserkerState.WANDER
-	state_timer = randf_range(WANDER_MIN_DURATION, WANDER_MAX_DURATION)
-	wander_direction = Vector2.RIGHT.rotated(randf() * TAU)
+func _start_stalk() -> void:
+	berserker_state = BerserkerState.STALK
+	state_timer = randf_range(STALK_MIN_DURATION, STALK_MAX_DURATION)
+	orbit_direction = -1.0 if randf() < 0.5 else 1.0
 	visual.modulate = visual_color
-	telegraph_flash.visible = false
-
-func _start_windup() -> void:
-	berserker_state = BerserkerState.WINDUP
-	state_timer = WINDUP_DURATION
-	velocity = Vector2.ZERO
-	charge_direction = (player.global_position - global_position).normalized()
-	if charge_direction == Vector2.ZERO:
-		charge_direction = Vector2.RIGHT
 	telegraph_flash.visible = true
-	visual.modulate = Color.RED
-	
+
+func _start_attack() -> void:
+	berserker_state = BerserkerState.ATTACK
+	visual.modulate = Color(1.0, 0.15, 0.1, 1.0)
+	telegraph_flash.visible = true
+
 	var camera := player.get_node_or_null("Camera2D")
 	if camera and camera.has_method("shake"):
-		camera.shake(2.0)
+		camera.shake(3.0)
 
-func _start_charge() -> void:
-	berserker_state = BerserkerState.CHARGE
-	state_timer = CHARGE_DURATION
-	charge_start_position = global_position
-	telegraph_flash.visible = false
-	visual.modulate = Color(1.0, 0.15, 0.1, 1.0)
+func _get_stalk_velocity() -> Vector2:
+	var to_player := player.global_position - global_position
+	var distance := to_player.length()
+	if distance == 0.0:
+		to_player = Vector2.RIGHT
+		distance = 1.0
 
-func _start_recovery() -> void:
-	berserker_state = BerserkerState.RECOVERY
-	state_timer = RECOVERY_DURATION
-	velocity = Vector2.ZERO
-	visual.modulate = Color(0.25, 1.0, 0.35, 1.0)
+	var toward_player := to_player.normalized()
+	var orbit_direction_vector := toward_player.rotated(PI / 2.0) * orbit_direction
+	var radial_correction := Vector2.ZERO
+
+	if distance > stalk_max_distance:
+		radial_correction = toward_player
+	elif distance < stalk_min_distance:
+		radial_correction = -toward_player
+
+	var stalk_direction := orbit_direction_vector * orbit_bias + radial_correction
+	if stalk_direction == Vector2.ZERO:
+		stalk_direction = orbit_direction_vector
+	return stalk_direction.normalized() * stalk_speed
 
 func _try_hit_player() -> void:
-	if global_position.distance_to(player.global_position) > charge_hit_radius:
+	if global_position.distance_to(player.global_position) > attack_hit_radius:
 		return
 	if player.has_method("die"):
 		player.die()
 
 func _update_telegraph_flash() -> void:
-	var pulse := 0.45 + sin(Time.get_ticks_msec() / 35.0) * 0.25
+	var pulse_speed := 75.0 if berserker_state == BerserkerState.STALK else 28.0
+	var pulse := 0.35 + sin(Time.get_ticks_msec() / pulse_speed) * 0.2
 	telegraph_flash.modulate = Color(1.0, 0.0, 0.0, pulse)
 
-func _update_visual_rotation() -> void:
-	if berserker_state == BerserkerState.CHARGE:
-		visual.rotation = charge_direction.angle() - PI / 2
-	elif berserker_state == BerserkerState.WANDER:
-		visual.rotation = wander_direction.angle() - PI / 2
-	else:
-		visual.rotation = (player.global_position - global_position).angle() - PI / 2
+func _face_player() -> void:
+	visual.rotation = (player.global_position - global_position).angle() - PI / 2.0
 
 func die() -> void:
-	if berserker_state == BerserkerState.CHARGE:
-		return
 	telegraph_flash.visible = false
 	super()

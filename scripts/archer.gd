@@ -62,6 +62,7 @@ func _start_windup() -> void:
 	archer_state = ArcherState.WINDUP
 	windup_timer = shoot_windup
 	velocity = Vector2.ZERO
+	visual.modulate = Color.RED
 	_show_telegraph()
 
 func _process_windup(delta: float) -> void:
@@ -72,6 +73,7 @@ func _process_windup(delta: float) -> void:
 	if windup_timer <= 0.0:
 		_shoot_arrow()
 		_hide_telegraph()
+		visual.modulate = visual_color
 		archer_state = ArcherState.COOLDOWN
 		cooldown_timer = shoot_cooldown
 

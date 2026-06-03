@@ -11,17 +11,17 @@ extends Node2D
 @export_group("Spawn Weights")
 @export var mid_scout_weight: float = 0.20
 @export var mid_archer_weight: float = 0.15
-@export var mid_mage_weight: float = 0.10
+@export var mid_mage_weight: float = 0.40
 @export var mid_berserker_weight: float = 0.10
 @export var hard_scout_weight: float = 0.10
 @export var hard_brute_weight: float = 0.10
 @export var hard_archer_weight: float = 0.20
-@export var hard_mage_weight: float = 0.15
+@export var hard_mage_weight: float = 0.45
 @export var hard_berserker_weight: float = 0.15
 @export var late_scout_weight: float = 0.10
 @export var late_brute_weight: float = 0.10
 @export var late_archer_weight: float = 0.20
-@export var late_mage_weight: float = 0.15
+@export var late_mage_weight: float = 0.50
 @export var late_berserker_weight: float = 0.20
 
 @export var initial_spawn_interval: float = 1.2
@@ -85,6 +85,8 @@ func pick_orc_scene() -> PackedScene:
 			return orc_scout_scene
 		if roll < mid_scout_weight + mid_archer_weight:
 			return orc_archer_scene
+		if roll < mid_scout_weight + mid_archer_weight + mid_mage_weight:
+			return orc_mage_scene
 		return orc_normal_scene
 	elif elapsed_time < 45.0:
 		if roll < mid_scout_weight:

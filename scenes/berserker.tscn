@@ -9,10 +9,12 @@ move_speed = 195.0
 visual_color = Color(0.82, 0.18, 0.12, 1)
 visual_scale = 1.15
 pickup_drop_chance = 0.25
-wander_speed = 195.0
-charge_speed = 806.0
-charge_hit_radius = 34.0
-charge_max_distance = 900.0
+stalk_speed = 195.0
+attack_speed = 806.0
+attack_hit_radius = 34.0
+stalk_min_distance = 150.0
+stalk_max_distance = 240.0
+orbit_bias = 0.75
 
 [node name="OrcSpriteAnimator2D" parent="." index="0"]
 modulate = Color(0.82, 0.18, 0.12, 1)

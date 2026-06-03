@@ -12,15 +12,40 @@ collision_layer = 8
 collision_mask = 1
 script = ExtResource("1_7wllt")
 residue_scene = ExtResource("2_3xx80")
+trail_spawn_interval = 0.09
+split_visual_residue_count = 4
+split_visual_spread_degrees = 120.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_q3u4d")
 
+[node name="OuterAura" type="Polygon2D" parent="."]
+modulate = Color(0.35, 0.95, 1, 0.26)
+color = Color(0.35, 0.95, 1, 1)
+polygon = PackedVector2Array(36, 0, 33, 14, 25, 25, 14, 33, 0, 36, -14, 33, -25, 25, -33, 14, -36, 0, -33, -14, -25, -25, -14, -33, 0, -36, 14, -33, 25, -25, 33, -14)
+
 [node name="Core" type="Polygon2D" parent="."]
-color = Color(0.74, 0.19, 1, 1)
-polygon = PackedVector2Array(14, 0, 7, 8, -5, 8, -13, 0, -5, -8, 7, -8)
+color = Color(0.82, 0.98, 1, 1)
+polygon = PackedVector2Array(14, 0, 13, 5, 10, 10, 5, 13, 0, 14, -5, 13, -10, 10, -13, 5, -14, 0, -13, -5, -10, -10, -5, -13, 0, -14, 5, -13, 10, -10, 13, -5)
 
 [node name="Glow" type="Polygon2D" parent="."]
-modulate = Color(0.85, 0.25, 1, 0.35)
-color = Color(0.85, 0.25, 1, 1)
-polygon = PackedVector2Array(22, 0, 11, 15, -9, 15, -22, 0, -9, -15, 11, -15)
+modulate = Color(0.2, 0.78, 1, 0.56)
+color = Color(0.2, 0.82, 1, 1)
+polygon = PackedVector2Array(27, 0, 25, 10, 19, 19, 10, 25, 0, 27, -10, 25, -19, 19, -25, 10, -27, 0, -25, -10, -19, -19, -10, -25, 0, -27, 10, -25, 19, -19, 25, -10)
+
+[node name="SparkTrail" type="CPUParticles2D" parent="."]
+emitting = true
+amount = 12
+lifetime = 0.35
+explosiveness = 0.0
+local_coords = false
+direction = Vector2(-1, 0)
+spread = 0.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 35.0
+initial_velocity_max = 120.0
+angular_velocity_min = -180.0
+angular_velocity_max = 180.0
+scale_amount_min = 0.8
+scale_amount_max = 2.6
+color = Color(0.55, 0.92, 1, 0.9)
