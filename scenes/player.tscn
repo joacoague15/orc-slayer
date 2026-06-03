@@ -167,7 +167,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"idle_to_slice_1",
-"speed": 50.0
+"speed": 30.0
 }, {
 "frames": [{
 "duration": 0.3,
@@ -202,7 +202,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"slice_1",
-"speed": 37.0
+"speed": 22.2
 }, {
 "frames": [{
 "duration": 0.3,
@@ -237,7 +237,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"slice_2",
-"speed": 33.0
+"speed": 19.8
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lnb5w"]

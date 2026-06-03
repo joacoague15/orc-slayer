@@ -4,8 +4,8 @@ extends "res://scripts/orc.gd"
 const STALK_MIN_DURATION: float = 3.0
 const STALK_MAX_DURATION: float = 10.0
 
-@export var stalk_speed: float = 195.0
-@export var attack_speed: float = 806.0
+@export var stalk_speed: float = 253.5
+@export var attack_speed: float = 1047.8
 @export var attack_hit_radius: float = 34.0
 @export var stalk_min_distance: float = 150.0
 @export var stalk_max_distance: float = 240.0
@@ -41,6 +41,8 @@ func _physics_process(delta: float) -> void:
 			_process_attack()
 
 	move_and_slide()
+	if berserker_state == BerserkerState.ATTACK:
+		_try_hit_player()
 	_face_player()
 
 func _process_stalk(delta: float) -> void:

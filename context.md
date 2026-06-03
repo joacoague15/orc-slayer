@@ -20,15 +20,22 @@ Estas reglas nunca se cambian. Si una IA sugiere modificarlas, rechazar la suger
 Input: WASD
 Sin fricción: Parada instantánea cuando sueltas la tecla. Responde al 100%.
 Atraviesa enemigos: No hay colisión física con orcos ni proyectiles (excepto daño).
+Velocidad actual del jugador: 390 px/s.
 3.2 Ataque (Click izquierdo)
 Forma: Arco curvo frente al jugador
 Mata todo lo que toca de un golpe
+El ataque puede mantenerse apretado; no hace falta presionar click repetidamente.
+Velocidad actual de animaciones de ataque: 60% del valor anterior.
 3.3 Dash
 Input: Shift
 Dirección: Última dirección de movimiento.
 I-frames: Invulnerable durante TODO el dash
 Atraviesa TODO: Enemigos, proyectiles, zonas de daño
 Cooldown: empieza cuando termina el dash)
+Velocidad actual del dash: 1270.75 px/s.
+Duración actual del dash: 0.16s.
+Distancia actual del dash: 203.32 px.
+Durante el dash, absolutamente nada puede matar al jugador. Cualquier daño debe pasar por player.die(), y player.die() debe ignorarse si el jugador está dasheando o invulnerable.
 Feedback visual:
 3-4 copias fantasma del jugador que se desvanecen
 Screen shake
@@ -48,6 +55,7 @@ Conducta:
 Corre directo al jugador persiguiendolo
 Velocidad: más lento que el jugador
 No tiene ataque a distancia
+Wind-up de ataque: 0.08s. Si llega al jugador, casi no hay ventana de reacción: es matarlo antes de que llegue o morir.
 Muere al tocar el arco de ataque del jugador
 Muere de un golpe
 Counterplay:
@@ -83,8 +91,8 @@ Mientras acecha, intenta sostenerse entre 150 px y 240 px del jugador.
 Tiempo de acecho antes de atacar: aleatorio e impredecible entre 3.0s y 10.0s.
 Cuando decide atacar, se lanza contra el jugador y lo persigue sin detenerse.
 Durante el ataque, no bloquea dirección: ajusta su trayectoria constantemente hacia el jugador.
-Velocidad de acecho: 195 px/s.
-Velocidad de ataque: 806 px/s.
+Velocidad de acecho: 253.5 px/s.
+Velocidad de ataque: 1047.8 px/s.
 Radio de golpe durante ataque: 34 px.
 Muere de un golpe como todo enemigo.
 Counterplay:

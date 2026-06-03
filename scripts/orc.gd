@@ -1,9 +1,9 @@
 # scripts/orc.gd
 extends CharacterBody2D
 
-@export var move_speed: float = 156.0
+@export var move_speed: float = 202.8
 @export var attack_range: float = 40.0
-@export var telegraph_duration: float = 0.5
+@export var telegraph_duration: float = 0.08
 @export var score_value: int = 1
 @export var visual_color: Color = Color.WHITE
 @export var blood_color: Color = Color(0.08, 0.45, 0.12, 1.0)
@@ -106,9 +106,8 @@ func start_telegraph() -> void:
 	telegraph_timer = telegraph_duration
 	velocity = Vector2.ZERO
 	
-	# Animación de ataque + tinte rojo
+	# Animación de ataque
 	visual.play("attack")
-	visual.modulate = Color.RED
 	
 	if is_instance_valid(player):
 		var camera := player.get_node_or_null("Camera2D")

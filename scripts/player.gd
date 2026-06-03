@@ -6,12 +6,12 @@ signal dash_started
 signal dash_finished
 signal dash_ready
 
-@export var move_speed: float = 325.0
+@export var move_speed: float = 390.0
 @export var slice_speed_multiplier: float = 0.5
 @export var slice_scene: PackedScene
 
 @export_group("Dash")
-@export var dash_speed: float = 1105.0
+@export var dash_speed: float = 1270.75
 @export var dash_duration: float = 0.16
 @export var dash_cooldown: float = 0.75
 @export var dash_ghost_count: int = 4
@@ -107,7 +107,7 @@ func _physics_process(delta: float) -> void:
 			_start_return_to_idle()
 	
 	# Input de ataque
-	if Input.is_action_just_pressed("attack"):
+	if Input.is_action_pressed("attack"):
 		_try_attack()
 
 func _is_in_slice_animation() -> bool:
@@ -243,7 +243,7 @@ func _flash_dash_ready() -> void:
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.12)
 
 func is_damage_invulnerable() -> bool:
-	return is_invulnerable
+	return is_invulnerable or is_dashing
 
 func _on_animation_finished() -> void:
 	match slice_state:
@@ -269,7 +269,7 @@ func _on_animation_finished() -> void:
 func die() -> void:
 	if is_dead:
 		return
-	if is_invulnerable:
+	if is_damage_invulnerable():
 		return
 	is_dead = true
 	AudioManager.play_player_death()

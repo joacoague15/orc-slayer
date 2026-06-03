@@ -4,7 +4,7 @@ extends "res://scripts/orc.gd"
 signal arrow_shot(arrow: Area2D)
 
 @export var arrow_scene: PackedScene
-@export var archer_move_speed: float = 110.5
+@export var archer_move_speed: float = 143.65
 @export var archer_attack_range: float = 420.0
 @export var arrow_speed: float = 520.0
 @export var arrow_lifetime: float = 10.0

@@ -116,7 +116,7 @@ animations = [{
 [node name="Mage" instance=ExtResource("1_vlm5i")]
 script = ExtResource("2_fmw2m")
 arcane_bolt_scene = ExtResource("3_skk7e")
-mage_move_speed = 97.5
+mage_move_speed = 126.75
 mage_attack_range = 360.0
 mage_min_range = 120.0
 arcane_bolt_speed = 360.0
@@ -124,7 +124,7 @@ bolt_split_distance = 200.0
 split_bolt_travel_distance = 360.0
 attack_cooldown = 3.0
 cast_origin_offset = Vector2(0, 36)
-move_speed = 97.5
+move_speed = 126.75
 blood_color = Color(0.253894, 0.287159, 0.804483, 1)
 
 [node name="OrcSpriteAnimator2D" parent="." index="0"]

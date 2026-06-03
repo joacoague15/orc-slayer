@@ -10,7 +10,7 @@ const BURST_ANGLES_DEGREES: Array[float] = [0.0, -15.0, 15.0]
 const NO_SPLIT_DISTANCE: float = 50.0
 
 @export var arcane_bolt_scene: PackedScene
-@export var mage_move_speed: float = 97.5
+@export var mage_move_speed: float = 126.75
 @export var mage_attack_range: float = 360.0
 @export var mage_min_range: float = 120.0
 @export var arcane_bolt_speed: float = 360.0
