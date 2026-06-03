@@ -58,7 +58,7 @@ No tiene ataque a distancia
 Wind-up de ataque: 0.08s. Si llega al jugador, casi no hay ventana de reacción: es matarlo antes de que llegue o morir.
 Escena usada: solo `orc.tscn`.
 Variación runtime permitida: tamaño y velocidad levemente variables por instancia.
-No usar `orc_2.tscn`, `orc_3.tscn`, `orc_4.tscn`, `orc_brute.tscn` ni `orc_scout.tscn` para spawn.
+Las escenas legacy `orc_2.tscn`, `orc_3.tscn`, `orc_4.tscn`, `orc_brute.tscn` y `orc_scout.tscn` fueron removidas.
 Muere al tocar el arco de ataque del jugador
 Muere de un golpe
 Counterplay:

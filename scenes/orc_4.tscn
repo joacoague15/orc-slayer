@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://rhpqr7fkx41q"]
+[gd_scene load_steps=32 format=3 uid="uid://b2ty6wsp50qqk"]
 
 [ext_resource type="Script" path="res://scripts/orc.gd" id="1_mr8kc"]
 [ext_resource type="PackedScene" uid="uid://cbecpas7yxhve" path="res://scenes/pickup.tscn" id="2_pmnwc"]
