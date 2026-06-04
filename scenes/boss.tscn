@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/orc.tscn" id="3_4vfdc"]
 
 [node name="Boss" instance=ExtResource("1_167e4")]
+z_index = 5
 script = ExtResource("2_5f7rj")
 move_speed = 312.65
 score_value = 10

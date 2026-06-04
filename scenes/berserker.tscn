@@ -101,6 +101,7 @@ animations = [{
 }]
 
 [node name="Berserker" instance=ExtResource("1_t0yvn")]
+z_index = 4
 script = ExtResource("2_eglhv")
 move_speed = 253.5
 visual_color = Color(1, 1, 1, 1)

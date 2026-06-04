@@ -140,6 +140,7 @@ func die() -> void:
 		return
 	is_dying = true
 	is_dead = true
+	z_index = -1
 	
 	visual.modulate = dead_body_color
 	

@@ -190,12 +190,12 @@ berserker = orc_berserker_scene
 
 | Wave | Kills para avanzar | Max enemigos vivos | Spawn interval | Grunt | Archer | Mage | Berserker | Objetivo de diseño |
 | - | -: | -: | -: | -: | -: | -: | -: | - |
-| 1 | 24 | 16 | 1.20s | 1.00 | 0.00 | 0.00 | 0.00 | Enseñar persecución básica y combo con orc y archer. |
-| 2 | 50 | 32 | 1.05s | 0.90 | 0.10 | 0.00 | 0.00 | Introducir presión lateral leve con Archer. |
-| 3 | 70 | 24 | 0.90s | 0.68 | 0.20 | 0.12 | 0.00 | Introducir Mage y movimiento constante. |
-| 4 | 100 | 34 | 0.78s | 0.62 | 0.22 | 0.12 | 0.04 | Introducir Berserker sin saturar. |
-| 5 | 100 | 48 | 0.66s | 0.52 | 0.24 | 0.16 | 0.08 | Mezclar amenazas de distancia y cazador. |
-| 6 | 160 | 64 | 0.54s | 0.44 | 0.25 | 0.18 | 0.13 | Test pre-boss: presión alta sin jefe. |
+| 1 | 6 | 6 | 1.20s | 0.50 | 0.50 | 0.00 | 0.00 | Enseñar persecución básica y combo con orc y archer. |
+| 2 | 30 | 16 | 1.05s | 0.20 | 0.80 | 0.00 | 0.00 | Introducir presión lateral leve con Archer. |
+| 3 | 30 | 16 | 0.90s | 0.20 | 0.40 | 0.40 | 0.00 | Introducir Mage y movimiento constante. |
+| 4 | 100 | 34 | 0.78s | 0.20 | 0.30 | 0.20 | 0.30 | Introducir Berserker sin saturar. |
+| 5 | 100 | 48 | 0.66s | 0.10 | 0.30 | 0.30 | 0.30 | Mezclar amenazas de distancia y cazador. |
+| 6 | 160 | 64 | 0.54s | 0.05 | 0.30 | 0.45 | 0.20 | Test pre-boss: presión alta sin jefe. |
 | 7 | Boss | Boss + summons | Boss sequence | 0.00 | 0.00 | 0.00 | 0.00 | Limpiar arena y ejecutar transición al Warlord o BOSS PENDING. |
 
 5.3 Distribución de weights
@@ -261,6 +261,17 @@ Al matar al Warlord: pantalla de victoria
 Muestra: Score final, combo máximo, tiempo, orcos matados
 
 6. UI/UX: QUÉ MOSTRAR Y QUÉ NO
+6.0 Legibilidad visual
+Orden visual obligatorio:
+Sangre en suelo: z_index -2.
+Corpses/enemigos muertos: z_index -1.
+Grunts vivos: z_index 2.
+Enemigos especiales vivos: z_index 4.
+Boss: z_index 5.
+Player: z_index 10.
+El jugador nunca debe quedar tapado por corpses ni enemigos muertos.
+Los enemigos vivos nunca deben quedar debajo de corpses.
+
 6.1 Durante Gameplay (HUD)
 Elementos obligatorios:
 Score (arriba-izquierda, tamanio normal)

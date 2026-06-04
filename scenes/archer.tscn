@@ -98,7 +98,7 @@ animations = [{
 }]
 
 [node name="Archer" instance=ExtResource("1_7eu2k")]
-z_index = 2
+z_index = 4
 script = ExtResource("2_b0dba")
 arrow_scene = ExtResource("3_f4wm5")
 archer_move_speed = 143.65
