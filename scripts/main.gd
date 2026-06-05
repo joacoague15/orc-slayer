@@ -2,6 +2,15 @@
 extends Node2D
 
 const BOSS_WAVE_NUMBER: int = 7
+const LOW_RES_VIEWPORT_SIZE: Vector2i = Vector2i(426, 240)
+const GAME_VIEW_WORLD_SIZE: Vector2 = Vector2(1280.0, 720.0)
+const LOW_RES_WORLD_NODES: Array[StringName] = [
+	&"GroundBase",
+	&"GroundRain",
+	&"Player",
+	&"Spawner",
+	&"GroundVariations",
+]
 
 @export var boss_scene: PackedScene
 @export var boss_pending: bool = true
@@ -9,11 +18,17 @@ const BOSS_WAVE_NUMBER: int = 7
 @export var boss_spawn_distance_buffer: float = 120.0
 @export var wave_transition_delay: float = 2.0
 
+@onready var low_res_output: SubViewportContainer = $LowResOutput
+@onready var low_res_viewport: SubViewport = $LowResOutput/LowResViewport
+@onready var low_res_world: Node2D = $LowResOutput/LowResViewport/World
 @onready var player: Node2D = $Player
 @onready var spawner: Node2D = $Spawner
 @onready var score_label: Label = $UI/TopLeftPanel/ScoreLabel
 @onready var time_label: Label = $UI/TimeRow/TimeVBox/TimeLabel
 @onready var wave_marker_label: Label = $UI/WaveMarkerLabel
+@onready var wave_progress_container: Control = $UI/WaveProgressContainer
+@onready var wave_progress_fill_clip: Control = $UI/WaveProgressContainer/WaveProgressFillClip
+@onready var wave_progress_fill: TextureRect = $UI/WaveProgressContainer/WaveProgressFillClip/WaveProgressFill
 
 # Nuevos refs para el game over screen
 @onready var game_over_screen: Control = $UI/GameOverScreen
@@ -30,8 +45,12 @@ const BOSS_WAVE_NUMBER: int = 7
 var boss_spawn_started: bool = false
 var boss_instance: Node2D
 var wave_transition_running: bool = false
+var wave_progress_ratio: float = 0.0
+var wave_start_kill_count: int = 0
+var wave_progress_total: int = 1
 
 func _ready() -> void:
+	_setup_low_res_render()
 	GameState.reset_score()
 	GameState.game_over = false
 	player.died.connect(_on_player_died)
@@ -46,6 +65,9 @@ func _ready() -> void:
 	combo_value_label.text = ""
 	combo_timer_bar.modulate.a = 0.0
 	wave_marker_label.modulate.a = 0.0
+	wave_progress_container.visible = true
+	wave_progress_container.resized.connect(_sync_wave_progress_layout)
+	_set_wave_progress_ratio(0.0)
 	
 	# Asegurar que el game over screen arranque invisible
 	game_over_screen.modulate.a = 1.0  # el container sí está activo
@@ -57,6 +79,27 @@ func _ready() -> void:
 	go_prompt.modulate.a = 0.0
 	AudioManager.play_game_music()
 	spawner.start_waves()
+
+func _setup_low_res_render() -> void:
+	_resize_low_res_output()
+	get_viewport().size_changed.connect(_resize_low_res_output)
+	
+	for node_name in LOW_RES_WORLD_NODES:
+		var node := get_node_or_null(NodePath(node_name))
+		if not node:
+			continue
+		node.reparent(low_res_world, true)
+	
+	var camera := player.get_node_or_null("Camera2D")
+	if camera is Camera2D:
+		camera.zoom = Vector2(
+			float(LOW_RES_VIEWPORT_SIZE.x) / GAME_VIEW_WORLD_SIZE.x,
+			float(LOW_RES_VIEWPORT_SIZE.y) / GAME_VIEW_WORLD_SIZE.y
+		)
+		camera.make_current()
+
+func _resize_low_res_output() -> void:
+	low_res_output.size = get_viewport_rect().size
 
 func _process(_delta: float) -> void:
 	if not player.is_dead:
@@ -75,29 +118,50 @@ func _on_score_changed(new_score: int) -> void:
 
 func _on_kill_count_changed(_kill_count: int) -> void:
 	if boss_spawn_started or wave_transition_running:
+		_update_wave_progress_bar()
 		return
 	spawner.notify_enemy_killed()
+	_update_wave_progress_bar()
 
 func _on_wave_started(wave_number: int, kills_required: int) -> void:
 	if wave_number >= BOSS_WAVE_NUMBER:
+		wave_progress_container.visible = false
 		return
+	wave_progress_container.visible = true
+	wave_start_kill_count = GameState.kill_count
+	wave_progress_total = max(kills_required + spawner.get_current_wave_max_orcs(), 1)
+	_set_wave_progress_ratio(0.0)
 	_show_wave_marker("WAVE %d" % wave_number, "KILLS 0 / %d" % kills_required)
+
+func _update_wave_progress_bar() -> void:
+	var killed_this_wave: int = max(GameState.kill_count - wave_start_kill_count, 0)
+	_set_wave_progress_ratio(clampf(float(killed_this_wave) / float(wave_progress_total), 0.0, 1.0))
+
+func _set_wave_progress_ratio(ratio: float) -> void:
+	wave_progress_ratio = ratio
+	_sync_wave_progress_layout()
+
+func _sync_wave_progress_layout() -> void:
+	var full_size := wave_progress_container.size
+	wave_progress_fill_clip.size = Vector2(full_size.x * wave_progress_ratio, full_size.y)
+	wave_progress_fill.size = full_size
 
 func _on_wave_completed(wave_number: int) -> void:
 	if wave_transition_running:
 		return
 	if wave_number >= BOSS_WAVE_NUMBER - 1:
-		_start_boss_sequence()
+		_start_boss_sequence(wave_number)
 		return
 	_start_wave_transition(wave_number)
 
 func _start_wave_transition(wave_number: int) -> void:
 	wave_transition_running = true
-	_show_wave_marker("WAVE %d CLEAR" % wave_number, "CLEAN UP")
 	await _wait_for_orcs_cleared()
 	if GameState.game_over or player.is_dead:
 		wave_transition_running = false
 		return
+	_set_wave_progress_ratio(1.0)
+	_show_wave_marker("WAVE %d CLEAR" % wave_number, "NEXT WAVE INCOMING")
 	await get_tree().create_timer(wave_transition_delay).timeout
 	if GameState.game_over or player.is_dead:
 		wave_transition_running = false
@@ -105,11 +169,17 @@ func _start_wave_transition(wave_number: int) -> void:
 	wave_transition_running = false
 	spawner.start_next_wave()
 
-func _start_boss_sequence() -> void:
+func _start_boss_sequence(wave_number: int) -> void:
 	boss_spawn_started = true
 	wave_transition_running = true
 	if spawner.has_method("set_spawning_enabled"):
 		spawner.set_spawning_enabled(false)
+	await _wait_for_orcs_cleared()
+	if GameState.game_over or player.is_dead:
+		wave_transition_running = false
+		return
+	_set_wave_progress_ratio(1.0)
+	_show_wave_marker("WAVE %d CLEAR" % wave_number, "BOSS INCOMING")
 	_clear_existing_orcs()
 	
 	if player.has_node("Camera2D"):
@@ -141,11 +211,10 @@ func _spawn_boss() -> void:
 		return
 	boss_instance = boss_scene.instantiate()
 	boss_instance.global_position = _get_boss_spawn_position()
-	add_child(boss_instance)
+	low_res_world.add_child(boss_instance)
 
 func _get_boss_spawn_position() -> Vector2:
-	var viewport_size := get_viewport().get_visible_rect().size
-	var spawn_radius: float = max(viewport_size.x, viewport_size.y) / 2.0 + boss_spawn_distance_buffer
+	var spawn_radius: float = max(GAME_VIEW_WORLD_SIZE.x, GAME_VIEW_WORLD_SIZE.y) / 2.0 + boss_spawn_distance_buffer
 	var camera := get_viewport().get_camera_2d()
 	var center := player.global_position
 	if camera:

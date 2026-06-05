@@ -64,6 +64,7 @@ const WAVE_CONFIGS: Array[Dictionary] = [
 @export var orc_berserker_scene: PackedScene
 
 @export var spawn_distance_buffer: float = 50.0
+@export var spawn_view_world_size: Vector2 = Vector2(1280.0, 720.0)
 @export var grunt_speed_variation: float = 0.12
 @export var grunt_size_variation: float = 0.10
 
@@ -181,8 +182,7 @@ func _get_entry_weight(entry: Dictionary) -> float:
 	return base_weight * GameState.get_spawn_enemy_weight_factor(entry["key"])
 
 func get_spawn_position() -> Vector2:
-	var viewport_size := get_viewport().get_visible_rect().size
-	var spawn_radius: float = max(viewport_size.x, viewport_size.y) / 2.0 + spawn_distance_buffer
+	var spawn_radius: float = max(spawn_view_world_size.x, spawn_view_world_size.y) / 2.0 + spawn_distance_buffer
 	
 	var angle := randf() * TAU
 	var offset := Vector2(cos(angle), sin(angle)) * spawn_radius
@@ -211,3 +211,6 @@ func get_current_wave_kills() -> int:
 
 func get_current_wave_kills_required() -> int:
 	return int(get_current_wave()["kills_required"])
+
+func get_current_wave_max_orcs() -> int:
+	return int(get_current_wave()["max_orcs"])

@@ -158,7 +158,7 @@ func _spawn_slice() -> void:
 	var slice := slice_scene.instantiate()
 	slice.position = global_position
 	slice.rotation = direction
-	get_tree().current_scene.add_child(slice)
+	get_parent().add_child(slice)
 
 func _try_dash() -> void:
 	if not can_dash:
@@ -227,7 +227,7 @@ func _spawn_dash_ghost() -> void:
 	ghost.global_scale = sprite.global_scale
 	ghost.z_index = sprite.z_index + 20
 	ghost.modulate = Color(0.6, 0.9, 1.0, 0.45)
-	get_tree().current_scene.add_child(ghost)
+	get_parent().add_child(ghost)
 	
 	var tween := ghost.create_tween()
 	tween.tween_property(ghost, "modulate:a", 0.0, dash_ghost_lifetime)

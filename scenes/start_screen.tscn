@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://dnr2r1qt25jg"]
+[gd_scene load_steps=6 format=3 uid="uid://dnr2r1qt25jg"]
 
 [ext_resource type="Script" path="res://scripts/start_screen.gd" id="1_cxrsa"]
+[ext_resource type="Texture2D" uid="uid://bh2otjknefdwq" path="res://sprites/main_menu_title.png" id="2_1a28p"]
 [ext_resource type="Texture2D" uid="uid://dc8tub4opx64e" path="res://sprites/main_menu.png" id="2_8kvlq"]
-[ext_resource type="FontFile" uid="uid://v2dqr2ab4mf5" path="res://fonts/PressStart2P-Regular.ttf" id="2_oa7cn"]
+[ext_resource type="FontFile" uid="uid://cqpxt7hcmlt3p" path="res://fonts/Silkscreen-Regular.ttf" id="3_11yr1"]
+[ext_resource type="Texture2D" uid="uid://bphh1g2nbuvpb" path="res://sprites/button_1.png" id="4_5vrj7"]
 
 [node name="StartScreen" type="Control"]
 layout_mode = 3
@@ -36,36 +38,39 @@ grow_vertical = 2
 theme_override_constants/separation = 30
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.7, 0.3, 1)
-theme_override_constants/outline_size = 8
-theme_override_fonts/font = ExtResource("2_oa7cn")
-theme_override_font_sizes/font_size = 60
-text = "ORC SLAYER"
-horizontal_alignment = 1
+[node name="Title" type="Sprite2D" parent="VBoxContainer"]
+z_index = 1
+position = Vector2(588, 154)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_1a28p")
 
-[node name="InstructionsLabel" type="Label" parent="VBoxContainer"]
+[node name="StartButton" type="TextureButton" parent="VBoxContainer"]
+custom_minimum_size = Vector2(468, 70)
 layout_mode = 2
-theme_override_constants/line_spacing = 20
-theme_override_fonts/font = ExtResource("2_oa7cn")
-theme_override_font_sizes/font_size = 20
-text = "Move with WASD
-Left click to slice"
-horizontal_alignment = 1
+size_flags_horizontal = 4
+focus_mode = 0
+texture_normal = ExtResource("4_5vrj7")
+ignore_texture_size = true
+stretch_mode = 0
 
-[node name="PromptLabel" type="Label" parent="VBoxContainer"]
-layout_mode = 2
+[node name="Label" type="Label" parent="VBoxContainer/StartButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_constants/line_spacing = 2
-theme_override_fonts/font = ExtResource("2_oa7cn")
+theme_override_fonts/font = ExtResource("3_11yr1")
 theme_override_font_sizes/font_size = 28
-text = "PRESS SPACE TO START"
+text = "Face them all"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="HighscoreLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_oa7cn")
+theme_override_fonts/font = ExtResource("3_11yr1")
 theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 

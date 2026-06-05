@@ -158,7 +158,7 @@ func _cast_bolt(angle_degrees: float) -> void:
 			bolt_split_distance,
 			split_bolt_travel_distance
 		)
-	get_tree().current_scene.add_child(bolt)
+	get_parent().add_child(bolt)
 	bolt_cast.emit(bolt)
 
 func _get_cast_origin_global_position() -> Vector2:

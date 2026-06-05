@@ -69,7 +69,7 @@ func _spawn_split_bolt(split_direction: Vector2) -> void:
 	split_bolt.global_position = global_position
 	if split_bolt.has_method("setup"):
 		split_bolt.setup(split_direction, speed, false, split_distance, split_travel_distance)
-	get_tree().current_scene.add_child(split_bolt)
+	get_parent().add_child(split_bolt)
 	split_spawned.emit(split_bolt)
 
 func _spawn_residue() -> void:
@@ -78,7 +78,7 @@ func _spawn_residue() -> void:
 	var residue := residue_scene.instantiate()
 	residue.global_position = global_position
 	residue.rotation = direction.angle()
-	get_tree().current_scene.add_child(residue)
+	get_parent().add_child(residue)
 
 func _update_trail(delta: float) -> void:
 	trail_timer -= delta
@@ -101,7 +101,7 @@ func _spawn_split_residue_burst() -> void:
 		residue.global_position = global_position + visual_direction * randf_range(10.0, 34.0)
 		residue.rotation = visual_direction.angle()
 		residue.scale = Vector2.ONE * randf_range(0.55, 1.15)
-		get_tree().current_scene.add_child(residue)
+		get_parent().add_child(residue)
 
 func _on_body_entered(body: Node2D) -> void:
 	if not body.is_in_group("player"):

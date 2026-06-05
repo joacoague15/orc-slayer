@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://8o10rd76dja7"]
+[gd_scene load_steps=19 format=3 uid="uid://8o10rd76dja7"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hyiwn"]
 [ext_resource type="PackedScene" uid="uid://dp3v5iocdqtj2" path="res://scenes/player.tscn" id="2_rl6d3"]
@@ -6,13 +6,21 @@
 [ext_resource type="Script" path="res://scripts/spawner.gd" id="4_2bv7o"]
 [ext_resource type="FontFile" uid="uid://v2dqr2ab4mf5" path="res://fonts/PressStart2P-Regular.ttf" id="4_lowrd"]
 [ext_resource type="Script" path="res://scripts/ground_variations.gd" id="8_txakl"]
+[ext_resource type="Texture2D" uid="uid://dpmtu6pvwup3d" path="res://sprites/wave_progress_bar.png" id="8_yahsx"]
 [ext_resource type="Texture2D" uid="uid://dtifo0f33ghwm" path="res://sprites/tiles/tile_1.png" id="10_r780o"]
 [ext_resource type="PackedScene" uid="uid://b6o73a5lhv1ga" path="res://scenes/archer.tscn" id="11_7xhwn"]
 [ext_resource type="PackedScene" uid="uid://c6u4oegopnuge" path="res://scenes/mage.tscn" id="12_0wrcj"]
 [ext_resource type="PackedScene" path="res://scenes/berserker.tscn" id="13_vjdqi"]
 [ext_resource type="PackedScene" path="res://scenes/boss.tscn" id="14_p4n2m"]
 [ext_resource type="PackedScene" path="res://scenes/ground_rain.tscn" id="15_t4c5q"]
-[ext_resource type="Shader" path="res://shaders/screen_grit.gdshader" id="16_stsxk"]
+[ext_resource type="Shader" path="res://shaders/low_res_palette.gdshader" id="16_7c18v"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k7pyu"]
+shader = ExtResource("16_7c18v")
+shader_parameter/palette_levels = 6.0
+shader_parameter/contrast = 1.08
+shader_parameter/saturation = 0.95
+shader_parameter/shadow_tint = 0.12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51kyq"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -23,19 +31,24 @@ bg_color = Color(0.1, 0.1, 0.1, 0.7)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c7f13"]
 bg_color = Color(1, 0.85, 0.2, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_k7pyu"]
-shader = ExtResource("16_stsxk")
-shader_parameter/scanline_strength = 0.08
-shader_parameter/vignette_strength = 0.35
-shader_parameter/noise_strength = 0.025
-shader_parameter/chromatic_aberration = 0.0015
-shader_parameter/posterize_levels = 14.0
-shader_parameter/contrast = 1.08
-shader_parameter/saturation = 0.92
-
 [node name="Main" type="Node2D"]
 script = ExtResource("1_hyiwn")
 boss_scene = ExtResource("14_p4n2m")
+
+[node name="LowResOutput" type="SubViewportContainer" parent="."]
+material = SubResource("ShaderMaterial_k7pyu")
+offset_right = 1280.0
+offset_bottom = 720.0
+stretch = true
+stretch_shrink = 3
+
+[node name="LowResViewport" type="SubViewport" parent="LowResOutput"]
+handle_input_locally = false
+canvas_item_default_texture_filter = 0
+size = Vector2i(426, 240)
+render_target_update_mode = 4
+
+[node name="World" type="Node2D" parent="LowResOutput/LowResViewport"]
 
 [node name="GroundBase" type="Sprite2D" parent="."]
 z_index = -10
@@ -53,6 +66,36 @@ region_rect = Rect2(-10000, -10000, 3000, 3000)
 z_index = 1
 
 [node name="UI" type="CanvasLayer" parent="."]
+
+[node name="WaveProgressContainer" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 19.0
+grow_horizontal = 2
+
+[node name="WaveProgressBackground" type="ColorRect" parent="UI/WaveProgressContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.015, 0.02, 0.015, 0.82)
+
+[node name="WaveProgressFillClip" type="Control" parent="UI/WaveProgressContainer"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 0
+grow_horizontal = 2
+
+[node name="WaveProgressFill" type="TextureRect" parent="UI/WaveProgressContainer/WaveProgressFillClip"]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 19.0
+texture = ExtResource("8_yahsx")
+expand_mode = 1
+stretch_mode = 1
 
 [node name="GameOverScreen" type="Control" parent="UI"]
 z_index = 3
@@ -208,18 +251,6 @@ theme_override_fonts/font = ExtResource("4_lowrd")
 theme_override_font_sizes/font_size = 34
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="PostProcess" type="CanvasLayer" parent="."]
-layer = 100
-
-[node name="ScreenGrit" type="ColorRect" parent="PostProcess"]
-material = SubResource("ShaderMaterial_k7pyu")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
 
 [node name="Spawner" type="Node2D" parent="." groups=["spawner"]]
 script = ExtResource("4_2bv7o")
