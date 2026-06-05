@@ -5,6 +5,7 @@ extends CharacterBody2D
 @export var attack_range: float = 40.0
 @export var telegraph_duration: float = 0.08
 @export var score_value: int = 1
+@export var enemy_class: StringName = &"grunt"
 @export var visual_color: Color = Color.WHITE
 @export var blood_color: Color = Color(0.08, 0.45, 0.12, 1.0)
 @export var visual_scale: float = 1.0
@@ -88,6 +89,8 @@ func get_separation_vector() -> Vector2:
 		if neighbor == self:
 			continue
 		if not neighbor.is_in_group("orcs"):
+			continue
+		if neighbor.get("enemy_class") != enemy_class:
 			continue
 		
 		var diff := global_position - neighbor.global_position

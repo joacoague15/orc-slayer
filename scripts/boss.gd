@@ -42,6 +42,7 @@ var taunt_spawned: bool = false
 
 func _ready() -> void:
 	super()
+	enemy_class = &"boss"
 	_start_approach()
 
 func _physics_process(delta: float) -> void:

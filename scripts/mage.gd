@@ -36,6 +36,7 @@ var burst_should_split: bool = true
 
 func _ready() -> void:
 	super()
+	enemy_class = &"mage"
 	move_speed = mage_move_speed
 
 func _physics_process(delta: float) -> void:

@@ -19,21 +19,21 @@ const WAVE_CONFIGS: Array[Dictionary] = [
 		"kills_required": 30,
 		"max_orcs": 16,
 		"spawn_interval": 1.05,
-		"weights": {"normal": 0.20, "archer": 0.80, "mage": 0.00, "berserker": 0.00},
+		"weights": {"normal": 0.40, "archer": 0.60, "mage": 0.00, "berserker": 0.00},
 	},
 	{
 		"number": 3,
 		"kills_required": 30,
 		"max_orcs": 16,
 		"spawn_interval": 0.90,
-		"weights": {"normal": 0.20, "archer": 0.40, "mage": 0.40, "berserker": 0.00},
+		"weights": {"normal": 0.50, "archer": 0.30, "mage": 0.20, "berserker": 0.00},
 	},
 	{
 		"number": 4,
 		"kills_required": 100,
 		"max_orcs": 34,
 		"spawn_interval": 0.78,
-		"weights": {"normal": 0.20, "archer": 0.30, "mage": 0.20, "berserker": 0.30},
+		"weights": {"normal": 0.40, "archer": 0.20, "mage": 0.20, "berserker": 0.20},
 	},
 	{
 		"number": 5,
@@ -72,6 +72,7 @@ var time_since_last_spawn: float = 0.0
 var spawning_enabled: bool = true
 var current_wave_index: int = 0
 var current_wave_kills: int = 0
+var current_wave_spawned: int = 0
 var wave_active: bool = false
 
 var player: Node2D
@@ -94,12 +95,13 @@ func _process(delta: float) -> void:
 	var wave := get_current_wave()
 	if time_since_last_spawn >= float(wave["spawn_interval"]):
 		time_since_last_spawn = 0.0
-		if get_orc_count() < int(wave["max_orcs"]):
+		if _can_spawn_in_current_wave(wave):
 			spawn_orc()
 
 func start_waves() -> void:
 	current_wave_index = 0
 	current_wave_kills = 0
+	current_wave_spawned = 0
 	_start_current_wave()
 
 func notify_enemy_killed() -> void:
@@ -117,6 +119,7 @@ func start_next_wave() -> void:
 		return
 	current_wave_index += 1
 	current_wave_kills = 0
+	current_wave_spawned = 0
 	_start_current_wave()
 
 func _start_current_wave() -> void:
@@ -143,6 +146,12 @@ func spawn_orc() -> void:
 	if scene == orc_normal_scene:
 		_apply_grunt_variation(orc)
 	get_parent().add_child(orc)
+	current_wave_spawned += 1
+
+func _can_spawn_in_current_wave(wave: Dictionary) -> bool:
+	if current_wave_spawned >= int(wave["kills_required"]):
+		return false
+	return get_orc_count() < int(wave["max_orcs"])
 
 func pick_orc_scene() -> PackedScene:
 	var weights: Dictionary = get_current_wave()["weights"]
@@ -211,6 +220,3 @@ func get_current_wave_kills() -> int:
 
 func get_current_wave_kills_required() -> int:
 	return int(get_current_wave()["kills_required"])
-
-func get_current_wave_max_orcs() -> int:
-	return int(get_current_wave()["max_orcs"])

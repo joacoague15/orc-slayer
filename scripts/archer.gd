@@ -26,6 +26,7 @@ var cooldown_timer: float = 0.0
 
 func _ready() -> void:
 	super()
+	enemy_class = &"archer"
 	move_speed = archer_move_speed
 	_hide_telegraph()
 

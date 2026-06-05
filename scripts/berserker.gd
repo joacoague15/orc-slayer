@@ -22,6 +22,7 @@ var orbit_direction: float = 1.0
 
 func _ready() -> void:
 	super()
+	enemy_class = &"berserker"
 	_start_stalk()
 
 func _physics_process(delta: float) -> void:

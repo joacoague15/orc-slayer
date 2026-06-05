@@ -56,8 +56,6 @@ var boss_spawn_started: bool = false
 var boss_instance: Node2D
 var wave_transition_running: bool = false
 var wave_progress_ratio: float = 0.0
-var wave_start_kill_count: int = 0
-var wave_progress_total: int = 1
 var game_over_button_hovered: bool = false
 var game_over_button_tween: Tween
 
@@ -148,14 +146,16 @@ func _on_wave_started(wave_number: int, kills_required: int) -> void:
 		wave_progress_container.visible = false
 		return
 	wave_progress_container.visible = true
-	wave_start_kill_count = GameState.kill_count
-	wave_progress_total = max(kills_required + spawner.get_current_wave_max_orcs(), 1)
 	_set_wave_progress_ratio(0.0)
 	_show_wave_marker("WAVE %d" % wave_number, "KILLS 0 / %d" % kills_required)
 
 func _update_wave_progress_bar() -> void:
-	var killed_this_wave: int = max(GameState.kill_count - wave_start_kill_count, 0)
-	_set_wave_progress_ratio(clampf(float(killed_this_wave) / float(wave_progress_total), 0.0, 1.0))
+	var kills_required: int = spawner.get_current_wave_kills_required()
+	if kills_required <= 0:
+		_set_wave_progress_ratio(0.0)
+		return
+	var current_wave_kills: int = spawner.get_current_wave_kills()
+	_set_wave_progress_ratio(clampf(float(current_wave_kills) / float(kills_required), 0.0, 1.0))
 
 func _set_wave_progress_ratio(ratio: float) -> void:
 	wave_progress_ratio = ratio
@@ -170,7 +170,7 @@ func _on_wave_completed(wave_number: int) -> void:
 	if wave_transition_running:
 		return
 	if wave_number >= BOSS_WAVE_NUMBER - 1:
-		_start_boss_sequence(wave_number)
+		_finish_current_build_after_wave6(wave_number)
 		return
 	_start_wave_transition(wave_number)
 
@@ -209,6 +209,18 @@ func _start_boss_sequence(wave_number: int) -> void:
 	if GameState.game_over or player.is_dead:
 		return
 	spawner.start_next_wave()
+
+func _finish_current_build_after_wave6(wave_number: int) -> void:
+	boss_spawn_started = true
+	wave_transition_running = true
+	if spawner.has_method("set_spawning_enabled"):
+		spawner.set_spawning_enabled(false)
+	await _wait_for_orcs_cleared()
+	if GameState.game_over or player.is_dead:
+		wave_transition_running = false
+		return
+	_set_wave_progress_ratio(1.0)
+	_show_wave_marker("WAVE %d CLEAR" % wave_number, "BOSS NO HECHO")
 
 func _on_boss_wave_reached() -> void:
 	if boss_pending or not boss_scene:
