@@ -1,14 +1,12 @@
-[gd_scene load_steps=22 format=3 uid="uid://8o10rd76dja7"]
+[gd_scene load_steps=20 format=3 uid="uid://8o10rd76dja7"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hyiwn"]
 [ext_resource type="PackedScene" uid="uid://dp3v5iocdqtj2" path="res://scenes/player.tscn" id="2_rl6d3"]
 [ext_resource type="PackedScene" uid="uid://bf6tun472e7x8" path="res://scenes/orc.tscn" id="3_cgdby"]
 [ext_resource type="Script" path="res://scripts/spawner.gd" id="4_2bv7o"]
 [ext_resource type="FontFile" uid="uid://v2dqr2ab4mf5" path="res://fonts/PressStart2P-Regular.ttf" id="4_lowrd"]
-[ext_resource type="Script" path="res://scripts/ground_variations.gd" id="8_txakl"]
 [ext_resource type="Texture2D" uid="uid://dpmtu6pvwup3d" path="res://sprites/wave_progress_bar.png" id="8_yahsx"]
 [ext_resource type="FontFile" uid="uid://cqpxt7hcmlt3p" path="res://fonts/Silkscreen-Regular.ttf" id="9_23d4l"]
-[ext_resource type="Texture2D" uid="uid://dtifo0f33ghwm" path="res://sprites/tiles/tile_1.png" id="10_r780o"]
 [ext_resource type="PackedScene" uid="uid://b6o73a5lhv1ga" path="res://scenes/archer.tscn" id="11_7xhwn"]
 [ext_resource type="PackedScene" uid="uid://c6u4oegopnuge" path="res://scenes/mage.tscn" id="12_0wrcj"]
 [ext_resource type="PackedScene" path="res://scenes/berserker.tscn" id="13_vjdqi"]
@@ -53,15 +51,10 @@ render_target_update_mode = 4
 
 [node name="World" type="Node2D" parent="LowResOutput/LowResViewport"]
 
-[node name="GroundBase" type="Sprite2D" parent="."]
-z_index = -10
-texture_repeat = 2
-position = Vector2(415, -129)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("10_r780o")
-centered = false
-region_enabled = true
-region_rect = Rect2(-10000, -10000, 3000, 3000)
+[node name="GroundFallback" type="Polygon2D" parent="."]
+z_index = -100
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-20000, -20000, 20000, -20000, 20000, 20000, -20000, 20000)
 
 [node name="GroundRain" parent="." instance=ExtResource("15_t4c5q")]
 
@@ -297,9 +290,3 @@ orc_normal_scene = ExtResource("3_cgdby")
 orc_archer_scene = ExtResource("11_7xhwn")
 orc_mage_scene = ExtResource("12_0wrcj")
 orc_berserker_scene = ExtResource("13_vjdqi")
-
-[node name="GroundVariations" type="Node2D" parent="."]
-modulate = Color(0.18, 0.18, 0.2, 1)
-script = ExtResource("8_txakl")
-tile_variations = Array[Texture2D]([ExtResource("10_r780o")])
-tile_size = 1254.0

@@ -13,11 +13,10 @@ const GAME_OVER_LINES: Array[Dictionary] = [
 	{"enemy": "The ground is hungry for you.", "knight": "Let it stay hungry."},
 ]
 const LOW_RES_WORLD_NODES: Array[StringName] = [
-	&"GroundBase",
+	&"GroundFallback",
 	&"GroundRain",
 	&"Player",
 	&"Spawner",
-	&"GroundVariations",
 ]
 
 @export var boss_scene: PackedScene
