@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://8o10rd76dja7"]
+[gd_scene load_steps=22 format=3 uid="uid://8o10rd76dja7"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hyiwn"]
 [ext_resource type="PackedScene" uid="uid://dp3v5iocdqtj2" path="res://scenes/player.tscn" id="2_rl6d3"]
@@ -7,6 +7,7 @@
 [ext_resource type="FontFile" uid="uid://v2dqr2ab4mf5" path="res://fonts/PressStart2P-Regular.ttf" id="4_lowrd"]
 [ext_resource type="Script" path="res://scripts/ground_variations.gd" id="8_txakl"]
 [ext_resource type="Texture2D" uid="uid://dpmtu6pvwup3d" path="res://sprites/wave_progress_bar.png" id="8_yahsx"]
+[ext_resource type="FontFile" uid="uid://cqpxt7hcmlt3p" path="res://fonts/Silkscreen-Regular.ttf" id="9_23d4l"]
 [ext_resource type="Texture2D" uid="uid://dtifo0f33ghwm" path="res://sprites/tiles/tile_1.png" id="10_r780o"]
 [ext_resource type="PackedScene" uid="uid://b6o73a5lhv1ga" path="res://scenes/archer.tscn" id="11_7xhwn"]
 [ext_resource type="PackedScene" uid="uid://c6u4oegopnuge" path="res://scenes/mage.tscn" id="12_0wrcj"]
@@ -14,6 +15,8 @@
 [ext_resource type="PackedScene" path="res://scenes/boss.tscn" id="14_p4n2m"]
 [ext_resource type="PackedScene" path="res://scenes/ground_rain.tscn" id="15_t4c5q"]
 [ext_resource type="Shader" path="res://shaders/low_res_palette.gdshader" id="16_7c18v"]
+[ext_resource type="Texture2D" uid="uid://bcps0esbqrdg1" path="res://sprites/game_over_background.png" id="17_5ds7n"]
+[ext_resource type="Texture2D" uid="uid://bphh1g2nbuvpb" path="res://sprites/button_1.png" id="18_0gn4b"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_k7pyu"]
 shader = ExtResource("16_7c18v")
@@ -100,21 +103,34 @@ stretch_mode = 1
 [node name="GameOverScreen" type="Control" parent="UI"]
 z_index = 3
 layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
-anchor_bottom = 1.031
-offset_top = 22.0
-offset_bottom = -0.320007
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Overlay" type="ColorRect" parent="UI/GameOverScreen"]
 modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_left = 620.0
-offset_top = -13.0
-offset_right = 660.0
-offset_bottom = 27.0
-color = Color(0, 0, 0, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Background" type="TextureRect" parent="UI/GameOverScreen"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("17_5ds7n")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="StatsContainer" type="VBoxContainer" parent="UI/GameOverScreen"]
 layout_mode = 1
@@ -130,15 +146,42 @@ offset_bottom = -0.119995
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
+[node name="EnemyQuoteLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 64
-text = "GAME OVER"
+theme_override_fonts/font = ExtResource("9_23d4l")
+theme_override_font_sizes/font_size = 24
+text = "\"No one will mourn you here.\""
 horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="KnightResponseButton" type="TextureButton" parent="UI/GameOverScreen/StatsContainer"]
+modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(468, 70)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+texture_normal = ExtResource("18_0gn4b")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="UI/GameOverScreen/StatsContainer/KnightResponseButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("9_23d4l")
+theme_override_font_sizes/font_size = 18
+text = "I didn't come to be mourned."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="ScoreLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("9_23d4l")
 theme_override_font_sizes/font_size = 36
 text = "Score: 0"
 horizontal_alignment = 1
@@ -146,20 +189,16 @@ horizontal_alignment = 1
 [node name="HighscoreLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_fonts/font = ExtResource("9_23d4l")
 theme_override_font_sizes/font_size = 28
 text = "Highscore: 0"
 horizontal_alignment = 1
 
 [node name="TimeLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("9_23d4l")
 theme_override_font_sizes/font_size = 28
 text = "Time: 0:00"
-horizontal_alignment = 1
-
-[node name="PromptLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "[R] Restart    [Q] Menu"
 horizontal_alignment = 1
 
 [node name="TopLeftPanel" type="PanelContainer" parent="UI"]

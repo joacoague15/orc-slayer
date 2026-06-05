@@ -4,6 +4,14 @@ extends Node2D
 const BOSS_WAVE_NUMBER: int = 7
 const LOW_RES_VIEWPORT_SIZE: Vector2i = Vector2i(426, 240)
 const GAME_VIEW_WORLD_SIZE: Vector2 = Vector2(1280.0, 720.0)
+const GAME_OVER_LINES: Array[Dictionary] = [
+	{"enemy": "No one will mourn you here.", "knight": "I didn't come to be mourned."},
+	{"enemy": "This is where your story ends.", "knight": "You don't get to write it."},
+	{"enemy": "Kneel, and it will be quick.", "knight": "I kneel to no beast."},
+	{"enemy": "Your bones will make fine tools.", "knight": "Come and take them."},
+	{"enemy": "Your armor will rust on your corpse.", "knight": "Not today."},
+	{"enemy": "The ground is hungry for you.", "knight": "Let it stay hungry."},
+]
 const LOW_RES_WORLD_NODES: Array[StringName] = [
 	&"GroundBase",
 	&"GroundRain",
@@ -33,11 +41,13 @@ const LOW_RES_WORLD_NODES: Array[StringName] = [
 # Nuevos refs para el game over screen
 @onready var game_over_screen: Control = $UI/GameOverScreen
 @onready var overlay: ColorRect = $UI/GameOverScreen/Overlay
-@onready var go_title: Label = $UI/GameOverScreen/StatsContainer/TitleLabel
+@onready var go_background: TextureRect = $UI/GameOverScreen/Background
+@onready var go_enemy_quote: Label = $UI/GameOverScreen/StatsContainer/EnemyQuoteLabel
+@onready var go_response_button: TextureButton = $UI/GameOverScreen/StatsContainer/KnightResponseButton
+@onready var go_response_label: Label = $UI/GameOverScreen/StatsContainer/KnightResponseButton/Label
 @onready var go_score: Label = $UI/GameOverScreen/StatsContainer/ScoreLabel
 @onready var go_time: Label = $UI/GameOverScreen/StatsContainer/TimeLabel
 @onready var go_highscore: Label = $UI/GameOverScreen/StatsContainer/HighscoreLabel
-@onready var go_prompt: Label = $UI/GameOverScreen/StatsContainer/PromptLabel
 
 @onready var combo_value_label: Label = $UI/ComboContainer/ComboVBox/ComboValueLabel
 @onready var combo_timer_bar: ProgressBar = $UI/ComboContainer/ComboVBox/ComboTimerBar
@@ -48,6 +58,8 @@ var wave_transition_running: bool = false
 var wave_progress_ratio: float = 0.0
 var wave_start_kill_count: int = 0
 var wave_progress_total: int = 1
+var game_over_button_hovered: bool = false
+var game_over_button_tween: Tween
 
 func _ready() -> void:
 	_setup_low_res_render()
@@ -72,11 +84,19 @@ func _ready() -> void:
 	# Asegurar que el game over screen arranque invisible
 	game_over_screen.modulate.a = 1.0  # el container sí está activo
 	overlay.modulate.a = 0.0
-	go_title.modulate.a = 0.0
+	go_background.modulate.a = 0.0
+	go_enemy_quote.modulate.a = 0.0
+	go_response_button.modulate.a = 0.0
+	go_response_button.disabled = true
+	go_response_button.pressed.connect(_on_game_over_response_pressed)
+	go_response_button.mouse_entered.connect(_on_game_over_button_mouse_entered)
+	go_response_button.mouse_exited.connect(_on_game_over_button_mouse_exited)
+	go_response_button.button_down.connect(_on_game_over_button_down)
+	go_response_button.button_up.connect(_on_game_over_button_up)
+	_update_game_over_button_pivot()
 	go_score.modulate.a = 0.0
 	go_time.modulate.a = 0.0
 	go_highscore.modulate.a = 0.0
-	go_prompt.modulate.a = 0.0
 	AudioManager.play_game_music()
 	spawner.start_waves()
 
@@ -292,21 +312,32 @@ func _on_player_died() -> void:
 	AudioManager.fade_music_to(0.3)
 	
 	# Pre-llenar labels iniciales
+	var line: Dictionary = GAME_OVER_LINES.pick_random()
+	go_enemy_quote.text = "\"%s\"" % String(line["enemy"])
+	go_response_label.text = String(line["knight"])
+	go_response_button.disabled = true
 	go_score.text = "Score: %d" % GameState.score
 	go_highscore.text = "Highscore: %d" % GameState.highscore
-	go_prompt.text = "[R] Restart    [Q] Menu"
 	
 	# Silencio inicial
-	await get_tree().create_timer(0.4).timeout
+	await get_tree().create_timer(0.25).timeout
 	
-	# Fade in del overlay
+	# Fade suave a negro.
 	var overlay_tween := create_tween()
-	overlay_tween.tween_property(overlay, "modulate:a", 1.0, 0.4)
-	await get_tree().create_timer(0.4).timeout
+	overlay_tween.tween_property(overlay, "modulate:a", 1.0, 0.7)
+	await overlay_tween.finished
+	
+	# Aparece el background de game over sobre el negro.
+	var background_tween := create_tween()
+	background_tween.tween_property(go_background, "modulate:a", 1.0, 0.65)
+	await background_tween.finished
+	await get_tree().create_timer(0.15).timeout
 	
 	# Cascade in de los labels iniciales
 	var fade_tween := create_tween()
-	fade_tween.tween_property(go_title, "modulate:a", 1.0, 0.3)
+	fade_tween.tween_property(go_enemy_quote, "modulate:a", 1.0, 0.3)
+	fade_tween.tween_interval(0.2)
+	fade_tween.tween_property(go_response_button, "modulate:a", 1.0, 0.3)
 	fade_tween.tween_interval(0.2)
 	fade_tween.tween_property(go_score, "modulate:a", 1.0, 0.3)
 	
@@ -317,21 +348,50 @@ func _on_player_died() -> void:
 	print("[GAME OVER] empezando final tween")
 	var final_tween := create_tween()
 	final_tween.tween_property(go_highscore, "modulate:a", 1.0, 0.3)
-	final_tween.tween_interval(0.2)
-	final_tween.tween_property(go_prompt, "modulate:a", 1.0, 0.4)
 	await final_tween.finished
+	go_response_button.disabled = false
 	print("[GAME OVER] final tween terminado")
 
-func _unhandled_input(event: InputEvent) -> void:
+func _on_game_over_response_pressed() -> void:
 	if not player.is_dead:
 		return
-	if go_prompt.modulate.a < 0.9:
+	get_tree().reload_current_scene()
+
+func _on_game_over_button_mouse_entered() -> void:
+	if go_response_button.disabled:
 		return
-	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_R:
-			get_tree().reload_current_scene()
-		elif event.keycode == KEY_Q:
-			get_tree().change_scene_to_file("res://scenes/start_screen.tscn")
+	game_over_button_hovered = true
+	_animate_game_over_button(Vector2(1.035, 1.035), Color(1.18, 1.18, 1.18, go_response_button.modulate.a))
+
+func _on_game_over_button_mouse_exited() -> void:
+	game_over_button_hovered = false
+	_animate_game_over_button(Vector2.ONE, Color(1.0, 1.0, 1.0, go_response_button.modulate.a))
+
+func _on_game_over_button_down() -> void:
+	if go_response_button.disabled:
+		return
+	_animate_game_over_button(Vector2(0.975, 0.975), Color(0.92, 0.92, 0.92, go_response_button.modulate.a), 0.06)
+
+func _on_game_over_button_up() -> void:
+	if go_response_button.disabled:
+		return
+	if game_over_button_hovered:
+		_animate_game_over_button(Vector2(1.035, 1.035), Color(1.18, 1.18, 1.18, go_response_button.modulate.a), 0.08)
+	else:
+		_animate_game_over_button(Vector2.ONE, Color(1.0, 1.0, 1.0, go_response_button.modulate.a), 0.08)
+
+func _animate_game_over_button(target_scale: Vector2, target_modulate: Color, duration: float = 0.12) -> void:
+	if game_over_button_tween:
+		game_over_button_tween.kill()
+	_update_game_over_button_pivot()
+	game_over_button_tween = create_tween().set_parallel(true)
+	game_over_button_tween.tween_property(go_response_button, "scale", target_scale, duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	game_over_button_tween.tween_property(go_response_button, "modulate:r", target_modulate.r, duration)
+	game_over_button_tween.tween_property(go_response_button, "modulate:g", target_modulate.g, duration)
+	game_over_button_tween.tween_property(go_response_button, "modulate:b", target_modulate.b, duration)
+
+func _update_game_over_button_pivot() -> void:
+	go_response_button.pivot_offset = go_response_button.size * 0.5
 
 func format_time(seconds: float) -> String:
 	var minutes := int(seconds) / 60

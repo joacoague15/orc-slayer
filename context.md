@@ -366,14 +366,13 @@ R: Sí, pero los proyectiles no alcanzan a dividirse. Son solo 3 proyectiles rec
 [x] Orco Mago + proyectiles con split
 [x] Orco Warlord (jefe) + 5 fases
 [ ] Pantalla de victoria + créditos
-[ ] Game over mejorado (stats, tips, slow-mo)
-[ ] HUD mejorado (dash indicator, boss phase)
-[ ] Sistema de audio
+[x] Game over mejorado (stats, tips, slow-mo)
+[x] HUD mejorado (dash indicator, boss phase)
+[x] Sistema de audio
 [ ] Música de boss
-[ ] Efectos de pantalla (screen shake, hit stop, chromatic)
+[x] Efectos de pantalla (post-processing, shaders)
 
 cosas a pulir:
-[] Mas animaciones en las muertes de los orcos
 [] Pulir arquero
 [] Pulir mago
 [] Pulir berserker
@@ -390,8 +389,27 @@ cosas a pulir:
 [] Animaciones jefe
 
 [] Terreno mejorado
-[] Personaje con sprites pulidos
+[x] Personaje con sprites pulidos
 
 CUANDO SE GANA
 Sistema de oleadas 
 Boss final
+
+FRASES DE GAME OVER
+Orc: "No one will mourn you here."
+Knight: "I didn't come to be mourned."
+
+Troll: "This is where your story ends."
+Knight: "You don't get to write it."
+
+Orc: "Kneel, and it will be quick."
+Knight: "I kneel to no beast."
+
+Orc: "Your bones will make fine tools."
+Knight: "Come and take them."
+
+Troll: "Your armor will rust on your corpse."
+Knight: "Not today."
+
+Orc: "The ground is hungry for you."
+Knight: "Let it stay hungry."
