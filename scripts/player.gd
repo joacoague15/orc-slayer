@@ -71,17 +71,20 @@ func _physics_process(delta: float) -> void:
 	if is_dashing:
 		_process_dash(delta)
 		move_and_slide()
+		_clamp_to_arena()
 		return
-	
+
 	if Input.is_action_just_pressed("dash"):
 		_try_dash()
 		if is_dashing:
 			move_and_slide()
+			_clamp_to_arena()
 			return
-	
+
 	# Movimiento
 	velocity = input_vector * move_speed
 	move_and_slide()
+	_clamp_to_arena()
 	
 	# Rotación del sprite hacia el mouse
 	var mouse_pos := get_global_mouse_position()
@@ -237,6 +240,18 @@ func _flash_dash_ready() -> void:
 	var tween := create_tween()
 	tween.tween_property(sprite, "modulate", Color(1.6, 1.6, 1.6, 1.0), 0.04)
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.12)
+
+func _clamp_to_arena() -> void:
+	# Mantiene al jugador dentro del arena circular. No es colisión física: la
+	# "ronda" es decorativa y el límite se aplica acá, respetando la regla de que
+	# el jugador atraviesa enemigos. Se aplica también durante el dash, así no se
+	# puede dashear afuera del arena.
+	if GameState.arena_radius <= 0.0:
+		return
+	var offset := global_position - GameState.arena_center
+	var max_dist := GameState.arena_radius - GameState.arena_player_margin
+	if offset.length() > max_dist:
+		global_position = GameState.arena_center + offset.normalized() * max_dist
 
 func is_damage_invulnerable() -> bool:
 	return is_invulnerable or is_dashing

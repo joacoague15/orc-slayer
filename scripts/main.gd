@@ -15,6 +15,7 @@ const GAME_OVER_LINES: Array[Dictionary] = [
 const LOW_RES_WORLD_NODES: Array[StringName] = [
 	&"GroundFallback",
 	&"GroundRain",
+	&"Arena",
 	&"Player",
 	&"Spawner",
 ]
@@ -114,6 +115,17 @@ func _setup_low_res_render() -> void:
 			float(LOW_RES_VIEWPORT_SIZE.y) / GAME_VIEW_WORLD_SIZE.y
 		)
 		camera.make_current()
+		_apply_camera_arena_limits(camera)
+
+func _apply_camera_arena_limits(camera: Camera2D) -> void:
+	# La cámara sigue al jugador pero frena en el borde del arena, así nunca se
+	# ve vacío más allá de la ronda. Arena_ring.gd ya publicó la geometría.
+	if GameState.arena_radius <= 0.0:
+		return
+	camera.limit_left = int(GameState.arena_center.x - GameState.arena_radius)
+	camera.limit_right = int(GameState.arena_center.x + GameState.arena_radius)
+	camera.limit_top = int(GameState.arena_center.y - GameState.arena_radius)
+	camera.limit_bottom = int(GameState.arena_center.y + GameState.arena_radius)
 
 func _resize_low_res_output() -> void:
 	low_res_output.size = get_viewport_rect().size
@@ -245,16 +257,24 @@ func _spawn_boss() -> void:
 	low_res_world.add_child(boss_instance)
 
 func _get_boss_spawn_position() -> Vector2:
-	var spawn_radius: float = max(GAME_VIEW_WORLD_SIZE.x, GAME_VIEW_WORLD_SIZE.y) / 2.0 + boss_spawn_distance_buffer
-	var camera := get_viewport().get_camera_2d()
-	var center := player.global_position
-	if camera:
-		center = camera.global_position
-	
+	# Con arena: el jefe aparece en el punto del borde de la ronda más lejano al
+	# jugador. Sin arena: anillo alrededor del centro de cámara (legacy).
+	var center: Vector2
+	var spawn_radius: float
+	if GameState.arena_radius > 0.0:
+		center = GameState.arena_center
+		spawn_radius = max(GameState.arena_radius - boss_spawn_distance_buffer, 0.0)
+	else:
+		spawn_radius = max(GAME_VIEW_WORLD_SIZE.x, GAME_VIEW_WORLD_SIZE.y) / 2.0 + boss_spawn_distance_buffer
+		center = player.global_position
+		var camera := get_viewport().get_camera_2d()
+		if camera:
+			center = camera.global_position
+
 	var best_position := center + Vector2.RIGHT * spawn_radius
 	var best_distance := -1.0
-	for i in range(8):
-		var angle := TAU * float(i) / 8.0
+	for i in range(16):
+		var angle := TAU * float(i) / 16.0
 		var candidate := center + Vector2(cos(angle), sin(angle)) * spawn_radius
 		var distance := candidate.distance_to(player.global_position)
 		if distance > best_distance:

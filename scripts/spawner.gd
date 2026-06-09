@@ -65,6 +65,8 @@ const WAVE_CONFIGS: Array[Dictionary] = [
 
 @export var spawn_distance_buffer: float = 50.0
 @export var spawn_view_world_size: Vector2 = Vector2(1280.0, 720.0)
+@export var spawn_inner_margin: float = 70.0              # cuánto adentro de la ronda aparecen los enemigos
+@export var min_spawn_distance_from_player: float = 450.0 # distancia mínima al jugador para no matarlo injusto
 @export var grunt_speed_variation: float = 0.12
 @export var grunt_size_variation: float = 0.10
 
@@ -191,11 +193,33 @@ func _get_entry_weight(entry: Dictionary) -> float:
 	return base_weight * GameState.get_spawn_enemy_weight_factor(entry["key"])
 
 func get_spawn_position() -> Vector2:
+	# Con arena acotada los enemigos emergen del borde (la ronda) hacia adentro.
+	if GameState.arena_radius > 0.0:
+		return _get_arena_spawn_position()
+	# Fallback legacy: anillo alrededor del jugador (mundo infinito).
 	var spawn_radius: float = max(spawn_view_world_size.x, spawn_view_world_size.y) / 2.0 + spawn_distance_buffer
-	
 	var angle := randf() * TAU
 	var offset := Vector2(cos(angle), sin(angle)) * spawn_radius
 	return player.global_position + offset
+
+func _get_arena_spawn_position() -> Vector2:
+	var center := GameState.arena_center
+	var ring_radius: float = max(GameState.arena_radius - spawn_inner_margin, 0.0)
+	# Probamos varios ángulos y elegimos uno suficientemente lejos del jugador
+	# para que no aparezcan encima (muerte injusta). Si ninguno alcanza, usamos
+	# el más lejano que encontramos.
+	var best := center + Vector2.RIGHT * ring_radius
+	var best_dist := -1.0
+	for i in range(8):
+		var angle := randf() * TAU
+		var candidate := center + Vector2(cos(angle), sin(angle)) * ring_radius
+		var dist := candidate.distance_to(player.global_position)
+		if dist >= min_spawn_distance_from_player:
+			return candidate
+		if dist > best_dist:
+			best_dist = dist
+			best = candidate
+	return best
 
 func get_orc_count() -> int:
 	return get_tree().get_nodes_in_group("orcs").size()

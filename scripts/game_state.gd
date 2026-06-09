@@ -23,6 +23,14 @@ var combo_timer: float = 0.0
 var time_survived: float = 0.0
 var is_running: bool = false
 var game_over: bool = false
+
+# === Arena ===
+# Geometría del arena circular. La publica arena_ring.gd y la consumen el
+# jugador (clamp de movimiento), el spawner y la cámara.
+# arena_radius == 0.0 significa "sin arena acotada" (mundo infinito legacy).
+var arena_center: Vector2 = Vector2.ZERO
+var arena_radius: float = 0.0
+var arena_player_margin: float = 50.0  # margen para que el jugador no se solape con la ronda
 var spawn_enemy_enabled: Dictionary = {
 	"normal": true,
 	"archer": true,
@@ -56,6 +64,10 @@ func register_kill(score_multiplier: int = 1, counts_as_enemy_kill: bool = true)
 	combo_timer = COMBO_TIMEOUT
 	combo_changed.emit(combo)
 	add_score(combo * score_multiplier)
+
+func set_arena(center: Vector2, radius: float) -> void:
+	arena_center = center
+	arena_radius = radius
 
 func reset_combo() -> void:
 	combo = 0

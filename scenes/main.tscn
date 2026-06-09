@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://8o10rd76dja7"]
+[gd_scene load_steps=21 format=3 uid="uid://8o10rd76dja7"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hyiwn"]
 [ext_resource type="PackedScene" uid="uid://dp3v5iocdqtj2" path="res://scenes/player.tscn" id="2_rl6d3"]
@@ -15,6 +15,7 @@
 [ext_resource type="Shader" path="res://shaders/low_res_palette.gdshader" id="16_7c18v"]
 [ext_resource type="Texture2D" uid="uid://bcps0esbqrdg1" path="res://sprites/game_over_background.png" id="17_5ds7n"]
 [ext_resource type="Texture2D" uid="uid://bphh1g2nbuvpb" path="res://sprites/button_1.png" id="18_0gn4b"]
+[ext_resource type="Script" path="res://scripts/arena_ring.gd" id="19_arena"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_k7pyu"]
 shader = ExtResource("16_7c18v")
@@ -57,6 +58,9 @@ color = Color(0, 0, 0, 1)
 polygon = PackedVector2Array(-20000, -20000, 20000, -20000, 20000, 20000, -20000, 20000)
 
 [node name="GroundRain" parent="." instance=ExtResource("15_t4c5q")]
+
+[node name="Arena" type="Node2D" parent="."]
+script = ExtResource("19_arena")
 
 [node name="Player" parent="." instance=ExtResource("2_rl6d3")]
 z_index = 1
