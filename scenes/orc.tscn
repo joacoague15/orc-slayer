@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://bf6tun472e7x8"]
+[gd_scene load_steps=33 format=3 uid="uid://bf6tun472e7x8"]
 
 [ext_resource type="Script" path="res://scripts/orc.gd" id="1_xeing"]
 [ext_resource type="PackedScene" uid="uid://cbecpas7yxhve" path="res://scenes/pickup.tscn" id="2_bl76n"]
@@ -26,6 +26,7 @@
 [ext_resource type="Texture2D" uid="uid://b4fcikcs6h1bg" path="res://sprites/animations_sprites/orc_attack/frame_11.png" id="14_ajvov"]
 [ext_resource type="Texture2D" uid="uid://i77xses0go6j" path="res://sprites/animations_sprites/death_orc/frame10.png" id="14_brecr"]
 [ext_resource type="Texture2D" uid="uid://dybygs8sr8hx8" path="res://sprites/animations_sprites/death_orc/frame11.png" id="15_tqk2b"]
+[ext_resource type="PackedScene" path="res://scenes/character_shadow.tscn" id="31_shadow"]
 
 [sub_resource type="GDScript" id="GDScript_tc4qd"]
 script/source = "# scripts/corpse.gd
@@ -254,3 +255,6 @@ collision_mask = 2
 
 [node name="NeighborShape" type="CollisionShape2D" parent="NeighborDetector"]
 shape = SubResource("CircleShape2D_k425p")
+
+[node name="Shadow" parent="." instance=ExtResource("31_shadow")]
+shadow_radius = 58.0

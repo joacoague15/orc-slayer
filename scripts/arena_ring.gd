@@ -26,7 +26,7 @@ const RING_ENEMY_TYPES: Array = [
 const DEAD_ORC_TEXTURE: Texture2D = preload("res://sprites/animations_sprites/death_orc/frame11.png")
 const BLOOD_SPLAT_SCENE: PackedScene = preload("res://scenes/blood_splat.tscn")
 const FOG_SHADER: Shader = preload("res://shaders/arena_fog.gdshader")
-const DEAD_BODY_COLOR: Color = Color(0.45, 0.45, 0.45, 1.0)  # mismo tinte que orc.gd al morir
+const DEAD_BODY_COLOR: Color = Color(0.19, 0.2, 0.25, 1.0)  # gris oscuro y frío, igual que orc.gd (cadáver hundido)
 const ORC_BLOOD_COLOR: Color = Color(0.08, 0.45, 0.12, 1.0)  # mismo verde que orc.gd
 
 @export var arena_radius: float = 900.0           # radio del arena; el centro es la posición de este nodo

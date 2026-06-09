@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://dp3v5iocdqtj2"]
+[gd_scene load_steps=32 format=3 uid="uid://dp3v5iocdqtj2"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_tlp8j"]
 [ext_resource type="PackedScene" uid="uid://bh7ad0ocsom3i" path="res://scenes/slice_effect.tscn" id="2_qg56k"]
@@ -28,6 +28,7 @@
 [ext_resource type="Texture2D" uid="uid://br851iw4a6pte" path="res://sprites/animations_sprites/slice_player/frame_13.png" id="25_pwpac"]
 [ext_resource type="Texture2D" uid="uid://bh08p8mfew7fd" path="res://sprites/animations_sprites/slice_player/frame_14.png" id="26_58qk6"]
 [ext_resource type="Texture2D" uid="uid://678qj4nm8o0x" path="res://sprites/animations_sprites/slice_player/frame_15.png" id="27_a7psd"]
+[ext_resource type="PackedScene" path="res://scenes/character_shadow.tscn" id="31_shadow"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fwcdg"]
 animations = [{
@@ -262,3 +263,6 @@ shape = SubResource("RectangleShape2D_lnb5w")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("3_83t3e")
+
+[node name="Shadow" parent="." instance=ExtResource("31_shadow")]
+shadow_radius = 52.0
