@@ -9,6 +9,7 @@
 extends Node2D
 
 @export var rain_enabled: bool = true
+@export var rain_z_index: int = -8                # en el juego: detrás de unidades, sobre el suelo. En el menú se sube sobre el fondo.
 
 @export_group("Gotas que caen")
 @export var drop_count: int = 240                 # gotas en vuelo a la vez (área = pantalla completa)
@@ -38,7 +39,7 @@ var drops: Array[Dictionary] = []
 var impacts: Array[Dictionary] = []
 
 func _ready() -> void:
-	z_index = -8
+	z_index = rain_z_index
 
 func _process(delta: float) -> void:
 	if not rain_enabled:

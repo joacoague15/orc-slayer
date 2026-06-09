@@ -346,7 +346,9 @@ func _on_player_died() -> void:
 	var line: Dictionary = GAME_OVER_LINES.pick_random()
 	go_enemy_quote.text = "\"%s\"" % String(line["enemy"])
 	go_response_label.text = String(line["knight"])
-	go_response_button.disabled = true
+	# Habilitado de inmediato: el jugador puede reiniciar apenas muere, sin esperar
+	# la animación. (En gameplay sigue deshabilitado para no robar clicks de ataque.)
+	go_response_button.disabled = false
 	go_score.text = "Score: %d" % GameState.score
 	go_highscore.text = "Highscore: %d" % GameState.highscore
 	
@@ -380,7 +382,6 @@ func _on_player_died() -> void:
 	var final_tween := create_tween()
 	final_tween.tween_property(go_highscore, "modulate:a", 1.0, 0.3)
 	await final_tween.finished
-	go_response_button.disabled = false
 	print("[GAME OVER] final tween terminado")
 
 func _on_game_over_response_pressed() -> void:

@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://dnr2r1qt25jg"]
+[gd_scene load_steps=7 format=3 uid="uid://dnr2r1qt25jg"]
 
 [ext_resource type="Script" path="res://scripts/start_screen.gd" id="1_cxrsa"]
 [ext_resource type="Texture2D" uid="uid://bh2otjknefdwq" path="res://sprites/main_menu_title.png" id="2_1a28p"]
 [ext_resource type="Texture2D" uid="uid://dc8tub4opx64e" path="res://sprites/main_menu.png" id="2_8kvlq"]
 [ext_resource type="FontFile" uid="uid://cqpxt7hcmlt3p" path="res://fonts/Silkscreen-Regular.ttf" id="3_11yr1"]
 [ext_resource type="Texture2D" uid="uid://bphh1g2nbuvpb" path="res://sprites/button_1.png" id="4_5vrj7"]
+[ext_resource type="PackedScene" path="res://scenes/ground_rain.tscn" id="5_rain"]
 
 [node name="StartScreen" type="Control"]
 layout_mode = 3
@@ -23,6 +24,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
+
+[node name="GroundRain" parent="." instance=ExtResource("5_rain")]
+position = Vector2(640, 360)
+rain_z_index = 0
+drop_count = 45
+drop_length_min = 16.0
+drop_length_max = 28.0
+drop_thickness = 2.0
+drop_color = Color(0.62, 0.74, 0.86, 0.2)
+impact_chance = 0.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
