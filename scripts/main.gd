@@ -20,6 +20,14 @@ const LOW_RES_WORLD_NODES: Array[StringName] = [
 	&"Spawner",
 ]
 
+# Tracker de oleadas (pips) que aparece en la transición.
+const PIP_SIZE: Vector2 = Vector2(16, 16)
+const PIP_DONE: Color = Color(1, 0.85, 0.2)        # wave completada
+const PIP_NEXT: Color = Color(1, 1, 1)             # la que viene (pop)
+const PIP_DIM: Color = Color(0.3, 0.3, 0.34)       # pendiente
+const PIP_BOSS_DIM: Color = Color(0.5, 0.16, 0.16)
+const PIP_BOSS_ACTIVE: Color = Color(1, 0.2, 0.2)
+
 @export var boss_scene: PackedScene
 @export var boss_pending: bool = true
 @export var boss_spawn_delay: float = 3.0
@@ -35,6 +43,9 @@ const LOW_RES_WORLD_NODES: Array[StringName] = [
 @onready var score_label: Label = $UI/TopLeftPanel/ScoreLabel
 @onready var time_label: Label = $UI/TimeRow/TimeVBox/TimeLabel
 @onready var wave_marker_label: Label = $UI/WaveMarkerLabel
+@onready var wave_tracker: VBoxContainer = $UI/WaveTracker
+@onready var wave_fromto_label: Label = $UI/WaveTracker/WaveFromToLabel
+@onready var wave_pip_row: HBoxContainer = $UI/WaveTracker/PipRow
 @onready var wave_progress_container: Control = $UI/WaveProgressContainer
 @onready var wave_progress_fill_clip: Control = $UI/WaveProgressContainer/WaveProgressFillClip
 @onready var wave_progress_fill: TextureRect = $UI/WaveProgressContainer/WaveProgressFillClip/WaveProgressFill
@@ -60,6 +71,7 @@ var wave_transition_running: bool = false
 var wave_progress_ratio: float = 0.0
 var game_over_button_hovered: bool = false
 var game_over_button_tween: Tween
+var wave_pips: Array[ColorRect] = []
 
 func _ready() -> void:
 	_setup_low_res_render()
@@ -77,6 +89,8 @@ func _ready() -> void:
 	combo_value_label.text = ""
 	combo_timer_bar.modulate.a = 0.0
 	wave_marker_label.modulate.a = 0.0
+	_build_wave_pips()
+	wave_tracker.modulate.a = 0.0
 	wave_progress_container.visible = true
 	wave_progress_container.resized.connect(_sync_wave_progress_layout)
 	_set_wave_progress_ratio(0.0)
@@ -163,7 +177,7 @@ func _on_wave_started(wave_number: int, kills_required: int) -> void:
 	_set_wave_progress_ratio(0.0)
 	# El banner escala en tamaño y color con la intensidad de la wave.
 	var emphasis: float = 1.0 + float(mini(wave_number - 1, 6)) * 0.07
-	_show_wave_marker("WAVE %d" % wave_number, "KILLS 0 / %d" % kills_required, _wave_accent_color(wave_number), emphasis)
+	_show_wave_marker("WAVE %d" % wave_number, "", _wave_accent_color(wave_number), emphasis)
 	# La horda embiste: la ronda se sacude hacia adentro + golpe de cámara.
 	if arena and arena.has_method("play_horde_surge"):
 		arena.play_horde_surge()
@@ -213,13 +227,60 @@ func _start_wave_transition(wave_number: int) -> void:
 		wave_transition_running = false
 		return
 	_set_wave_progress_ratio(1.0)
-	_show_wave_marker("WAVE %d CLEAR" % wave_number, "NEXT WAVE INCOMING")
+	_show_wave_tracker(wave_number, wave_number + 1)
 	await get_tree().create_timer(wave_transition_delay).timeout
 	if GameState.game_over or player.is_dead:
 		wave_transition_running = false
 		return
+	_hide_wave_tracker()
 	wave_transition_running = false
 	spawner.start_next_wave()
+
+func _build_wave_pips() -> void:
+	# Un pip por wave: 1..(BOSS-1) de combate + el último para el boss.
+	for i in range(BOSS_WAVE_NUMBER):
+		var pip := ColorRect.new()
+		pip.custom_minimum_size = PIP_SIZE
+		pip.pivot_offset = PIP_SIZE * 0.5
+		pip.color = PIP_BOSS_DIM if i == BOSS_WAVE_NUMBER - 1 else PIP_DIM
+		wave_pip_row.add_child(pip)
+		wave_pips.append(pip)
+
+func _show_wave_tracker(from_wave: int, to_wave: int) -> void:
+	wave_fromto_label.text = "WAVE %d  >  %d" % [from_wave, to_wave]
+	_update_wave_pips(to_wave)
+
+	wave_tracker.modulate.a = 0.0
+	var tween := create_tween()
+	tween.tween_property(wave_tracker, "modulate:a", 1.0, 0.22)
+
+	# Slam del texto para resaltar bien el pase de una wave a la siguiente.
+	wave_fromto_label.pivot_offset = wave_fromto_label.size * 0.5
+	wave_fromto_label.scale = Vector2(1.5, 1.5)
+	var slam := create_tween()
+	slam.tween_property(wave_fromto_label, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func _hide_wave_tracker() -> void:
+	var tween := create_tween()
+	tween.tween_property(wave_tracker, "modulate:a", 0.0, 0.3)
+
+func _update_wave_pips(to_wave: int) -> void:
+	for i in range(wave_pips.size()):
+		var w: int = i + 1
+		var pip: ColorRect = wave_pips[i]
+		var is_boss: bool = (w == BOSS_WAVE_NUMBER)
+		if w < to_wave:
+			pip.color = PIP_DONE
+			pip.scale = Vector2.ONE
+		elif w == to_wave:
+			# La que viene: se enciende con un pop.
+			pip.color = PIP_BOSS_ACTIVE if is_boss else PIP_NEXT
+			pip.scale = Vector2(1.7, 1.7)
+			var pop := create_tween()
+			pop.tween_property(pip, "scale", Vector2.ONE, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		else:
+			pip.color = PIP_BOSS_DIM if is_boss else PIP_DIM
+			pip.scale = Vector2.ONE
 
 func _start_boss_sequence(wave_number: int) -> void:
 	boss_spawn_started = true

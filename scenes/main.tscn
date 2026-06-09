@@ -299,6 +299,33 @@ theme_override_font_sizes/font_size = 34
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="WaveTracker" type="VBoxContainer" parent="UI"]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="WaveFromToLabel" type="Label" parent="UI/WaveTracker"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/font = ExtResource("4_lowrd")
+theme_override_font_sizes/font_size = 40
+text = "WAVE 1 > 2"
+horizontal_alignment = 1
+
+[node name="PipRow" type="HBoxContainer" parent="UI/WaveTracker"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
 [node name="Spawner" type="Node2D" parent="." groups=["spawner"]]
 script = ExtResource("4_2bv7o")
 orc_normal_scene = ExtResource("3_cgdby")
