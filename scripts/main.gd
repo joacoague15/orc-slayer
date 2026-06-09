@@ -46,6 +46,7 @@ const LOW_RES_WORLD_NODES: Array[StringName] = [
 @onready var go_response_button: TextureButton = $UI/GameOverScreen/StatsContainer/KnightResponseButton
 @onready var go_response_label: Label = $UI/GameOverScreen/StatsContainer/KnightResponseButton/Label
 @onready var go_score: Label = $UI/GameOverScreen/StatsContainer/ScoreLabel
+@onready var go_kills: Label = $UI/GameOverScreen/StatsContainer/KillBreakdownLabel
 @onready var go_time: Label = $UI/GameOverScreen/StatsContainer/TimeLabel
 @onready var go_highscore: Label = $UI/GameOverScreen/StatsContainer/HighscoreLabel
 
@@ -93,6 +94,7 @@ func _ready() -> void:
 	go_response_button.button_up.connect(_on_game_over_button_up)
 	_update_game_over_button_pivot()
 	go_score.modulate.a = 0.0
+	go_kills.modulate.a = 0.0
 	go_time.modulate.a = 0.0
 	go_highscore.modulate.a = 0.0
 	AudioManager.play_game_music()
@@ -350,6 +352,12 @@ func _on_player_died() -> void:
 	# la animación. (En gameplay sigue deshabilitado para no robar clicks de ataque.)
 	go_response_button.disabled = false
 	go_score.text = "Score: %d" % GameState.score
+	go_kills.text = "Grunts %d   Shamans %d\nBerserkers %d   Archers %d" % [
+		GameState.get_kills_of_class(&"grunt"),
+		GameState.get_kills_of_class(&"mage"),
+		GameState.get_kills_of_class(&"berserker"),
+		GameState.get_kills_of_class(&"archer"),
+	]
 	go_highscore.text = "Highscore: %d" % GameState.highscore
 	
 	# Silencio inicial
@@ -373,7 +381,9 @@ func _on_player_died() -> void:
 	fade_tween.tween_property(go_response_button, "modulate:a", 1.0, 0.3)
 	fade_tween.tween_interval(0.2)
 	fade_tween.tween_property(go_score, "modulate:a", 1.0, 0.3)
-	
+	fade_tween.tween_interval(0.15)
+	fade_tween.tween_property(go_kills, "modulate:a", 1.0, 0.3)
+
 	await fade_tween.finished
 	await get_tree().create_timer(0.4).timeout
 	

@@ -6,7 +6,10 @@ signal dash_started
 signal dash_finished
 signal dash_ready
 
-@export var move_speed: float = 390.0
+@export var move_speed: float = 390.0          # velocidad final (máxima) — valor del context.md
+@export var acceleration: float = 3200.0       # px/s² hasta la velocidad final
+@export var friction: float = 4200.0           # px/s² al soltar (alto = freno casi instantáneo)
+@export var rotation_speed: float = 16.0       # rad/s de giro del sprite hacia el mouse
 @export var slice_speed_multiplier: float = 0.5
 @export var slice_scene: PackedScene
 
@@ -14,8 +17,10 @@ signal dash_ready
 @export var dash_speed: float = 1270.75
 @export var dash_duration: float = 0.16
 @export var dash_cooldown: float = 0.75
-@export var dash_ghost_count: int = 4
-@export var dash_ghost_lifetime: float = 0.18
+@export var dash_ghost_count: int = 7
+@export var dash_ghost_lifetime: float = 0.22
+@export var dash_ghost_color: Color = Color(0.8, 1.1, 1.7, 0.7)      # cian sobreexpuesto: la estela resalta sobre el fondo oscuro
+@export var dash_ghost_scale: float = 1.12                           # leve "bloom" de la afterimage
 
 # Tiempo de espera antes de volver a idle desde slice_2_end
 @export var return_to_idle_delay: float = 2.0
@@ -81,14 +86,18 @@ func _physics_process(delta: float) -> void:
 			_clamp_to_arena()
 			return
 
-	# Movimiento
-	velocity = input_vector * move_speed
+	# Movimiento con aceleración hacia la velocidad final y freno al soltar.
+	if input_vector != Vector2.ZERO:
+		velocity = velocity.move_toward(input_vector * move_speed, acceleration * delta)
+	else:
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 	move_and_slide()
 	_clamp_to_arena()
-	
-	# Rotación del sprite hacia el mouse
+
+	# Rotación del sprite hacia el mouse, girando a rotation_speed (no instantáneo).
 	var mouse_pos := get_global_mouse_position()
-	sprite.rotation = (mouse_pos - global_position).angle() - PI / 2
+	var target_rotation := (mouse_pos - global_position).angle() - PI / 2
+	sprite.rotation = rotate_toward(sprite.rotation, target_rotation, rotation_speed * delta)
 	
 	# Velocidad de animación: solo idle se acelera al moverse
 	if slice_state == SliceState.IDLE:
@@ -227,9 +236,14 @@ func _spawn_dash_ghost() -> void:
 	ghost.texture = texture
 	ghost.global_position = global_position
 	ghost.global_rotation = sprite.global_rotation
-	ghost.global_scale = sprite.global_scale
+	ghost.global_scale = sprite.global_scale * dash_ghost_scale
 	ghost.z_index = sprite.z_index + 20
-	ghost.modulate = Color(0.6, 0.9, 1.0, 0.45)
+	# Degradé: las afterimages viejas (cola) arrancan más tenues que las recientes,
+	# para una estela que se desvanece suave hacia atrás.
+	var t := float(dash_ghosts_spawned) / maxf(float(dash_ghost_count), 1.0)
+	var ghost_color := dash_ghost_color
+	ghost_color.a *= lerpf(0.55, 1.0, t)
+	ghost.modulate = ghost_color
 	get_parent().add_child(ghost)
 	
 	var tween := ghost.create_tween()
@@ -237,9 +251,14 @@ func _spawn_dash_ghost() -> void:
 	tween.tween_callback(ghost.queue_free)
 
 func _flash_dash_ready() -> void:
-	var tween := create_tween()
-	tween.tween_property(sprite, "modulate", Color(1.6, 1.6, 1.6, 1.0), 0.04)
-	tween.tween_property(sprite, "modulate", Color.WHITE, 0.12)
+	# Destello cian sobreexpuesto + pop de escala: feedback claro de "dash listo".
+	var base_scale := sprite.scale
+	var flash := create_tween()
+	flash.tween_property(sprite, "modulate", Color(1.8, 2.5, 3.0, 1.0), 0.05)
+	flash.tween_property(sprite, "modulate", Color.WHITE, 0.2)
+	var pop := create_tween()
+	pop.tween_property(sprite, "scale", base_scale * 1.14, 0.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	pop.tween_property(sprite, "scale", base_scale, 0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func _clamp_to_arena() -> void:
 	# Mantiene al jugador dentro del arena circular. No es colisión física: la

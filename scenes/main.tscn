@@ -183,6 +183,17 @@ theme_override_font_sizes/font_size = 36
 text = "Score: 0"
 horizontal_alignment = 1
 
+[node name="KillBreakdownLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.74, 0.48, 1)
+theme_override_constants/line_spacing = 6
+theme_override_fonts/font = ExtResource("9_23d4l")
+theme_override_font_sizes/font_size = 20
+text = "Grunts 0   Shamans 0
+Berserkers 0   Archers 0"
+horizontal_alignment = 1
+
 [node name="HighscoreLabel" type="Label" parent="UI/GameOverScreen/StatsContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 0)

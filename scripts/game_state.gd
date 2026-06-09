@@ -10,6 +10,7 @@ var score: int = 0
 var highscore: int = 0
 var combo: int = 0
 var kill_count: int = 0
+var kills_by_class: Dictionary = {}  # enemy_class (StringName) -> cantidad eliminada en la run
 
 # Sistema de anger persistente
 var total_anger: int = 0
@@ -56,10 +57,12 @@ func _process(delta: float) -> void:
 		if combo_timer <= 0.0:
 			reset_combo()
 
-func register_kill(score_multiplier: int = 1, counts_as_enemy_kill: bool = true) -> void:
+func register_kill(score_multiplier: int = 1, counts_as_enemy_kill: bool = true, enemy_class: StringName = &"") -> void:
 	if counts_as_enemy_kill:
 		kill_count += 1
 		kill_count_changed.emit(kill_count)
+		if enemy_class != &"":
+			kills_by_class[enemy_class] = int(kills_by_class.get(enemy_class, 0)) + 1
 	combo += 1
 	combo_timer = COMBO_TIMEOUT
 	combo_changed.emit(combo)
@@ -68,6 +71,9 @@ func register_kill(score_multiplier: int = 1, counts_as_enemy_kill: bool = true)
 func set_arena(center: Vector2, radius: float) -> void:
 	arena_center = center
 	arena_radius = radius
+
+func get_kills_of_class(enemy_class: StringName) -> int:
+	return int(kills_by_class.get(enemy_class, 0))
 
 func reset_combo() -> void:
 	combo = 0
@@ -81,6 +87,7 @@ func add_score(amount: int) -> void:
 func reset_score() -> void:
 	score = 0
 	kill_count = 0
+	kills_by_class.clear()
 	time_survived = 0.0
 	is_running = true
 	game_over = false
