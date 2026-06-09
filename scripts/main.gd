@@ -31,6 +31,7 @@ const LOW_RES_WORLD_NODES: Array[StringName] = [
 @onready var low_res_world: Node2D = $LowResOutput/LowResViewport/World
 @onready var player: Node2D = $Player
 @onready var spawner: Node2D = $Spawner
+@onready var arena: Node2D = $Arena
 @onready var score_label: Label = $UI/TopLeftPanel/ScoreLabel
 @onready var time_label: Label = $UI/TimeRow/TimeVBox/TimeLabel
 @onready var wave_marker_label: Label = $UI/WaveMarkerLabel
@@ -160,7 +161,25 @@ func _on_wave_started(wave_number: int, kills_required: int) -> void:
 		return
 	wave_progress_container.visible = true
 	_set_wave_progress_ratio(0.0)
-	_show_wave_marker("WAVE %d" % wave_number, "KILLS 0 / %d" % kills_required)
+	# El banner escala en tamaño y color con la intensidad de la wave.
+	var emphasis: float = 1.0 + float(mini(wave_number - 1, 6)) * 0.07
+	_show_wave_marker("WAVE %d" % wave_number, "KILLS 0 / %d" % kills_required, _wave_accent_color(wave_number), emphasis)
+	# La horda embiste: la ronda se sacude hacia adentro + golpe de cámara.
+	if arena and arena.has_method("play_horde_surge"):
+		arena.play_horde_surge()
+	var surge_camera := player.get_node_or_null("Camera2D")
+	if surge_camera and surge_camera.has_method("shake"):
+		surge_camera.shake(6.0)
+
+func _wave_accent_color(wave_number: int) -> Color:
+	# Más alta la wave, más caliente/peligroso el color del banner.
+	if wave_number >= 6:
+		return Color(0.7, 0.2, 0.9)   # púrpura
+	elif wave_number >= 5:
+		return Color(1.0, 0.2, 0.2)   # rojo
+	elif wave_number >= 3:
+		return Color(1.0, 0.5, 0.1)   # naranja
+	return Color(1.0, 0.85, 0.2)      # gold
 
 func _update_wave_progress_bar() -> void:
 	var kills_required: int = spawner.get_current_wave_kills_required()
@@ -290,16 +309,22 @@ func _wait_for_orcs_cleared() -> void:
 			return
 		await get_tree().process_frame
 
-func _show_wave_marker(title: String, subtitle: String = "") -> void:
+func _show_wave_marker(title: String, subtitle: String = "", accent_color: Color = Color(1.0, 0.85, 0.2), emphasis: float = 1.0) -> void:
 	wave_marker_label.text = title
 	if subtitle != "":
 		wave_marker_label.text += "\n%s" % subtitle
-	wave_marker_label.scale = Vector2(1.2, 1.2)
+	wave_marker_label.add_theme_color_override("font_color", accent_color)
+	# Pivote al centro para que el slam escale desde el medio, no desde la esquina.
+	wave_marker_label.pivot_offset = wave_marker_label.size * 0.5
+
+	# Slam con overshoot: entra grande y de golpe, asienta con rebote.
+	var final_scale := Vector2.ONE * emphasis
+	wave_marker_label.scale = final_scale * 1.7
 	wave_marker_label.modulate.a = 0.0
-	
+
 	var tween := create_tween()
-	tween.tween_property(wave_marker_label, "modulate:a", 1.0, 0.2)
-	tween.parallel().tween_property(wave_marker_label, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(wave_marker_label, "modulate:a", 1.0, 0.1)
+	tween.parallel().tween_property(wave_marker_label, "scale", final_scale, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	if title != "BOSS PENDING":
 		tween.tween_interval(1.2)
 		tween.tween_property(wave_marker_label, "modulate:a", 0.0, 0.3)

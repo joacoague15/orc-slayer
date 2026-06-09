@@ -47,6 +47,11 @@ const ORC_BLOOD_COLOR: Color = Color(0.08, 0.45, 0.12, 1.0)  # mismo verde que o
 @export var gaze_max_angle: float = 0.20          # rad (~11°): desvío máximo desde mirar al centro. Poco, para no confundir.
 @export var gaze_smooth: float = 4.0              # qué tan rápido giran la cabeza hacia el jugador
 
+@export_group("Surge (embestida al cambiar de wave)")
+@export var surge_distance: float = 42.0          # cuánto se lanzan las siluetas hacia el centro
+@export var surge_color: Color = Color(0.9, 0.55, 0.4, 1.0)  # destello cálido del "rugido"
+@export var surge_duration: float = 0.5           # cuánto dura el pulso
+
 @export_group("Niebla (fuera de la ronda)")
 @export var fog_enabled: bool = true
 @export var fog_color: Color = Color(0.04, 0.05, 0.07, 1.0)  # casi negro, frío y tétrico
@@ -81,6 +86,11 @@ class RingOrc:
 var _orcs: Array = []
 var _time: float = 0.0
 var _player: Node2D
+var _surge: float = 0.0  # 1.0 al disparar la embestida, decae a 0
+
+# La horda embiste: las siluetas se lanzan hacia adentro y destellan ~surge_duration.
+func play_horde_surge() -> void:
+	_surge = 1.0
 
 func _ready() -> void:
 	# Publicar la geometría del arena para que jugador, spawner y cámara la consuman.
@@ -191,9 +201,19 @@ func _process(delta: float) -> void:
 	if gaze_follow and not is_instance_valid(_player):
 		_player = get_tree().get_first_node_in_group("player")
 
+	# Embestida: el pulso hace lunge-and-recoil (0 al inicio, pico al medio, 0 al final).
+	if _surge > 0.0:
+		_surge = maxf(_surge - delta / surge_duration, 0.0)
+	var surge_pulse := sin((1.0 - _surge) * PI) if _surge > 0.0 else 0.0
+
 	for o in _orcs:
 		var bob := sin(_time * o.speed_pos + o.phase_pos) * sway_position_amplitude
-		o.sprite.position = o.base_position + Vector2(0.0, bob)
+		var pos: Vector2 = o.base_position + Vector2(0.0, bob)
+		if surge_pulse > 0.0:
+			pos += (-(o.base_position as Vector2).normalized()) * surge_distance * surge_pulse  # hacia el centro
+		o.sprite.position = pos
+		# Destello cálido del rugido (decae con _surge; en reposo queda en ring_tint).
+		o.sprite.modulate = ring_tint.lerp(surge_color, _surge)
 
 		# Mirada: giran un poco la "cabeza" hacia el jugador, con desvío acotado
 		# (gaze_max_angle) respecto de mirar al centro, para no confundir.
