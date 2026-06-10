@@ -20,7 +20,7 @@ extends Node2D
 @export var drop_length_min: float = 34.0         # largo del trazo (gota pesada = trazo largo)
 @export var drop_length_max: float = 58.0
 @export var drop_thickness: float = 4.0           # grosor del trazo
-@export var drop_wind: float = 22.0               # desplazamiento horizontal durante la caída
+@export var drop_wind: float = 6.0                # desplazamiento horizontal durante la caída (bajo = lluvia casi vertical)
 @export var drop_color: Color = Color(0.62, 0.74, 0.86, 0.42)
 
 @export_group("Ondas de impacto")
