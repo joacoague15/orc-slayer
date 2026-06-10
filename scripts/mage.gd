@@ -7,15 +7,13 @@ const TELEGRAPH_DURATION: float = 0.8
 const PROJECTILE_INTERVAL: float = 0.3
 const BURST_PROJECTILE_COUNT: int = 3
 const BURST_ANGLES_DEGREES: Array[float] = [0.0, -15.0, 15.0]
-const NO_SPLIT_DISTANCE: float = 50.0
 
 @export var arcane_bolt_scene: PackedScene
 @export var mage_move_speed: float = 126.75
 @export var mage_attack_range: float = 360.0
 @export var mage_min_range: float = 120.0
-@export var arcane_bolt_speed: float = 360.0
-@export var bolt_split_distance: float = 200.0
-@export var split_bolt_travel_distance: float = 360.0
+@export var arcane_bolt_speed: float = 720.0
+@export var orb_homing_duration: float = 2.0  # segundos que el orbe persigue antes de salir recto
 @export var attack_cooldown: float = 3.0
 @export var cast_origin_offset: Vector2 = Vector2(0.0, 36.0)
 
@@ -32,7 +30,6 @@ var cooldown_timer: float = 0.0
 var burst_interval_timer: float = 0.0
 var burst_index: int = 0
 var burst_base_direction: Vector2 = Vector2.RIGHT
-var burst_should_split: bool = true
 
 func _ready() -> void:
 	super()
@@ -127,7 +124,6 @@ func _start_burst() -> void:
 	burst_base_direction = (player.global_position - cast_origin).normalized()
 	if burst_base_direction == Vector2.ZERO:
 		burst_base_direction = Vector2.RIGHT
-	burst_should_split = cast_origin.distance_to(player.global_position) >= NO_SPLIT_DISTANCE
 	_play_attack_animation()
 
 func _start_cooldown() -> void:
@@ -152,13 +148,9 @@ func _cast_bolt(angle_degrees: float) -> void:
 	var bolt := arcane_bolt_scene.instantiate()
 	bolt.global_position = _get_cast_origin_global_position()
 	if bolt.has_method("setup"):
-		bolt.setup(
-			bolt_direction,
-			arcane_bolt_speed,
-			burst_should_split,
-			bolt_split_distance,
-			split_bolt_travel_distance
-		)
+		# El orbe persigue al jugador durante orb_homing_duration y luego sigue
+		# recto. owner = self: si este mago muere, su orbe desaparece.
+		bolt.setup(bolt_direction, arcane_bolt_speed, orb_homing_duration, player, self)
 	get_parent().add_child(bolt)
 	bolt_cast.emit(bolt)
 

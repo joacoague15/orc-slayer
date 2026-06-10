@@ -16,7 +16,7 @@ const WAVE_CONFIGS: Array[Dictionary] = [
 	},
 	{
 		"number": 2,
-		"kills_required": 30,
+		"kills_required": 12,
 		"max_orcs": 16,
 		"spawn_interval": 1.05,
 		"weights": {"normal": 0.40, "archer": 0.60, "mage": 0.00, "berserker": 0.00},

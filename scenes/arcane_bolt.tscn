@@ -13,8 +13,6 @@ collision_mask = 1
 script = ExtResource("1_7wllt")
 residue_scene = ExtResource("2_3xx80")
 trail_spawn_interval = 0.09
-split_visual_residue_count = 4
-split_visual_spread_degrees = 120.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_q3u4d")
