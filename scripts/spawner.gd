@@ -62,6 +62,7 @@ const WAVE_CONFIGS: Array[Dictionary] = [
 @export var orc_archer_scene: PackedScene
 @export var orc_mage_scene: PackedScene
 @export var orc_berserker_scene: PackedScene
+@export var boss_scene: PackedScene  # usado por el modo de test "boss only"
 
 @export var spawn_distance_buffer: float = 50.0
 @export var spawn_view_world_size: Vector2 = Vector2(1280.0, 720.0)
@@ -151,11 +152,17 @@ func spawn_orc() -> void:
 	current_wave_spawned += 1
 
 func _can_spawn_in_current_wave(wave: Dictionary) -> bool:
+	# Modo de test: un solo Warlord a la vez (es invulnerable, nunca muere).
+	if GameState.boss_only_mode:
+		return get_orc_count() < 1
 	if current_wave_spawned >= int(wave["kills_required"]):
 		return false
 	return get_orc_count() < int(wave["max_orcs"])
 
 func pick_orc_scene() -> PackedScene:
+	# Modo de test: si está activo, todas las waves spawnean solo el Warlord.
+	if GameState.boss_only_mode and boss_scene:
+		return boss_scene
 	var weights: Dictionary = get_current_wave()["weights"]
 	return _pick_weighted_orc_scene([
 		{"key": "normal", "scene": orc_normal_scene, "weight": weights["normal"]},

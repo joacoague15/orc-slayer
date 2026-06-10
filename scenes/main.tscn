@@ -10,12 +10,12 @@
 [ext_resource type="PackedScene" uid="uid://b6o73a5lhv1ga" path="res://scenes/archer.tscn" id="11_7xhwn"]
 [ext_resource type="PackedScene" uid="uid://c6u4oegopnuge" path="res://scenes/mage.tscn" id="12_0wrcj"]
 [ext_resource type="PackedScene" path="res://scenes/berserker.tscn" id="13_vjdqi"]
-[ext_resource type="PackedScene" path="res://scenes/boss.tscn" id="14_p4n2m"]
 [ext_resource type="PackedScene" path="res://scenes/ground_rain.tscn" id="15_t4c5q"]
 [ext_resource type="Shader" path="res://shaders/low_res_palette.gdshader" id="16_7c18v"]
 [ext_resource type="Texture2D" uid="uid://bcps0esbqrdg1" path="res://sprites/game_over_background.png" id="17_5ds7n"]
 [ext_resource type="Texture2D" uid="uid://bphh1g2nbuvpb" path="res://sprites/button_1.png" id="18_0gn4b"]
 [ext_resource type="Script" path="res://scripts/arena_ring.gd" id="19_arena"]
+[ext_resource type="PackedScene" path="res://scenes/boss_warlord.tscn" id="20_bosstest"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_k7pyu"]
 shader = ExtResource("16_7c18v")
@@ -35,7 +35,7 @@ bg_color = Color(1, 0.85, 0.2, 1)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_hyiwn")
-boss_scene = ExtResource("14_p4n2m")
+boss_scene = ExtResource("20_bosstest")
 
 [node name="LowResOutput" type="SubViewportContainer" parent="."]
 material = SubResource("ShaderMaterial_k7pyu")
@@ -332,3 +332,4 @@ orc_normal_scene = ExtResource("3_cgdby")
 orc_archer_scene = ExtResource("11_7xhwn")
 orc_mage_scene = ExtResource("12_0wrcj")
 orc_berserker_scene = ExtResource("13_vjdqi")
+boss_scene = ExtResource("20_bosstest")

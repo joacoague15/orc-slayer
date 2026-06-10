@@ -1,0 +1,81 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/boss_warlord.gd" id="0_boss"]
+[ext_resource type="Texture2D" uid="uid://b1jsaqc63q36s" path="res://sprites/boss_1/body_boss.png" id="1_body"]
+[ext_resource type="Texture2D" uid="uid://culf0iqn6osap" path="res://sprites/boss_1/head_boss.png" id="2_head"]
+[ext_resource type="Texture2D" uid="uid://b3mjwsjrd87ie" path="res://sprites/boss_1/left_arm_boss.png" id="3_larm"]
+[ext_resource type="Texture2D" uid="uid://ol016b2c217b" path="res://sprites/boss_1/right_arm_boss.png" id="4_rarm"]
+
+[sub_resource type="Animation" id="Animation_idle"]
+resource_name = "idle"
+length = 3.0
+loop_mode = 1
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Parts:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.5, 3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 7), Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Parts/Body:scale")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1.5, 3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.02, 1.018), Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_boss"]
+_data = {
+"idle": SubResource("Animation_idle")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_boss"]
+radius = 320.0
+
+[node name="BossWarlord" type="CharacterBody2D" groups=["orcs"]]
+z_index = 5
+scale = Vector2(0.48, 0.48)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("0_boss")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_boss")
+
+[node name="Parts" type="Node2D" parent="."]
+
+[node name="RightArm" type="Sprite2D" parent="Parts"]
+position = Vector2(-180, -240)
+texture = ExtResource("4_rarm")
+offset = Vector2(180, 240)
+
+[node name="LeftArm" type="Sprite2D" parent="Parts"]
+position = Vector2(50, -210)
+texture = ExtResource("3_larm")
+offset = Vector2(-50, 210)
+
+[node name="Body" type="Sprite2D" parent="Parts"]
+texture = ExtResource("1_body")
+
+[node name="Head" type="Sprite2D" parent="Parts"]
+position = Vector2(-49, 22)
+texture = ExtResource("2_head")
+offset = Vector2(49, -22)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_boss")
+}
+autoplay = "idle"

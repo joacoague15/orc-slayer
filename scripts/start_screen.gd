@@ -3,6 +3,7 @@ extends Control
 
 @onready var start_button: TextureButton = $VBoxContainer/StartButton
 @onready var highscore_label: Label = $VBoxContainer/HighscoreLabel
+@onready var boss_only_toggle: CheckButton = $VBoxContainer/BossOnlyToggle
 @onready var hero_sprite: Sprite2D = $main_menu_sprite
 
 var blink_time: float = 0.0
@@ -23,6 +24,11 @@ func _ready() -> void:
 	start_button.mouse_exited.connect(_on_start_button_mouse_exited)
 	start_button.button_down.connect(_on_start_button_down)
 	start_button.button_up.connect(_on_start_button_up)
+
+	# Toggle de test "BOSS ONLY": persiste en GameState (autoload) hacia la partida.
+	boss_only_toggle.button_pressed = GameState.boss_only_mode
+	boss_only_toggle.toggled.connect(_on_boss_only_toggled)
+
 	_update_start_button_pivot()
 	animate_intro()
 	
@@ -69,6 +75,9 @@ func _animate_start_button(target_scale: Vector2, target_modulate: Color, durati
 
 func _update_start_button_pivot() -> void:
 	start_button.pivot_offset = start_button.size * 0.5
+
+func _on_boss_only_toggled(pressed: bool) -> void:
+	GameState.boss_only_mode = pressed
 
 func start_game() -> void:
 	# Bloqueamos input mientras hace la transición

@@ -45,6 +45,9 @@ var spawn_enemy_weight_multiplier: Dictionary = {
 	"berserker": 1.0,
 }
 
+# Modo de test del menú: si está ON, todas las waves spawnean solo el Warlord.
+var boss_only_mode: bool = false
+
 func _ready() -> void:
 	load_save()
 

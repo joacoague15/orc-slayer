@@ -85,6 +85,15 @@ theme_override_fonts/font = ExtResource("3_11yr1")
 theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 
+[node name="BossOnlyToggle" type="CheckButton" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_fonts/font = ExtResource("3_11yr1")
+theme_override_font_sizes/font_size = 16
+text = "BOSS ONLY"
+
 [node name="main_menu_sprite" type="Sprite2D" parent="."]
 position = Vector2(316, 406)
 scale = Vector2(0.5, 0.5)
