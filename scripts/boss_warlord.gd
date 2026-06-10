@@ -12,10 +12,14 @@
 extends CharacterBody2D
 
 @export var move_speed: float = 192.0
-@export var contact_kill_range: float = 110.0       # tocar el cuerpo = muerte del jugador
 @export var score_value: int = 10
 @export var enemy_class: StringName = &"boss"
 @export var invulnerable: bool = true               # por ahora SIEMPRE true
+
+@export_group("Bloqueo con escudo")
+@export var block_front_arc: float = 1.4            # rad (~80°): ataque considerado "de frente"
+@export var block_knockback: float = 1200.0        # fuerza con que rebota al jugador
+@export var shield_block_pose: float = 0.8          # cuánto se levanta el escudo al bloquear (rad)
 
 @export_group("Punteria")
 @export var head_turn_limit: float = 0.95           # rad (~54°) que la cabeza puede girar sola
@@ -43,6 +47,7 @@ var player: Node2D = null
 var time_accum: float = 0.0
 var block_cd: float = 0.0
 var shield_recoil: float = 0.0
+var shield_block: float = 0.0           # pose de "escudo al frente" (decae sola)
 var head_rot: float = 0.0               # rotación local actual de la cabeza
 var club_target: float = 0.0           # rotación objetivo del brazo de la maza
 var telegraph_node: Polygon2D = null
@@ -61,6 +66,7 @@ func _physics_process(delta: float) -> void:
 	time_accum += delta
 	block_cd = maxf(block_cd - delta, 0.0)
 	shield_recoil = move_toward(shield_recoil, 0.0, delta * 4.0)
+	shield_block = move_toward(shield_block, 0.0, delta * 3.0)
 
 	if GameState.game_over:
 		velocity = Vector2.ZERO
@@ -74,9 +80,8 @@ func _physics_process(delta: float) -> void:
 	var dist := to_player.length()
 	var target_body_rot := to_player.angle() - PI / 2.0
 
-	# Contacto con el cuerpo = muerte del jugador (die() respeta i-frames/dash).
-	if dist <= contact_kill_range and player.has_method("die"):
-		player.die()
+	# Sin contacto-letal pasivo: la amenaza letal es el cleave (telegrafiado).
+	# El frente está escudado: atacarlo de frente rebota al jugador (ver die()).
 
 	match state:
 		State.CHASE:
@@ -104,7 +109,7 @@ func _physics_process(delta: float) -> void:
 
 	# --- Brazos ---
 	club.rotation = club_target
-	shield.rotation = sin(time_accum * 1.3) * 0.04 + shield_recoil
+	shield.rotation = sin(time_accum * 1.3) * 0.04 + shield_recoil + shield_block
 
 	move_and_slide()
 
@@ -199,14 +204,29 @@ func _on_blocked() -> void:
 	if is_instance_valid(player):
 		dir = (player.global_position - global_position).normalized()
 
+	# ¿El golpe viene del frente del boss? (dentro del cono que cubre el escudo)
+	var fwd := Vector2.DOWN.rotated(parts.rotation)
+	var frontal := absf(fwd.angle_to(dir)) <= block_front_arc
+
+	# Chispas en el punto de contacto, hacia el jugador.
 	_spawn_block_sparks(global_position + dir * 110.0, dir)
-	shield_recoil = -0.3
 	# Flash del escudo (self_modulate no pelea con la rotación por frame).
 	shield.self_modulate = Color(2.2, 2.2, 2.4)
 	var tw := shield.create_tween()
 	tw.tween_property(shield, "self_modulate", Color.WHITE, 0.2)
-	_shake(2.5)
 	AudioManager.play_slice()  # provisional: falta un "clang" dedicado
+
+	if frontal:
+		# Interpone el escudo al frente y dispara al jugador hacia atrás.
+		shield_block = shield_block_pose
+		shield_recoil = -0.35
+		if is_instance_valid(player) and player.has_method("apply_knockback"):
+			player.apply_knockback(block_knockback, global_position)
+		_shake(5.0)
+	else:
+		# Golpe por un flanco no cubierto: sigue siendo invulnerable, feedback menor.
+		shield_recoil = -0.2
+		_shake(2.0)
 
 # === FX por código ===
 

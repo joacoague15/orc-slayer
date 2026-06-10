@@ -28,6 +28,8 @@ signal dash_ready
 # Multiplicador de velocidad de animación cuando se mueve (idle)
 @export var idle_walk_speed_mult: float = 2.0
 
+@export var knockback_friction: float = 2600.0  # px/s² con que se frena el rebote
+
 var is_dead: bool = false
 var is_dashing: bool = false
 var is_invulnerable: bool = false
@@ -38,6 +40,9 @@ var dash_timer: float = 0.0
 var dash_cooldown_timer: float = 0.0
 var dash_ghost_timer: float = 0.0
 var dash_ghosts_spawned: int = 0
+
+var knockback_velocity: Vector2 = Vector2.ZERO
+var knockback_timer: float = 0.0
 
 # Máquina de estados de slice
 enum SliceState {
@@ -85,6 +90,15 @@ func _physics_process(delta: float) -> void:
 			move_and_slide()
 			_clamp_to_arena()
 			return
+
+	# Knockback (rebote contra el escudo del boss): anula el control mientras dura.
+	if knockback_timer > 0.0:
+		knockback_timer -= delta
+		velocity = knockback_velocity
+		knockback_velocity = knockback_velocity.move_toward(Vector2.ZERO, knockback_friction * delta)
+		move_and_slide()
+		_clamp_to_arena()
+		return
 
 	# Movimiento con aceleración hacia la velocidad final y freno al soltar.
 	if input_vector != Vector2.ZERO:
@@ -274,6 +288,16 @@ func _clamp_to_arena() -> void:
 
 func is_damage_invulnerable() -> bool:
 	return is_invulnerable or is_dashing
+
+# Empuje del jugador alejándolo de `from_position` (ej. al rebotar contra el escudo del boss).
+func apply_knockback(strength: float, from_position: Vector2) -> void:
+	if is_dead:
+		return
+	var dir := global_position - from_position
+	if dir == Vector2.ZERO:
+		dir = -last_move_direction
+	knockback_velocity = dir.normalized() * strength
+	knockback_timer = 0.2
 
 func _on_animation_finished() -> void:
 	match slice_state:
