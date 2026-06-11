@@ -133,32 +133,41 @@ Rol en el juego: Fuerza movimiento constante. A diferencia del arquero (que pide
 
 
 4.5 Orco Warlord (Jefe Final)
-Pregunta al jugador: "¿Podés leer mis fases y atacar solo en las ventanas correctas?"
+Pregunta al jugador: "¿Podés sobrevivir a mis tres ataques y castigar mi única apertura?"
 Conducta:
 Tamaño: muy grande
-Velocidad: normal
-Salud: 1 (muere de un golpe, como todo)
-Fases cíclicas (8 segundos totales):
-Table
-Fase	Duración	Color	Vulnerable	Comportamiento
-APPROACH	2.0s	Naranja	✅ SÍ	Se mueve hacia el jugador. Arma brilla naranja.
-SPIN ATTACK	1.5s	Rojo	❌ NO	Se detiene. Gira arma 360° (radio 150px). Aura roja.
-RECOVER	1.0s	Verde	✅ SÍ	Aturdido. Respira pesado. Velocidad reducida.
-LEAP	1.5s	Rojo	❌ NO	Salta a posición del jugador. Sombra en el suelo 0.5s antes. Shockwave al caer (radio 100px).
-TAUNT	2.0s	Púrpura	✅ SÍ (riesgoso)	Gruñe. Invoca 2 Grunts en los bordes.
-Ciclo: APPROACH → SPIN → RECOVER → LEAP → TAUNT → (repetir)
+Velocidad de persecución: 240 px/s
+Salud: 1 (muere de un golpe, como todo), pero SOLO durante su ventana vulnerable.
+Invulnerable por defecto: bloquea cualquier golpe con el escudo (chispas + knockback al jugador).
+Puntería en dos capas: la cabeza gira rápido con límite; el cuerpo rota lento → punto ciego a la espalda.
+
+Tres ataques:
+1. CLEAVE (arco frontal):
+Alcance: 256 px. Se gatilla a 224 px del jugador.
+Wind-up: 0.69s (telegraph: abanico rojo en el piso + tinte rojo). Recover: 0.63s.
+La dirección se compromete al iniciar el wind-up: siempre esquivable.
+2. PISOTÓN:
+Cada 5-9 segundos.
+Telegraph de 0.5s: el boss se alza + círculo rojo de advertencia en el piso (radio 260 px).
+Libera 2-3 ondas expansivas LETALES escalonadas (0.16s entre ondas, expansión 0.6s).
+Se esquivan con timing, corriendo fuera del radio o atravesándolas con dash (i-frames).
+3. CARGA:
+Cada 9-13 segundos (la primera ~6s después de aparecer).
+3-4 embestidas a 1060 px/s contra el jugador, cada una hasta CHOCAR con el borde de la ronda.
+Cada carga se telegrafía 0.55s con un corredor rojo en el piso; el contacto durante la embestida mata (radio 110 px).
+La ÚLTIMA carga se telegrafía DORADA: al chocar con el borde queda VULNERABLE 1.5 segundos.
+Ventana vulnerable: tinte dorado pulsante, maza caída, chispas, y un disco-timer dorado que se achica con la ventana. Es el ÚNICO momento en que el jugador puede matarlo (de un golpe).
 Counterplay:
-APPROACH: Atacar si podés alcanzarlo. Pero no arriesgues quedarte cerca cuando termine (viene SPIN).
-SPIN: Alejarse o dash perpendicular. El spin tiene radio fijo (150px). Si estás a 160px, estás seguro.
-RECOVER: MEJOR VENTANA. 1.0s para acercarte y atacar. Es la fase más segura.
-LEAP: Cuando aparece la sombra, dash perpendicular a la sombra. No dashés hacia la sombra.
-TAUNT: Podés atacar al jefe, pero los 2 Grunts nuevos complican el espacio. Priorizar limpiar grunts primero.
+CLEAVE: leer el abanico rojo y salir del cono (o dash). El alcance corto y la cadencia lenta siempre dejan ventana.
+PISOTÓN: alejarse del círculo de advertencia o dashear a través de las ondas con i-frames.
+CARGA: moverse perpendicular al corredor; dash si te apuntó de cerca. NO sirve mantenerse lejos: la carga cruza toda la ronda.
+VENTANA: contar las cargas y leer el telegraph dorado. Cuando choca, correr hacia él y atacar antes de que el disco-timer se cierre.
 
 Rol en juego: Test final de todo lo aprendido. Combina elementos de todos los enemigos:
-Approach = Grunt (persecución directa)
-Spin = Berserker (zona de daño a evitar)
-Leap = Arquero (proyectil área que hay que esquivar agresivamente)
-Taunt = Mago (múltiples amenazas simultáneas)
+Cleave = Grunt (amenaza melee directa, leer y responder)
+Pisotón = Mago (zonas de peligro que fuerzan movimiento y timing)
+Carga = Berserker (embestida brutal que hay que esquivar en el último segundo)
+Ventana vulnerable = Arquero (agresividad obligatoria: si no cerrás distancia a tiempo, perdés la chance)
 
 5. SISTEMA DE OLEADAS Y SPAWN
 5.1 Estructura general
@@ -319,7 +328,7 @@ Si una IA sugiere cambiar alguna de estas, la respuesta es "No, ya está decidid
 ✅ El mago usa proyectiles con split angular (no teleport, no escudo)
 ✅ El berserker acecha rodeando al jugador y luego persigue sin detenerse, ajustando trayectoria constantemente
 ✅ El arquero usa flechas con tracking leve (no insta-hit, no spread shot)
-✅ El boss tiene 1 fase con 5 sub-fases cíclicas (no múltiples fases de vida)
+✅ El boss tiene 3 ataques (cleave, pisotón, carga) y una ÚNICA ventana vulnerable de 1.5s tras la última carga (no múltiples fases de vida)
 ✅ La música es por tiempo
 
 10. PREGUNTAS FRECUENTES YA RESPONDIDAS
@@ -330,7 +339,7 @@ R: El proyectil lo atraviesa sin daño (i-frames). Pero el dash no destruye el p
 P: ¿Los enemigos se dañan entre ellos?
 R: No. El arco de ataque del jugador solo daña enemigos. Las flechas del arquero solo dañan al jugador.
 P: ¿El boss puede morir durante cualquier fase?
-R: Sí, pero solo si es vulnerable (fases naranja/verde/púrpura). Durante fases rojas, el hitbox del jugador no le hace daño.
+R: No. Solo durante la ventana vulnerable de 1.5s tras su última carga (3-4 embestidas, la última telegrafiada en dorado). El resto del tiempo bloquea cualquier golpe con el escudo (chispas + knockback).
 P: ¿El combo afecta el daño?
 R: No. Todos mueren de un golpe siempre. El combo solo afecta puntuación.
 P: ¿Hay power-ups en el suelo?
@@ -342,7 +351,7 @@ R: Sí, Escape/P pausa el juego. Menú de pausa con opciones: Reanudar, Opciones
 P: ¿Qué pasa si mato al jefe con combo alto?
 R: El combo se mantiene hasta la pantalla de victoria. El score final incluye el multiplicador.
 P: ¿Los orcos spawnean durante el boss?
-R: No. El boss limpia todos los orcos existentes y pausa el spawn. Solo el boss + los 2 grunts que invoca en fase TAUNT.
+R: No. El boss limpia todos los orcos existentes y pausa el spawn. Solo el boss (no invoca enemigos).
 P: ¿Puedo atacar durante el dash?
 R: No. Durante el dash el estado es "DASHING". No se puede atacar ni cambiar dirección.
 P: ¿El berserker puede cargar fuera de pantalla?

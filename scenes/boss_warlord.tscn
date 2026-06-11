@@ -57,12 +57,16 @@ shape = SubResource("CircleShape2D_boss")
 [node name="Parts" type="Node2D" parent="."]
 
 [node name="RightArm" type="Sprite2D" parent="Parts"]
+z_index = 1
 position = Vector2(-180, -240)
+scale = Vector2(1.15, 1.15)
 texture = ExtResource("4_rarm")
 offset = Vector2(180, 240)
 
 [node name="LeftArm" type="Sprite2D" parent="Parts"]
+z_index = 3
 position = Vector2(50, -210)
+scale = Vector2(1.15, 1.15)
 texture = ExtResource("3_larm")
 offset = Vector2(-50, 210)
 
@@ -70,7 +74,9 @@ offset = Vector2(-50, 210)
 texture = ExtResource("1_body")
 
 [node name="Head" type="Sprite2D" parent="Parts"]
+z_index = 2
 position = Vector2(-49, 22)
+scale = Vector2(1.3, 1.3)
 texture = ExtResource("2_head")
 offset = Vector2(49, -22)
 

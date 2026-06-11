@@ -257,4 +257,3 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_k425p")
 
 [node name="Shadow" parent="." instance=ExtResource("31_shadow")]
-shadow_radius = 58.0
