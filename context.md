@@ -133,41 +133,42 @@ Rol en el juego: Fuerza movimiento constante. A diferencia del arquero (que pide
 
 
 4.5 Orco Warlord (Jefe Final)
-Pregunta al jugador: "¿Podés sobrevivir a mis tres ataques y castigar mi única apertura?"
+Pregunta al jugador: "¿Podés esquivar dentro de mi área de ataque y aguantar hasta que me agote?"
 Conducta:
 Tamaño: muy grande
-Velocidad de persecución: 240 px/s
-Salud: 1 (muere de un golpe, como todo), pero SOLO durante su ventana vulnerable.
+Aspecto: ESPECTRAL, un espíritu orco: tinte etéreo verde-cian con rim glow y ondulación (shader), motas de alma flotando, ecos/afterimages al moverse y bruma espectral en cada pisada.
+Marcha sincronizada: la animación de pasos avanza por DISTANCIA recorrida (no por tiempo) → no patina al desplazarse.
+Velocidad de persecución: 326.4 px/s (+70% sobre el prototipo de 192; más lento que el jugador, pero presiona)
+Salud: 1 (muere de un golpe, como todo), pero SOLO mientras está estuneado.
 Invulnerable por defecto: bloquea cualquier golpe con el escudo (chispas + knockback al jugador).
 Puntería en dos capas: la cabeza gira rápido con límite; el cuerpo rota lento → punto ciego a la espalda.
 
-Tres ataques:
+Dos ataques + agotamiento:
 1. CLEAVE (arco frontal):
-Alcance: 256 px. Se gatilla a 224 px del jugador.
-Wind-up: 0.69s (telegraph: abanico rojo en el piso + tinte rojo). Recover: 0.63s.
-La dirección se compromete al iniciar el wind-up: siempre esquivable.
+Alcance: 230 px (-40%). Se gatilla a 202 px del jugador.
+Ataque rápido: wind-up 0.38s (telegraph: abanico rojo con borde pulsante + RELLENO de carga lineal que llega al borde justo cuando cae el golpe + tinte rojo), swing 0.15s, recover 0.35s.
+La dirección se compromete al iniciar el wind-up: leer el abanico y salir del cono, o atravesarlo con dash (i-frames).
 2. PISOTÓN:
-Cada 5-9 segundos.
-Telegraph de 0.5s: el boss se alza + círculo rojo de advertencia en el piso (radio 260 px).
-Libera 2-3 ondas expansivas LETALES escalonadas (0.16s entre ondas, expansión 0.6s).
-Se esquivan con timing, corriendo fuera del radio o atravesándolas con dash (i-frames).
-3. CARGA:
-Cada 9-13 segundos (la primera ~6s después de aparecer).
-3-4 embestidas a 1060 px/s contra el jugador, cada una hasta CHOCAR con el borde de la ronda.
-Cada carga se telegrafía 0.55s con un corredor rojo en el piso; el contacto durante la embestida mata (radio 110 px).
-La ÚLTIMA carga se telegrafía DORADA: al chocar con el borde queda VULNERABLE 1.5 segundos.
-Ventana vulnerable: tinte dorado pulsante, maza caída, chispas, y un disco-timer dorado que se achica con la ventana. Es el ÚNICO momento en que el jugador puede matarlo (de un golpe).
+Frecuente: cada 3-5.5 segundos.
+Telegraph de 0.5s: el boss se alza + círculo rojo de advertencia con anillo CONTRACTOR que se cierra hacia el centro (cuando llega, cae el pisotón).
+Impacto: flash central, dos ondas de polvo no letales, escombros radiales, polvareda y shake fuerte antes del muro letal.
+Libera UNA onda expansiva LETAL que avanza a 430 px/s (expansión lineal) hasta cubrir TODA la ronda.
+Visual de peligro inconfundible: frente grueso ROJO (mismo lenguaje que los telegraphs) con núcleo blanco, grosor pulsante y brasas crepitando a lo largo de todo el anillo.
+Es más rápida que el jugador corriendo (390 px/s): no se le puede huir, hay que atravesarla con dash (i-frames).
+AGOTAMIENTO (stun):
+Después de 5-10 ataques (aleatorio; cuentan cleaves y pisotones), el boss queda ESTUNEADO 1.5 segundos al terminar su último ataque.
+Feedback: flash blanco + onda dorada + tinte dorado pulsante + maza caída + disco-timer dorado que se achica con la ventana.
+Es el ÚNICO momento en que el jugador puede matarlo (de un golpe).
+Si la ventana se cierra sin matarlo, el contador arranca de nuevo (5-10 ataques).
 Counterplay:
-CLEAVE: leer el abanico rojo y salir del cono (o dash). El alcance corto y la cadencia lenta siempre dejan ventana.
-PISOTÓN: alejarse del círculo de advertencia o dashear a través de las ondas con i-frames.
-CARGA: moverse perpendicular al corredor; dash si te apuntó de cerca. NO sirve mantenerse lejos: la carga cruza toda la ronda.
-VENTANA: contar las cargas y leer el telegraph dorado. Cuando choca, correr hacia él y atacar antes de que el disco-timer se cierre.
+CLEAVE: leer el abanico rojo y reaccionar rápido (0.38s): salir del cono por el costado o atravesarlo con dash. Quedarse parado dentro del área = muerte.
+PISOTÓN: no correr hacia el borde (la onda es más rápida que vos y cubre toda la ronda): dashear a través del frente con i-frames.
+STUN: contar los ataques para anticipar la ventana. Cuando colapsa, correr hacia él y atacar antes de que el disco-timer se cierre.
 
 Rol en juego: Test final de todo lo aprendido. Combina elementos de todos los enemigos:
-Cleave = Grunt (amenaza melee directa, leer y responder)
-Pisotón = Mago (zonas de peligro que fuerzan movimiento y timing)
-Carga = Berserker (embestida brutal que hay que esquivar en el último segundo)
-Ventana vulnerable = Arquero (agresividad obligatoria: si no cerrás distancia a tiempo, perdés la chance)
+Cleave = Grunt + Berserker (amenaza melee brutal que pide lectura y sangre fría)
+Pisotón = Mago (zonas de peligro que fuerzan movimiento y timing de dash)
+Agotamiento = Arquero (agresividad obligatoria: si no cerrás distancia a tiempo, perdés la chance)
 
 5. SISTEMA DE OLEADAS Y SPAWN
 5.1 Estructura general
@@ -328,7 +329,7 @@ Si una IA sugiere cambiar alguna de estas, la respuesta es "No, ya está decidid
 ✅ El mago usa proyectiles con split angular (no teleport, no escudo)
 ✅ El berserker acecha rodeando al jugador y luego persigue sin detenerse, ajustando trayectoria constantemente
 ✅ El arquero usa flechas con tracking leve (no insta-hit, no spread shot)
-✅ El boss tiene 3 ataques (cleave, pisotón, carga) y una ÚNICA ventana vulnerable de 1.5s tras la última carga (no múltiples fases de vida)
+✅ El boss tiene 2 ataques (cleave, pisotón) y una ÚNICA ventana vulnerable: queda estuneado 1.5s tras encadenar 5-10 ataques (no múltiples fases de vida)
 ✅ La música es por tiempo
 
 10. PREGUNTAS FRECUENTES YA RESPONDIDAS
@@ -339,7 +340,7 @@ R: El proyectil lo atraviesa sin daño (i-frames). Pero el dash no destruye el p
 P: ¿Los enemigos se dañan entre ellos?
 R: No. El arco de ataque del jugador solo daña enemigos. Las flechas del arquero solo dañan al jugador.
 P: ¿El boss puede morir durante cualquier fase?
-R: No. Solo durante la ventana vulnerable de 1.5s tras su última carga (3-4 embestidas, la última telegrafiada en dorado). El resto del tiempo bloquea cualquier golpe con el escudo (chispas + knockback).
+R: No. Solo mientras está estuneado: 1.5s después de encadenar 5-10 ataques (cleaves + pisotones). El resto del tiempo bloquea cualquier golpe con el escudo (chispas + knockback).
 P: ¿El combo afecta el daño?
 R: No. Todos mueren de un golpe siempre. El combo solo afecta puntuación.
 P: ¿Hay power-ups en el suelo?
