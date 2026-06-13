@@ -44,6 +44,10 @@ var dash_ghosts_spawned: int = 0
 var knockback_velocity: Vector2 = Vector2.ZERO
 var knockback_timer: float = 0.0
 
+# Fuente de input táctil (twin-stick). La asigna main.gd solo en dispositivos
+# táctiles; en desktop queda null y todo sale de teclado + mouse como siempre.
+var touch_source: Node = null
+
 # Máquina de estados de slice
 enum SliceState {
 	IDLE,
@@ -68,11 +72,8 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 	
-	var input_vector := Vector2(
-		Input.get_axis("move_left", "move_right"),
-		Input.get_axis("move_up", "move_down")
-	).normalized()
-	
+	var input_vector := _get_move_vector()
+
 	if input_vector != Vector2.ZERO and not is_dashing:
 		last_move_direction = input_vector
 	
@@ -108,10 +109,12 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_clamp_to_arena()
 
-	# Rotación del sprite hacia el mouse, girando a rotation_speed (no instantáneo).
-	var mouse_pos := get_global_mouse_position()
-	var target_rotation := (mouse_pos - global_position).angle() - PI / 2
-	sprite.rotation = rotate_toward(sprite.rotation, target_rotation, rotation_speed * delta)
+	# Rotación del sprite hacia el apuntado (mouse en desktop, stick derecho en táctil).
+	# Si en táctil no se está apuntando (stick centrado), mantiene la última dirección.
+	var aim_dir := _get_aim_direction()
+	if aim_dir != Vector2.ZERO:
+		var target_rotation := aim_dir.angle() - PI / 2
+		sprite.rotation = rotate_toward(sprite.rotation, target_rotation, rotation_speed * delta)
 	
 	# Velocidad de animación: solo idle se acelera al moverse
 	if slice_state == SliceState.IDLE:
@@ -131,6 +134,24 @@ func _physics_process(delta: float) -> void:
 	# Input de ataque
 	if Input.is_action_pressed("attack"):
 		_try_attack()
+
+# Dirección de movimiento: stick táctil si hay y está deflectado, si no teclado.
+func _get_move_vector() -> Vector2:
+	if touch_source:
+		var mv: Vector2 = touch_source.get_move_vector()
+		if mv != Vector2.ZERO:
+			return mv.normalized()
+	return Vector2(
+		Input.get_axis("move_left", "move_right"),
+		Input.get_axis("move_up", "move_down")
+	).normalized()
+
+# Dirección de apuntado: stick derecho táctil si hay y está deflectado, si no mouse.
+# Devuelve ZERO si no hay apuntado activo (el llamador decide el fallback).
+func _get_aim_direction() -> Vector2:
+	if touch_source:
+		return touch_source.get_aim_direction()
+	return (get_global_mouse_position() - global_position).normalized()
 
 func _is_in_slice_animation() -> bool:
 	return slice_state == SliceState.TRANSITIONING_TO_SLICE_1 \
@@ -178,9 +199,9 @@ func _spawn_slice() -> void:
 	AudioManager.play_slice()
 	$Camera2D.shake(2.0)
 	
-	var mouse_pos := get_global_mouse_position()
-	var direction := (mouse_pos - global_position).angle()
-	
+	var aim_dir := _get_aim_direction()
+	var direction := aim_dir.angle() if aim_dir != Vector2.ZERO else sprite.rotation + PI / 2
+
 	var slice := slice_scene.instantiate()
 	slice.position = global_position
 	slice.rotation = direction

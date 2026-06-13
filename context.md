@@ -26,8 +26,17 @@ Forma: Arco curvo frente al jugador
 Mata todo lo que toca de un golpe
 El ataque puede mantenerse apretado; no hace falta presionar click repetidamente.
 Velocidad actual de animaciones de ataque: 60% del valor anterior.
+3.2.1 Controles táctiles (celular / web táctil)
+Se activan SOLO si el dispositivo es táctil (DisplayServer.is_touchscreen_available()); en desktop todo sigue siendo teclado + mouse, sin cambios.
+Esquema twin-stick (capa CanvasLayer aparte, full-res, sobre el render low-res):
+- Stick izquierdo (mitad inferior izq.): movimiento. Origen dinámico (la base aparece donde tocás).
+- Stick derecho (mitad inferior der.): apuntado; al deflectarlo dispara el ataque (auto-fire estilo Archero).
+- Botón DASH (esquina inferior der.): dash (dirección = última de movimiento).
+Multitouch real: cada dedo se arbitra por índice en touch_controls.gd; el botón de dash tiene prioridad sobre el stick de apuntado que lo solapa.
+Requiere emulate_mouse_from_touch=false para que los toques no se conviertan en clicks y disparen "attack" por accidente.
+
 3.3 Dash
-Input: Shift
+Input: Shift (o botón DASH en táctil)
 Dirección: Última dirección de movimiento.
 I-frames: Invulnerable durante TODO el dash
 Atraviesa TODO: Enemigos, proyectiles, zonas de daño

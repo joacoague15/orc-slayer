@@ -12,6 +12,7 @@ const GAME_OVER_LINES: Array[Dictionary] = [
 	{"enemy": "Your armor will rust on your corpse.", "knight": "Not today."},
 	{"enemy": "The ground is hungry for you.", "knight": "Let it stay hungry."},
 ]
+const TouchControlsScene := preload("res://scenes/touch_controls.tscn")
 const LOW_RES_WORLD_NODES: Array[StringName] = [
 	&"GroundFallback",
 	&"GroundRain",
@@ -112,8 +113,20 @@ func _ready() -> void:
 	go_kills.modulate.a = 0.0
 	go_time.modulate.a = 0.0
 	go_highscore.modulate.a = 0.0
+	_setup_touch_controls()
 	AudioManager.play_game_music()
 	spawner.start_waves()
+
+func _setup_touch_controls() -> void:
+	# Solo en dispositivos táctiles (celular/web táctil). En desktop no se instancia
+	# y el control sigue siendo 100% teclado + mouse.
+	if not DisplayServer.is_touchscreen_available():
+		return
+	var tc := TouchControlsScene.instantiate()
+	add_child(tc)
+	player.touch_source = tc
+	# Al morir, los sticks estorban y taparían el botón de reinicio: se ocultan.
+	player.died.connect(func() -> void: tc.visible = false)
 
 func _setup_low_res_render() -> void:
 	_resize_low_res_output()

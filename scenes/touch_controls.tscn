@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=3 uid="uid://btouchctrl0001"]
+
+[ext_resource type="Script" path="res://scripts/touch_controls.gd" id="1_root"]
+[ext_resource type="Script" path="res://scripts/virtual_joystick.gd" id="2_stick"]
+[ext_resource type="Script" path="res://scripts/touch_button.gd" id="3_btn"]
+
+[node name="TouchControls" type="CanvasLayer"]
+layer = 2
+script = ExtResource("1_root")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="MoveStick" type="Control" parent="Root"]
+layout_mode = 1
+anchor_top = 0.4
+anchor_right = 0.5
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("2_stick")
+
+[node name="AimStick" type="Control" parent="Root"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.4
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("2_stick")
+
+[node name="DashButton" type="Control" parent="Root"]
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -248.0
+offset_top = -248.0
+offset_right = -56.0
+offset_bottom = -56.0
+mouse_filter = 2
+script = ExtResource("3_btn")
