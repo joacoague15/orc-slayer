@@ -5,52 +5,45 @@ signal wave_started(wave_number: int, kills_required: int)
 signal wave_completed(wave_number: int)
 signal boss_wave_reached
 
-const BOSS_WAVE_NUMBER: int = 7
+const BOSS_WAVE_NUMBER: int = 6
 const WAVE_CONFIGS: Array[Dictionary] = [
 	{
 		"number": 1,
 		"kills_required": 6,
 		"max_orcs": 6,
-		"spawn_interval": 1.20,
-		"weights": {"normal": 0.50, "archer": 0.50, "mage": 0.00, "berserker": 0.00},
+		"spawn_interval": 1.00,
+		"weights": {"normal": 1.00, "archer": 0.00, "mage": 0.00, "berserker": 0.00},
 	},
 	{
 		"number": 2,
-		"kills_required": 12,
-		"max_orcs": 16,
-		"spawn_interval": 1.05,
+		"kills_required": 14,
+		"max_orcs": 14,
+		"spawn_interval": 1.20,
 		"weights": {"normal": 0.40, "archer": 0.60, "mage": 0.00, "berserker": 0.00},
 	},
 	{
 		"number": 3,
-		"kills_required": 30,
-		"max_orcs": 16,
-		"spawn_interval": 0.90,
-		"weights": {"normal": 0.50, "archer": 0.30, "mage": 0.20, "berserker": 0.00},
+		"kills_required": 14,
+		"max_orcs": 14,
+		"spawn_interval": 1.20,
+		"weights": {"normal": 0.70, "archer": 0.00, "mage": 0.30, "berserker": 0.00},
 	},
 	{
 		"number": 4,
-		"kills_required": 100,
-		"max_orcs": 34,
-		"spawn_interval": 0.78,
-		"weights": {"normal": 0.40, "archer": 0.20, "mage": 0.20, "berserker": 0.20},
+		"kills_required": 20,
+		"max_orcs": 20,
+		"spawn_interval": 1.20,
+		"weights": {"normal": 0.70, "archer": 0.00, "mage": 0.00, "berserker": 0.30},
 	},
 	{
 		"number": 5,
 		"kills_required": 100,
-		"max_orcs": 48,
-		"spawn_interval": 0.66,
-		"weights": {"normal": 0.10, "archer": 0.30, "mage": 0.30, "berserker": 0.30},
+		"max_orcs": 34,
+		"spawn_interval": 1.20,
+		"weights": {"normal": 0.40, "archer": 0.20, "mage": 0.20, "berserker": 0.20},
 	},
 	{
 		"number": 6,
-		"kills_required": 160,
-		"max_orcs": 64,
-		"spawn_interval": 0.54,
-		"weights": {"normal": 0.05, "archer": 0.30, "mage": 0.45, "berserker": 0.20},
-	},
-	{
-		"number": 7,
 		"kills_required": 0,
 		"max_orcs": 0,
 		"spawn_interval": 0.0,
@@ -102,7 +95,9 @@ func _process(delta: float) -> void:
 			spawn_orc()
 
 func start_waves() -> void:
-	current_wave_index = 0
+	# Retoma desde la wave guardada (GameState.saved_wave). En partida nueva
+	# saved_wave == 1, así que arranca en la primera.
+	current_wave_index = clampi(GameState.saved_wave - 1, 0, WAVE_CONFIGS.size() - 1)
 	current_wave_kills = 0
 	current_wave_spawned = 0
 	_start_current_wave()

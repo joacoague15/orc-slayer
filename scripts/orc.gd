@@ -22,7 +22,7 @@ extends CharacterBody2D
 @export var death_lifetime: float = 90.0
 @export var death_fade_duration: float = 5.0
 @export var death_blood_delay: float = 0.5  # cuándo sale el charco final (segundos)
-@export var dead_body_color: Color = Color(0.19, 0.2, 0.25, 1.0)  # gris oscuro y frío: el cadáver retrocede, el vivo resalta
+@export var dead_body_color: Color = Color(0.228, 0.24, 0.3, 1.0)  # gris frío, 20% menos oscuro (×1.2 sobre 0.19,0.2,0.25): el cadáver retrocede pero menos opacado
 
 # Nuevo flag para distinguir "muriendo" de "muerto"
 var is_dead: bool = false

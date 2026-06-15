@@ -16,6 +16,10 @@ var kills_by_class: Dictionary = {}  # enemy_class (StringName) -> cantidad elim
 var total_anger: int = 0
 var current_level: int = 1
 
+# Wave desde la que se retoma la partida (1 = partida nueva). Persistido en el
+# save: al morir, el jugador reinicia en la wave que estaba, no en la 1.
+var saved_wave: int = 1
+
 const SAVE_PATH := "user://savegame.save"
 const COMBO_TIMEOUT: float = 3.5
 const POINTS_PER_ANGER: int = 10  # 10 puntos = 1 anger
@@ -105,6 +109,20 @@ func trigger_game_over() -> void:
 	game_over = true
 	is_running = false
 
+func set_saved_wave(wave_number: int) -> void:
+	var clamped := maxi(wave_number, 1)
+	if clamped == saved_wave:
+		return
+	saved_wave = clamped
+	save_progress()
+
+func start_new_run() -> void:
+	# "Partida nueva" desde el menú: vuelve a la wave 1.
+	if saved_wave == 1:
+		return
+	saved_wave = 1
+	save_progress()
+
 func try_update_highscore() -> bool:
 	if score > highscore:
 		highscore = score
@@ -189,6 +207,7 @@ func save_progress() -> void:
 		file.store_32(highscore)
 		file.store_32(total_anger)
 		file.store_32(current_level)
+		file.store_32(saved_wave)
 
 func load_save() -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
@@ -200,10 +219,15 @@ func load_save() -> void:
 		current_level = file.get_32()
 		if current_level < 1:
 			current_level = 1
+		# Campo agregado luego: saves viejos devuelven 0 al llegar al EOF.
+		saved_wave = file.get_32()
+		if saved_wave < 1:
+			saved_wave = 1
 			
 func reset_save() -> void:
 	highscore = 0
 	total_anger = 0
 	current_level = 1
+	saved_wave = 1
 	save_progress()
 	print("[GAMESTATE] Save reseteado")

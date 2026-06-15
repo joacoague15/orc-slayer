@@ -55,6 +55,30 @@ position = Vector2(588, 154)
 scale = Vector2(0.3, 0.3)
 texture = ExtResource("2_1a28p")
 
+[node name="ContinueButton" type="TextureButton" parent="VBoxContainer"]
+custom_minimum_size = Vector2(468, 70)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+texture_normal = ExtResource("4_5vrj7")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="VBoxContainer/ContinueButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.45, 1, 0.55, 1)
+theme_override_constants/line_spacing = 2
+theme_override_fonts/font = ExtResource("3_11yr1")
+theme_override_font_sizes/font_size = 28
+text = "Continue"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="StartButton" type="TextureButton" parent="VBoxContainer"]
 custom_minimum_size = Vector2(468, 70)
 layout_mode = 2
@@ -75,7 +99,7 @@ theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_constants/line_spacing = 2
 theme_override_fonts/font = ExtResource("3_11yr1")
 theme_override_font_sizes/font_size = 28
-text = "Face them all"
+text = "New Game"
 horizontal_alignment = 1
 vertical_alignment = 1
 

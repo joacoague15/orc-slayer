@@ -26,7 +26,7 @@ const RING_ENEMY_TYPES: Array = [
 const DEAD_ORC_TEXTURE: Texture2D = preload("res://sprites/animations_sprites/death_orc/frame11.png")
 const BLOOD_SPLAT_SCENE: PackedScene = preload("res://scenes/blood_splat.tscn")
 const FOG_SHADER: Shader = preload("res://shaders/arena_fog.gdshader")
-const DEAD_BODY_COLOR: Color = Color(0.19, 0.2, 0.25, 1.0)  # gris oscuro y frío, igual que orc.gd (cadáver hundido)
+const DEAD_BODY_COLOR: Color = Color(0.228, 0.24, 0.3, 1.0)  # gris frío, 20% menos oscuro (×1.2 sobre 0.19,0.2,0.25); igual que orc.gd
 const ORC_BLOOD_COLOR: Color = Color(0.08, 0.45, 0.12, 1.0)  # mismo verde que orc.gd
 
 @export var arena_radius: float = 900.0           # radio del arena; el centro es la posición de este nodo
@@ -34,7 +34,7 @@ const ORC_BLOOD_COLOR: Color = Color(0.08, 0.45, 0.12, 1.0)  # mismo verde que o
 @export var ring_scale_multiplier: float = 1.0    # multiplica la escala nativa de cada tipo de enemigo
 @export var radial_jitter: float = 18.0           # desorden radial para que parezca horda, no círculo perfecto
 @export var scale_jitter: float = 0.08            # variación de tamaño por silueta
-@export var ring_tint: Color = Color(0.20, 0.22, 0.28, 1.0)  # gris frío tenue: siluetas visibles contra la niebla, poco nítidas
+@export var ring_tint: Color = Color(0.24, 0.264, 0.336, 1.0)  # gris frío, 20% menos oscuro (×1.2 sobre 0.20,0.22,0.28): siluetas más legibles contra la niebla
 
 @export_group("Sway (movimiento sutil)")
 @export var sway_position_amplitude: float = 2.5  # px de balanceo posicional (respiración)

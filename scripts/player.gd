@@ -6,7 +6,7 @@ signal dash_started
 signal dash_finished
 signal dash_ready
 
-@export var move_speed: float = 390.0          # velocidad final (máxima) — valor del context.md
+@export var move_speed: float = 390.0          # velocidad final (máxima) — valor del DATA.md
 @export var acceleration: float = 3200.0       # px/s² hasta la velocidad final
 @export var friction: float = 4200.0           # px/s² al soltar (alto = freno casi instantáneo)
 @export var rotation_speed: float = 16.0       # rad/s de giro del sprite hacia el mouse
@@ -15,8 +15,8 @@ signal dash_ready
 
 @export_group("Dash")
 @export var dash_speed: float = 1270.75
-@export var dash_duration: float = 0.16
-@export var dash_cooldown: float = 0.75
+@export var dash_duration: float = 0.176        # +10% sobre 0.16: como el i-frame dura todo el dash, da +10% de i-frame y, a velocidad constante, +10% de distancia (203.32 → 223.65 px)
+@export var dash_cooldown: float = 0.55         # 0.2s menos que el 0.75 anterior
 @export var dash_ghost_count: int = 7
 @export var dash_ghost_lifetime: float = 0.22
 @export var dash_ghost_color: Color = Color(0.8, 1.1, 1.7, 0.7)      # cian sobreexpuesto: la estela resalta sobre el fondo oscuro

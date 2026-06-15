@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://3o1aw27yriil"
+path="res://.godot/imported/The Hunt.ogg-8b28955574471a6bdd6b50b286ce5d8b.oggvorbisstr"
+
+[deps]
+
+source_file="res://audio/music/The Hunt.ogg"
+dest_files=["res://.godot/imported/The Hunt.ogg-8b28955574471a6bdd6b50b286ce5d8b.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

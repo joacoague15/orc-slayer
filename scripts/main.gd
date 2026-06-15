@@ -1,7 +1,7 @@
 # scripts/main.gd
 extends Node2D
 
-const BOSS_WAVE_NUMBER: int = 7
+const BOSS_WAVE_NUMBER: int = 6
 const LOW_RES_VIEWPORT_SIZE: Vector2i = Vector2i(426, 240)
 const GAME_VIEW_WORLD_SIZE: Vector2 = Vector2(1280.0, 720.0)
 const GAME_OVER_LINES: Array[Dictionary] = [
@@ -114,7 +114,13 @@ func _ready() -> void:
 	go_time.modulate.a = 0.0
 	go_highscore.modulate.a = 0.0
 	_setup_touch_controls()
-	AudioManager.play_game_music()
+	# Si ya venía sonando la música del juego, esto es un reinicio tras game over:
+	# la música NO se corta, solo se restaura el volumen (sigue desde donde estaba).
+	# Si no (venimos del menú: New Game o Continue), arranca el intro -> loop.
+	if AudioManager.is_game_music_active():
+		AudioManager.set_music_ducked(false)
+	else:
+		AudioManager.play_game_music()
 	spawner.start_waves()
 
 func _setup_touch_controls() -> void:
@@ -183,6 +189,8 @@ func _on_kill_count_changed(_kill_count: int) -> void:
 	_update_wave_progress_bar()
 
 func _on_wave_started(wave_number: int, kills_required: int) -> void:
+	# Persistir la wave alcanzada: si el jugador muere, retoma desde acá.
+	GameState.set_saved_wave(wave_number)
 	if wave_number >= BOSS_WAVE_NUMBER:
 		wave_progress_container.visible = false
 		return
@@ -200,11 +208,11 @@ func _on_wave_started(wave_number: int, kills_required: int) -> void:
 
 func _wave_accent_color(wave_number: int) -> Color:
 	# Más alta la wave, más caliente/peligroso el color del banner.
-	if wave_number >= 6:
+	if wave_number >= 4:
 		return Color(0.7, 0.2, 0.9)   # púrpura
-	elif wave_number >= 5:
-		return Color(1.0, 0.2, 0.2)   # rojo
 	elif wave_number >= 3:
+		return Color(1.0, 0.2, 0.2)   # rojo
+	elif wave_number >= 2:
 		return Color(1.0, 0.5, 0.1)   # naranja
 	return Color(1.0, 0.85, 0.2)      # gold
 
@@ -229,7 +237,7 @@ func _on_wave_completed(wave_number: int) -> void:
 	if wave_transition_running:
 		return
 	if wave_number >= BOSS_WAVE_NUMBER - 1:
-		_finish_current_build_after_wave6(wave_number)
+		_finish_after_last_pre_boss_wave(wave_number)
 		return
 	_start_wave_transition(wave_number)
 
@@ -316,7 +324,7 @@ func _start_boss_sequence(wave_number: int) -> void:
 		return
 	spawner.start_next_wave()
 
-func _finish_current_build_after_wave6(wave_number: int) -> void:
+func _finish_after_last_pre_boss_wave(wave_number: int) -> void:
 	boss_spawn_started = true
 	wave_transition_running = true
 	if spawner.has_method("set_spawning_enabled"):
@@ -441,7 +449,9 @@ func _on_player_died() -> void:
 	GameState.trigger_game_over()
 	GameState.stop_timer()
 	GameState.try_update_highscore()
-	AudioManager.fade_music_to(0.3)
+	# Game over: la canción NO para ni corta, solo baja el volumen (duck). El
+	# reinicio la restaura sin cortarla (ver _ready).
+	AudioManager.set_music_ducked(true)
 	
 	# Pre-llenar labels iniciales
 	var line: Dictionary = GAME_OVER_LINES.pick_random()

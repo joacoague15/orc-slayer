@@ -210,13 +210,12 @@ berserker = orc_berserker_scene
 
 | Wave | Kills para avanzar | Max enemigos vivos | Spawn interval | Grunt | Archer | Mage | Berserker | Objetivo de diseño |
 | - | -: | -: | -: | -: | -: | -: | -: | - |
-| 1 | 6 | 6 | 1.20s | 0.50 | 0.50 | 0.00 | 0.00 | Enseñar persecución básica y combo con orc y archer. |
-| 2 | 30 | 16 | 1.05s | 0.40 | 0.60 | 0.00 | 0.00 | Introducir presión lateral leve con Archer. |
-| 3 | 30 | 16 | 0.90s | 0.50 | 0.30 | 0.20 | 0.00 | Introducir Mage y movimiento constante. |
-| 4 | 100 | 34 | 0.78s | 0.40 | 0.20 | 0.20 | 0.20 | Introducir Berserker sin saturar. |
-| 5 | 100 | 48 | 0.66s | 0.10 | 0.30 | 0.30 | 0.30 | Mezclar amenazas de distancia y cazador. |
-| 6 | 160 | 64 | 0.54s | 0.05 | 0.30 | 0.45 | 0.20 | Test pre-boss: presión alta sin jefe. |
-| 7 | Boss | Boss + summons | Boss sequence | 0.00 | 0.00 | 0.00 | 0.00 | Limpiar arena y ejecutar transición al Warlord o BOSS PENDING. |
+| 1 | 6 | 6 | 1.00s | 1.00 | 0.00 | 0.00 | 0.00 | Enseñar persecución básica y combo con orc y archer. |
+| 2 | 14 | 14 | 1.20s | 0.40 | 0.60 | 0.00 | 0.00 | Introducir presión lateral leve con Archer. |
+| 3 | 14 | 14 | 1.20s | 0.70 | 0.00 | 0.30 | 0.00 | Introducir Mage y movimiento constante. |
+| 4 | 20 | 20 | 1.20s | 0.70 | 0.00 | 0.00 | 0.30 | Introducir Berserker sin saturar. |
+| 5 | 100 | 34 | 1.20s | 0.40 | 0.20 | 0.20 | 0.20 | De todo |
+| 6 | Boss | Boss + summons | Boss sequence | 0.00 | 0.00 | 0.00 | 0.00 | Limpiar arena y ejecutar transición al Warlord o BOSS PENDING. |
 
 `kills_required` define tambien el total maximo de enemigos que el spawner puede crear en esa wave. `max_orcs` solo limita cuantos enemigos pueden estar vivos al mismo tiempo.
 
