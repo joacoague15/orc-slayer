@@ -208,7 +208,8 @@ func play_pickup() -> void:
 	_play_sfx(pickup_stream, "pickup", 0.1)
 
 func play_berserker_attack() -> void:
-	_play_sfx(berserker_attack_stream, "berserker_attack", 0.05, 0.6)
+	# Volumen 0.42 = 30% menos que el 0.6 original.
+	_play_sfx(berserker_attack_stream, "berserker_attack", 0.05, 0.42)
 
 func play_mage_attack() -> void:
 	_play_sfx(mage_attack_stream, "mage_attack", 0.05, 1.5)
