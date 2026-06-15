@@ -30,7 +30,7 @@ const PIP_BOSS_DIM: Color = Color(0.5, 0.16, 0.16)
 const PIP_BOSS_ACTIVE: Color = Color(1, 0.2, 0.2)
 
 @export var boss_scene: PackedScene
-@export var boss_pending: bool = true
+@export var boss_pending: bool = false
 @export var boss_spawn_delay: float = 3.0
 @export var boss_spawn_distance_buffer: float = 120.0
 @export var wave_transition_delay: float = 2.0
@@ -41,6 +41,7 @@ const PIP_BOSS_ACTIVE: Color = Color(1, 0.2, 0.2)
 @onready var player: Node2D = $Player
 @onready var spawner: Node2D = $Spawner
 @onready var arena: Node2D = $Arena
+@onready var ui: CanvasLayer = $UI
 @onready var score_label: Label = $UI/TopLeftPanel/ScoreLabel
 @onready var time_label: Label = $UI/TimeRow/TimeVBox/TimeLabel
 @onready var wave_marker_label: Label = $UI/WaveMarkerLabel
@@ -237,7 +238,7 @@ func _on_wave_completed(wave_number: int) -> void:
 	if wave_transition_running:
 		return
 	if wave_number >= BOSS_WAVE_NUMBER - 1:
-		_finish_after_last_pre_boss_wave(wave_number)
+		_start_boss_sequence(wave_number)
 		return
 	_start_wave_transition(wave_number)
 
@@ -324,18 +325,6 @@ func _start_boss_sequence(wave_number: int) -> void:
 		return
 	spawner.start_next_wave()
 
-func _finish_after_last_pre_boss_wave(wave_number: int) -> void:
-	boss_spawn_started = true
-	wave_transition_running = true
-	if spawner.has_method("set_spawning_enabled"):
-		spawner.set_spawning_enabled(false)
-	await _wait_for_orcs_cleared()
-	if GameState.game_over or player.is_dead:
-		wave_transition_running = false
-		return
-	_set_wave_progress_ratio(1.0)
-	_show_wave_marker("WAVE %d CLEAR" % wave_number, "BOSS NO HECHO")
-
 func _on_boss_wave_reached() -> void:
 	if boss_pending or not boss_scene:
 		_show_boss_pending()
@@ -357,7 +346,83 @@ func _spawn_boss() -> void:
 		return
 	boss_instance = boss_scene.instantiate()
 	boss_instance.global_position = _get_boss_spawn_position()
+	if boss_instance.has_signal("defeated"):
+		boss_instance.defeated.connect(_on_boss_defeated)
 	low_res_world.add_child(boss_instance)
+
+func _on_boss_defeated() -> void:
+	# Warlord derrotado = fin de la demo. Congela el run y muestra la pantalla final.
+	GameState.stop_timer()
+	if is_instance_valid(player):
+		player.set_physics_process(false)
+		player.set_process(false)
+	AudioManager.set_music_ducked(true)
+	_show_end_of_demo()
+
+func _show_end_of_demo() -> void:
+	var title_font := load("res://fonts/PressStart2P-Regular.ttf")
+	var body_font := load("res://fonts/Silkscreen-Regular.ttf")
+	var accent := Color(1.0, 0.85, 0.2)
+
+	var screen := Control.new()
+	screen.name = "EndOfDemoScreen"
+	screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	screen.mouse_filter = Control.MOUSE_FILTER_STOP
+	ui.add_child(screen)
+
+	# Telón negro que entra primero.
+	var overlay := ColorRect.new()
+	overlay.color = Color(0.02, 0.02, 0.03, 1.0)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.modulate.a = 0.0
+	screen.add_child(overlay)
+
+	var vbox := VBoxContainer.new()
+	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 28)
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	screen.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "END OF DEMO"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_override("font", title_font)
+	title.add_theme_font_size_override("font_size", 48)
+	title.add_theme_color_override("font_color", accent)
+	title.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	title.add_theme_constant_override("outline_size", 8)
+	title.modulate.a = 0.0
+	vbox.add_child(title)
+
+	var thanks := Label.new()
+	thanks.text = "Thank you for playing."
+	thanks.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	thanks.add_theme_font_override("font", body_font)
+	thanks.add_theme_font_size_override("font_size", 26)
+	thanks.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92))
+	thanks.modulate.a = 0.0
+	vbox.add_child(thanks)
+
+	var coming := Label.new()
+	coming.text = "What's coming:\nnew enemies, new challenges\nand a new power to change everything..."
+	coming.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	coming.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	coming.add_theme_font_override("font", body_font)
+	coming.add_theme_font_size_override("font_size", 18)
+	coming.add_theme_color_override("font_color", Color(0.62, 0.66, 0.7))
+	coming.add_theme_constant_override("line_spacing", 8)
+	coming.modulate.a = 0.0
+	vbox.add_child(coming)
+
+	# Transición suave y escalonada: telón -> título -> agradecimiento -> teaser.
+	var tween := create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, 1.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_property(title, "modulate:a", 1.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_property(thanks, "modulate:a", 1.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(0.4)
+	tween.tween_property(coming, "modulate:a", 1.0, 1.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 func _get_boss_spawn_position() -> Vector2:
 	# Con arena: el jefe aparece en el punto del borde de la ronda más lejano al

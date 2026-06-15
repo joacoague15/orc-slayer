@@ -21,6 +21,8 @@
 # Forward del boss = su eje local +Y (mira "hacia abajo"/cámara con rotación 0).
 extends CharacterBody2D
 
+signal defeated
+
 const ShockwaveRing := preload("res://scripts/shockwave_ring.gd")
 const CleaveTelegraph := preload("res://scripts/cleave_telegraph.gd")
 const StompTelegraph := preload("res://scripts/stomp_telegraph.gd")
@@ -594,6 +596,9 @@ func _die_for_real() -> void:
 	Engine.time_scale = 0.05
 	await get_tree().create_timer(0.25, true, false, true).timeout
 	Engine.time_scale = 1.0
+	# El boss fue derrotado: fin de la demo. Se emite con el tiempo ya restaurado
+	# para que la transición de la pantalla corra a velocidad normal.
+	defeated.emit()
 	queue_free()
 
 func _on_attacked() -> void:

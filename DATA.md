@@ -181,12 +181,11 @@ Agotamiento = Arquero (agresividad obligatoria: si no cerrás distancia a tiempo
 
 5. SISTEMA DE OLEADAS Y SPAWN
 5.1 Estructura general
-El juego usa un sistema cerrado de 7 waves.
-Las waves 1 a 6 son pre-boss.
-La wave 7 es la wave del Warlord.
-En la build actual, la run se detiene al completar la wave 6 y muestra "BOSS NO HECHO".
-Mientras el Warlord no esté implementado o conectado, la wave 7 entra en estado BOSS PENDING.
-Boss pending no es victoria ni game over: detiene el spawner, deja la run viva y muestra un mensaje claro de placeholder.
+El juego usa un sistema cerrado de 6 waves.
+Las waves 1 a 5 son pre-boss.
+La wave 6 es la wave del Warlord.
+Al completar la wave 5 y limpiar los enemigos restantes, se ejecuta la secuencia de entrada del boss y aparece el Warlord en la wave 6.
+El Warlord ya está implementado y conectado: no existe estado BOSS PENDING en la build actual. (Se conserva un flag interno boss_pending como fallback defensivo por si el boss no estuviera disponible, pero por defecto está apagado.)
 Cada wave debe ser más complicada que la anterior por una combinación de:
 Más enemigos requeridos para avanzar.
 Mayor cantidad máxima de enemigos vivos.
@@ -214,8 +213,8 @@ berserker = orc_berserker_scene
 | 2 | 14 | 14 | 1.20s | 0.40 | 0.60 | 0.00 | 0.00 | Introducir presión lateral leve con Archer. |
 | 3 | 14 | 14 | 1.20s | 0.70 | 0.00 | 0.30 | 0.00 | Introducir Mage y movimiento constante. |
 | 4 | 20 | 20 | 1.20s | 0.70 | 0.00 | 0.00 | 0.30 | Introducir Berserker sin saturar. |
-| 5 | 100 | 34 | 1.20s | 0.40 | 0.20 | 0.20 | 0.20 | De todo |
-| 6 | Boss | Boss + summons | Boss sequence | 0.00 | 0.00 | 0.00 | 0.00 | Limpiar arena y ejecutar transición al Warlord o BOSS PENDING. |
+| 5 | 20 | 20 | 1.20s | 0.40 | 0.20 | 0.20 | 0.20 | De todo |
+| 6 | Boss | Boss | Boss sequence | 0.00 | 0.00 | 0.00 | 0.00 | Limpiar arena y ejecutar la transición al Warlord. |
 
 `kills_required` define tambien el total maximo de enemigos que el spawner puede crear en esa wave. `max_orcs` solo limita cuantos enemigos pueden estar vivos al mismo tiempo.
 
@@ -263,24 +262,24 @@ Slider de multiplicador de peso entre x0.0 y x3.0.
 La configuración se guarda en GameState durante runtime. No se persiste en disco y no es meta-progresión.
 
 5.6 Trigger del Jefe
-Condición: completar la wave 6 y limpiar los enemigos restantes.
-Estado actual de build: al completar la wave 6 se detiene el spawner y se muestra "BOSS NO HECHO"; no se inicia wave 7.
+Condición: completar la wave 5 (última pre-boss) y limpiar los enemigos restantes.
 Secuencia:
-Se completa la wave 6.
+Se completa la wave 5.
 El spawner se detiene.
 Los enemigos restantes se limpian antes de la entrada del boss.
-3 segundos de pausa (audio de alerta, pantalla tiembla leve)
-Aparece el Warlord en el punto de spawn más lejano del jugador
-Música de boss comienza
-Si el Warlord no está disponible:
+Se muestra "BOSS INCOMING" y la pantalla tiembla leve.
+3 segundos de pausa (audio de alerta).
+Comienza la wave 6 y aparece el Warlord en el punto de spawn más lejano del jugador.
+Música de boss comienza.
+Fallback defensivo (boss_pending o boss no disponible):
 No se instancia ningún jefe.
 El spawner queda detenido.
-Se muestra "BOSS PENDING" en pantalla.
 La run no se marca como victoria.
 
 5.7 Victoria
-Al matar al Warlord: pantalla de victoria 
-Muestra: Score final, combo máximo, tiempo, orcos matados
+Al matar al Warlord (solo es vulnerable durante el agotamiento): se congela el run y aparece, con una transición suave y escalonada (telón negro → título → texto), la pantalla de FIN DE DEMO.
+Texto: "END OF DEMO" / "Thank you for playing." / "What's coming: new enemies, new challenges and a new power to change everything..."
+Nota: en esta build el cierre es la pantalla de fin de demo (teaser), no una pantalla de stats de victoria.
 
 6. UI/UX: QUÉ MOSTRAR Y QUÉ NO
 6.0 Legibilidad visual
