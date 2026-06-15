@@ -17,6 +17,10 @@ var has_saved_run: bool = false
 func _ready() -> void:
 	AudioManager.play_menu_music()
 
+	# Precargar la escena del juego en segundo plano mientras el jugador está en el
+	# menú, así al tocar el botón ya está en caché y la transición no espera a cargar.
+	ResourceLoader.load_threaded_request("res://scenes/main.tscn")
+
 	# Mostrar highscore si existe
 	if GameState.highscore > 0:
 		highscore_label.text = "Highscore: %d" % GameState.highscore
@@ -132,12 +136,6 @@ func _begin_transition() -> void:
 	# Bloqueamos input mientras hace la transición
 	start_button.disabled = true
 	continue_button.disabled = true
-
-	# Fade-out de todo
-	var tween := create_tween().set_parallel(true)
-	tween.tween_property(hero_sprite, "modulate:a", 0.0, 0.4)
-	tween.tween_property($VBoxContainer, "modulate:a", 0.0, 0.4)
-
-	# Esperar a que termine el fade y cambiar de escena
-	await tween.finished
-	get_tree().change_scene_to_file("res://scenes/main.tscn")
+	set_process(false)  # frenar el blink de los botones
+	# Transición fade-to-black con carga en segundo plano (sin trabones).
+	SceneTransition.transition_to_scene("res://scenes/main.tscn")

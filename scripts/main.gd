@@ -506,7 +506,8 @@ func _on_player_died() -> void:
 func _on_game_over_response_pressed() -> void:
 	if not player.is_dead:
 		return
-	get_tree().reload_current_scene()
+	# Transición fade-to-black con carga en segundo plano (sin trabones).
+	SceneTransition.transition_to_scene("res://scenes/main.tscn")
 
 func _on_game_over_button_mouse_entered() -> void:
 	if go_response_button.disabled:
